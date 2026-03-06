@@ -25,7 +25,10 @@ export default function FilesPage() {
     <Layout title="File Sharing — Orios Class" description="Securely share and download class materials">
       <div className={styles.page}>
         <header className={styles.header}>
-          <span className={styles.headerIcon}>📁</span>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', left: '-50px', bottom: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
+            <span className={styles.headerIcon}>📁</span>
+          </div>
           <div>
             <h1 className={styles.title}>File Sharing</h1>
             <p className={styles.subtitle}>Securely share and download class materials and resources</p>

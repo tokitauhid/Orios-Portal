@@ -49,7 +49,9 @@ export default function NotesPage() {
     <Layout title="Notes — Orios Class" description="Subject-wise notes, links, docs, and resources">
       <div className={styles.page}>
         <header className={styles.header}>
-          <div className={styles.headerContent}>
+          <div className={styles.headerContent} style={{ position: 'relative' }}>
+            <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', left: '-50px', top: '-20px', width: '50px', height: '50px', objectFit: 'contain', transform: 'rotate(-15deg)', opacity: 0.9 }} />
+            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', right: '-40px', bottom: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(10deg)', opacity: 0.9 }} />
             <span className={styles.headerIcon}>📝</span>
             <div>
               <h1 className={styles.title}>Notes</h1>

@@ -50,7 +50,10 @@ export default function AssignmentsPage() {
     <Layout title="Assignments — Orios Class" description="Track your assignments and due dates">
       <div className={styles.page}>
         <header className={styles.header}>
-          <span className={styles.headerIcon}>📋</span>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', right: '-40px', top: '-10px', width: '55px', height: '55px', objectFit: 'contain', transform: 'rotate(5deg)', opacity: 0.9 }} />
+            <span className={styles.headerIcon}>📋</span>
+          </div>
           <div>
             <h1 className={styles.title}>Assignments</h1>
             <p className={styles.subtitle}>Track due dates, status, and submissions</p>

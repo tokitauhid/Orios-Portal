@@ -32,7 +32,10 @@ export default function TeachersPage() {
     <Layout title="Teachers — Orios Class" description="Find all teachers' contact info and office hours">
       <div className={styles.page}>
         <header className={styles.header}>
-          <span className={styles.headerIcon}>👨‍🏫</span>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src="/img/orio1.png" alt="Orio1" style={{ position: 'absolute', right: '-40px', top: '-10px', width: '55px', height: '55px', objectFit: 'contain', transform: 'rotate(5deg)', opacity: 0.9 }} />
+            <span className={styles.headerIcon}>👨‍🏫</span>
+          </div>
           <div>
             <h1 className={styles.title}>Teacher Directory</h1>
             <p className={styles.subtitle}>Find contact info, office hours, and details for all teachers</p>

@@ -66,7 +66,8 @@ export default function AdminDashboard() {
       <AdminLayout title="📊 Dashboard">
         {/* Settings Section */}
         <section className={styles.settingsSection}>
-          <div className={styles.settingsHeader}>
+          <div className={styles.settingsHeader} style={{ position: 'relative' }}>
+            <img src="/img/orio.png" alt="Orio" style={{ position: 'absolute', left: '-40px', top: '-30px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-15deg)', opacity: 0.9 }} />
             <h2 className={styles.sectionTitle}>⚙️ Homepage Settings</h2>
             <button className={styles.saveBtn} onClick={handleSaveSettings}>
               {savedSettings ? '✅ Saved!' : '💾 Save Settings'}
@@ -113,7 +114,10 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <section className={styles.quickSection}>
-          <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', right: '-50px', top: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(10deg)', opacity: 0.9 }} />
+            <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
+          </div>
           <div className={styles.quickGrid}>
             {quickActions.map((action, i) => (
               <a key={action.to} href={action.to} className={styles.quickCard} style={{ animationDelay: `${i * 40}ms` }}>

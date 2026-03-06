@@ -89,7 +89,10 @@ export default function CalendarPage() {
         </div>
 
         <section className={styles.routineSection}>
-          <h2 className={styles.sectionTitle}>🗓️ Weekly Routine</h2>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src="/img/orio.png" alt="Orio" style={{ position: 'absolute', right: '-50px', top: '-30px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(15deg)', opacity: 0.9 }} />
+            <h2 className={styles.sectionTitle}>🗓️ Weekly Routine</h2>
+          </div>
           <RoutineViewer routine={liveRoutine} />
         </section>
       </div>

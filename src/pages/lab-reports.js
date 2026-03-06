@@ -41,7 +41,10 @@ export default function LabReportsPage() {
     <Layout title="Lab Reports — Orios Class" description="Manage lab experiment reports by subject">
       <div className={styles.page}>
         <header className={styles.header}>
-          <span className={styles.headerIcon}>🔬</span>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src="/img/orio.png" alt="Orio" style={{ position: 'absolute', left: '-50px', bottom: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
+            <span className={styles.headerIcon}>🔬</span>
+          </div>
           <div>
             <h1 className={styles.title}>Lab Reports</h1>
             <p className={styles.subtitle}>Manage lab experiment reports organized by subject</p>
