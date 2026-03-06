@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import assignmentsData from '@site/src/data/assignments';
+import { autoUpdateStatuses } from '@site/src/auth/db';
 import styles from './assignments.module.css';
 
 const statusColors = {
@@ -10,13 +11,26 @@ const statusColors = {
   graded: { bg: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', label: 'Graded' },
 };
 
+function computeStatus(a) {
+  if (a.status === 'submitted' || a.status === 'graded') return a.status;
+  const now = new Date();
+  return (a.dueDate && new Date(a.dueDate) < now) ? 'overdue' : 'pending';
+}
+
 export default function AssignmentsPage() {
   const [filter, setFilter] = useState('all');
-  const subjects = [...new Set(assignmentsData.map(a => a.subject))];
+  const [data, setData] = useState(assignmentsData);
+
+  useEffect(() => {
+    try { autoUpdateStatuses(); } catch {}
+    setData(assignmentsData.map(a => ({ ...a, status: computeStatus(a) })));
+  }, []);
+
+  const subjects = [...new Set(data.map(a => a.subject))];
 
   const filtered = filter === 'all'
-    ? assignmentsData
-    : assignmentsData.filter(a => a.status === filter || a.subject === filter);
+    ? data
+    : data.filter(a => a.status === filter || a.subject === filter);
 
   const getDaysLeft = (dueDate) => {
     const diff = new Date(dueDate) - new Date();
@@ -50,7 +64,7 @@ export default function AssignmentsPage() {
 
         <div className={styles.grid}>
           {filtered.map((a, i) => {
-            const status = statusColors[a.status];
+            const status = statusColors[a.status] || statusColors.pending;
             return (
               <div key={a.id} className={styles.card} style={{ animationDelay: `${i * 80}ms` }}>
                 <div className={styles.cardHeader}>
@@ -68,7 +82,7 @@ export default function AssignmentsPage() {
                   </span>
                 </div>
                 <div className={styles.tags}>
-                  {a.tags.map(t => <span key={t} className={styles.tag}>{t}</span>)}
+                  {(a.tags || []).map(t => <span key={t} className={styles.tag}>{t}</span>)}
                 </div>
               </div>
             );

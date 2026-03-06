@@ -1,0 +1,23 @@
+.card {
+  background: var(--surface-0); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); padding: 24px; margin-bottom: 16px;
+}
+.sectionTitle { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin: 0 0 16px; color: var(--text-primary); }
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+.label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+.input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm); background: var(--surface-1);
+  font-size: 0.85rem; color: var(--text-primary); outline: none;
+  font-family: var(--ifm-font-family-base); transition: border-color var(--transition-fast);
+}
+.input:focus { border-color: var(--ifm-color-primary); }
+.hint { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+
+.saveBtn {
+  padding: 12px 28px; border: none; border-radius: var(--radius-sm);
+  background: var(--gradient-primary); color: white; font-weight: 600;
+  font-size: 0.9rem; cursor: pointer; transition: all var(--transition-fast);
+}
+.saveBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }

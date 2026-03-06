@@ -1,6 +1,6 @@
 const routine = {
   timeSlots: ['8:00', '9:00', '10:00', '11:00', '12:00', '1:00', '2:00', '3:00', '4:00'],
-  days: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+  days: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
   schedule: {
     Saturday: [
       { time: '8:00', subject: 'Data Structures', room: 'CSE-301', teacher: 'Dr. Aminul Islam', type: 'lecture' },

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import NoticeBanner from '@site/src/components/NoticeBanner';
 import CountdownTimer from '@site/src/components/CountdownTimer';
 import FeatureCard from '@site/src/components/FeatureCard';
+import RoutineViewer from '@site/src/components/RoutineViewer';
 import SearchOverlay from '@site/src/components/SearchOverlay';
 import notices from '@site/src/data/notices';
 import events from '@site/src/data/events';
@@ -10,6 +11,8 @@ import notes from '@site/src/data/notes';
 import assignments from '@site/src/data/assignments';
 import teachers from '@site/src/data/teachers';
 import files from '@site/src/data/files';
+import routine from '@site/src/data/routine';
+import { getSettings, getRoutine, autoUpdateStatuses } from '@site/src/auth/db';
 import styles from './index.module.css';
 
 // Get upcoming events sorted by date
@@ -29,6 +32,23 @@ function getNextExam(eventList) {
     .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
 }
 
+// Get today's classes from routine
+function getTodayClasses(routineData) {
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const today = dayNames[new Date().getDay()];
+  const slots = routineData?.schedule?.[today] || [];
+  return slots.filter(Boolean);
+}
+
+// Get pending assignment count
+function getPendingCount(list) {
+  const now = new Date();
+  return list.filter(a => {
+    if (a.status === 'pending' && a.dueDate && new Date(a.dueDate) >= now) return true;
+    return false;
+  }).length;
+}
+
 const features = [
   { title: 'Notes', description: 'Access subject-wise notes, links, docs, and resources all in one place.', to: '/notes', type: 'notes' },
   { title: 'Assignments', description: 'Track all your assignments with due dates and submission status.', to: '/assignments', type: 'assignments' },
@@ -40,10 +60,24 @@ const features = [
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [welcomeText, setWelcomeText] = useState('Semester 3/1');
+  const [liveRoutine, setLiveRoutine] = useState(routine);
+
+  useEffect(() => {
+    try {
+      autoUpdateStatuses();
+      const settings = getSettings();
+      if (settings.welcomeText) setWelcomeText(settings.welcomeText);
+      const savedRoutine = getRoutine();
+      if (savedRoutine?.days) setLiveRoutine(savedRoutine);
+    } catch {}
+  }, []);
+
   const upcomingEvents = getUpcomingEvents(events);
   const nextExam = getNextExam(events);
+  const todayClasses = getTodayClasses(liveRoutine);
+  const pendingAssignments = getPendingCount(assignments);
 
-  // Combine all searchable content
   const searchData = [
     ...notes,
     ...assignments.map(a => ({ ...a, icon: '📋', type: 'assignment' })),
@@ -66,8 +100,9 @@ export default function Home() {
           <h1 className={styles.heroTitle}>
             Welcome to <span className={styles.gradient}>Orios Class</span>
           </h1>
+          <p className={styles.welcomeBox}>{welcomeText}</p>
           <p className={styles.heroSubtitle}>
-            Your all-in-one class companion. Access notes, track assignments, check schedules, and stay updated — all in one beautiful place.
+            Your all-in-one class companion. Access notes, track assignments, check schedules, and stay updated.
           </p>
           <div className={styles.heroActions}>
             <button className={styles.searchBtn} onClick={() => setSearchOpen(true)}>
@@ -88,6 +123,38 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
+        {/* Quick Stats Row */}
+        <section className={styles.statsRow}>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>📚</span>
+            <div>
+              <span className={styles.statNumber}>{todayClasses.length}</span>
+              <span className={styles.statLabel}>Classes Today</span>
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>📋</span>
+            <div>
+              <span className={styles.statNumber}>{pendingAssignments}</span>
+              <span className={styles.statLabel}>Pending Tasks</span>
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>📅</span>
+            <div>
+              <span className={styles.statNumber}>{upcomingEvents.length}</span>
+              <span className={styles.statLabel}>Upcoming Events</span>
+            </div>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statIcon}>📝</span>
+            <div>
+              <span className={styles.statNumber}>{notes.length}</span>
+              <span className={styles.statLabel}>Total Notes</span>
+            </div>
+          </div>
+        </section>
+
         {/* Countdown Section */}
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
@@ -96,12 +163,7 @@ export default function Home() {
           </div>
           <div className={styles.countdownGrid}>
             {nextExam && (
-              <CountdownTimer
-                title={nextExam.title}
-                targetDate={nextExam.date}
-                type="exam"
-                icon="🎯"
-              />
+              <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
             )}
             {upcomingEvents.map(event => (
               <CountdownTimer
@@ -113,6 +175,33 @@ export default function Home() {
               />
             ))}
           </div>
+        </section>
+
+        {/* Today's Schedule */}
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>📚 Today's Schedule</h2>
+            <p className={styles.sectionDesc}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          </div>
+          {todayClasses.length > 0 ? (
+            <div className={styles.todayGrid}>
+              {todayClasses.map((cls, i) => (
+                <div key={i} className={`${styles.todayCard} ${styles[cls.type + 'Card']}`}>
+                  <span className={styles.todayTime}>{cls.time}</span>
+                  <h4 className={styles.todaySubject}>{cls.subject}</h4>
+                  <span className={styles.todayRoom}>{cls.room} · {cls.teacher}</span>
+                  <span className={`${styles.todayBadge} ${cls.type === 'lab' ? styles.labBadge : ''}`}>
+                    {cls.type === 'lab' ? '🔬 Lab' : '📖 Lecture'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.noClasses}>
+              <span>🎉</span>
+              <p>No classes today! Enjoy your day off.</p>
+            </div>
+          )}
         </section>
 
         {/* Quick Access Features */}

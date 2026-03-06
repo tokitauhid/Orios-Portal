@@ -23,6 +23,19 @@ const COLLECTIONS = {
 };
 
 const ROUTINE_KEY = 'orios_routine';
+const SETTINGS_KEY = 'orios_settings';
+const SUBJECTS_KEY = 'orios_subjects';
+
+const DEFAULT_SUBJECTS = [
+  'Data Structures', 'Physics', 'Mathematics', 'Database Systems',
+  'Electronics', 'English', 'Chemistry',
+];
+
+const DEFAULT_SETTINGS = {
+  welcomeText: 'Semester 3/1',
+  googleCalendarUrl: '',
+  countryCode: 'BD',
+};
 
 // ----- HELPERS -----
 
@@ -94,4 +107,60 @@ export function getRoutine() {
 
 export function saveRoutine(data) {
   localStorage.setItem(ROUTINE_KEY, JSON.stringify(data));
+}
+
+// ----- SETTINGS -----
+
+export function getSettings() {
+  try {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+    return { ...DEFAULT_SETTINGS };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+export function saveSettings(data) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(data));
+}
+
+// ----- SUBJECTS -----
+
+export function getSubjects() {
+  try {
+    const stored = localStorage.getItem(SUBJECTS_KEY);
+    if (stored) return JSON.parse(stored);
+    return [...DEFAULT_SUBJECTS];
+  } catch {
+    return [...DEFAULT_SUBJECTS];
+  }
+}
+
+export function saveSubjects(subjects) {
+  localStorage.setItem(SUBJECTS_KEY, JSON.stringify(subjects));
+}
+
+// ----- AUTO-STATUS UPDATE -----
+
+/**
+ * Auto-update assignment/lab report statuses based on due dates.
+ * pending → overdue if past due date.
+ */
+export function autoUpdateStatuses() {
+  const now = new Date();
+
+  ['assignments', 'labReports'].forEach(col => {
+    const items = getData(col);
+    let changed = false;
+    items.forEach(item => {
+      if (item.status === 'pending' && item.dueDate) {
+        if (new Date(item.dueDate) < now) {
+          item.status = 'overdue';
+          changed = true;
+        }
+      }
+    });
+    if (changed) saveData(col, items);
+  });
 }

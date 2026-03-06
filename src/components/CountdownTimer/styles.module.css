@@ -124,6 +124,17 @@
   50% { opacity: 0.3; }
 }
 
+/* Urgent (<24h) */
+.urgent { border-color: rgba(239,68,68,0.4); animation: urgentPulse 2s ease-in-out infinite; }
+.urgent::before { background: linear-gradient(90deg, #ef4444, #dc2626) !important; height: 4px; }
+.urgentBadge {
+  font-size: 0.6rem; font-weight: 700; color: #ef4444;
+  padding: 2px 8px; background: rgba(239,68,68,0.1); border-radius: var(--radius-full);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.urgentNumber { color: #ef4444 !important; }
+@keyframes urgentPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.1); } 50% { box-shadow: 0 0 20px 4px rgba(239,68,68,0.15); } }
+
 @media (max-width: 768px) {
   .countdown {
     padding: 16px;

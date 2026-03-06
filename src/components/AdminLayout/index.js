@@ -13,6 +13,8 @@ const navItems = [
   { label: '👨‍🏫 Teachers', to: '/admin/teachers-manager' },
   { label: '📁 Files', to: '/admin/files-manager' },
   { label: '🗓️ Routine', to: '/admin/routine-manager' },
+  { label: '📚 Subjects', to: '/admin/subjects' },
+  { label: '⚙️ Settings', to: '/admin/settings' },
   { label: '👥 Admins', to: '/admin/admins' },
 ];
 
