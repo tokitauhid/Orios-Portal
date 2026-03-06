@@ -63,6 +63,7 @@ const config = {
           { to: '/calendar', label: '📅 Calendar', position: 'left' },
           { to: '/teachers', label: '👨‍🏫 Teachers', position: 'left' },
           { to: '/files', label: '📁 Files', position: 'left' },
+          { to: '/admin/login', label: '⚙️ Admin', position: 'right' },
         ],
       },
       footer: {

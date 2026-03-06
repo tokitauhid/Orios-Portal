@@ -1,0 +1,51 @@
+.wrapper { animation: fadeInUp 0.4s ease-out; }
+
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 16px; flex-wrap: wrap;
+}
+.searchInput {
+  padding: 10px 14px; border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--surface-0); font-size: 0.85rem; color: var(--text-primary);
+  outline: none; transition: border-color var(--transition-fast); max-width: 300px; width: 100%;
+  font-family: var(--ifm-font-family-base);
+}
+.searchInput:focus { border-color: var(--ifm-color-primary); }
+.count { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+.tableWrap {
+  overflow-x: auto; border: 1px solid var(--border-light); border-radius: var(--radius-md);
+  background: var(--surface-0);
+}
+.table { width: 100%; border-collapse: collapse; min-width: 500px; }
+.th {
+  padding: 12px 16px; text-align: left; font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);
+  background: var(--surface-1); border-bottom: 1px solid var(--border-light);
+  white-space: nowrap;
+}
+.td {
+  padding: 12px 16px; font-size: 0.85rem; color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light); vertical-align: middle;
+}
+.row { transition: background var(--transition-fast); }
+.row:hover { background: var(--surface-1); }
+.row:last-child .td { border-bottom: none; }
+
+.empty { text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.9rem; }
+
+.actions { display: flex; gap: 6px; }
+.editBtn, .deleteBtn {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: transparent; cursor: pointer; font-size: 0.85rem;
+  transition: all var(--transition-fast);
+}
+.editBtn:hover { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.3); }
+.deleteBtn:hover { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); }
+.confirmDelete {
+  background: rgba(239,68,68,0.1); border-color: var(--color-danger); font-size: 0.6rem;
+  width: auto; padding: 0 8px; color: var(--color-danger); font-weight: 600;
+}
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }

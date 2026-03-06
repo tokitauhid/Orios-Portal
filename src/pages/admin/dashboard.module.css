@@ -1,0 +1,36 @@
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px; }
+
+.statCard {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 20px 16px; background: var(--surface-0); border: 1px solid var(--border-light);
+  border-top: 3px solid; border-radius: var(--radius-md);
+  text-decoration: none; color: inherit; transition: all var(--transition-base);
+  animation: fadeInUp 0.4s ease-out both;
+}
+.statCard:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); text-decoration: none; color: inherit; }
+.statIcon { font-size: 1.5rem; }
+.statCount { font-family: var(--font-display); font-weight: 800; font-size: 2rem; color: var(--text-primary); line-height: 1; }
+.statLabel { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.quickSection { margin-top: 8px; }
+.sectionTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; margin: 0 0 16px; color: var(--text-primary); }
+
+.quickGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.quickCard {
+  display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+  background: var(--surface-0); border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  text-decoration: none; color: inherit; transition: all var(--transition-fast);
+  animation: fadeInUp 0.4s ease-out both;
+}
+.quickCard:hover { background: var(--surface-2); border-color: var(--ifm-color-primary-lighter); text-decoration: none; color: inherit; transform: translateX(2px); }
+.quickIcon { font-size: 1.1rem; }
+.quickLabel { font-size: 0.85rem; font-weight: 500; flex: 1; color: var(--text-primary); }
+.quickArrow { color: var(--text-muted); font-size: 0.9rem; transition: transform var(--transition-fast); }
+.quickCard:hover .quickArrow { transform: translateX(4px); color: var(--ifm-color-primary); }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 768px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .quickGrid { grid-template-columns: 1fr; }
+}

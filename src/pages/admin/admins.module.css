@@ -1,0 +1,73 @@
+.info {
+  display: flex; align-items: center; gap: 10px; padding: 14px 20px; margin-bottom: 24px;
+  background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.15); border-radius: var(--radius-md);
+}
+.info p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+
+.sectionTitle { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin: 0 0 12px; color: var(--text-primary); }
+
+.addForm { margin-bottom: 24px; padding: 20px; background: var(--surface-0); border: 1px solid var(--border-light); border-radius: var(--radius-md); }
+.formRow { display: flex; gap: 8px; flex-wrap: wrap; }
+.emailInput {
+  flex: 1; min-width: 200px; padding: 10px 14px; border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--surface-1); font-size: 0.85rem; color: var(--text-primary); outline: none; font-family: var(--ifm-font-family-base);
+}
+.emailInput:focus { border-color: var(--ifm-color-primary); }
+.roleSelect {
+  padding: 10px 14px; border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+  background: var(--surface-1); font-size: 0.85rem; color: var(--text-primary); outline: none;
+}
+.addBtn {
+  padding: 10px 20px; border: none; border-radius: var(--radius-sm);
+  background: var(--gradient-primary); color: white; font-weight: 600; font-size: 0.85rem;
+  cursor: pointer; transition: all var(--transition-fast); white-space: nowrap;
+}
+.addBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+.addBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.error {
+  padding: 10px 16px; margin-bottom: 16px; background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-sm);
+  color: var(--color-danger); font-size: 0.85rem;
+}
+.success {
+  padding: 10px 16px; margin-bottom: 16px; background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.2); border-radius: var(--radius-sm);
+  color: var(--color-success); font-size: 0.85rem;
+}
+
+.listSection { margin-top: 8px; }
+.adminList { display: flex; flex-direction: column; gap: 8px; }
+.adminCard {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; background: var(--surface-0); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); transition: all var(--transition-fast);
+}
+.adminCard:hover { box-shadow: var(--shadow-sm); }
+.adminInfo { display: flex; align-items: center; gap: 12px; }
+.adminAvatar {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--gradient-primary);
+  display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;
+}
+.adminEmail { display: block; font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+.roleBadge {
+  display: inline-block; font-size: 0.7rem; font-weight: 600; margin-top: 2px;
+  color: var(--text-muted);
+}
+.superBadge { color: var(--color-warning); }
+.youBadge {
+  font-size: 0.75rem; font-weight: 600; color: var(--ifm-color-primary);
+  padding: 4px 12px; background: rgba(99,102,241,0.1); border-radius: var(--radius-full);
+}
+.removeBtn {
+  padding: 6px 16px; border: 1px solid rgba(239,68,68,0.3); border-radius: var(--radius-sm);
+  background: transparent; color: var(--color-danger); font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: all var(--transition-fast);
+}
+.removeBtn:hover { background: rgba(239,68,68,0.08); }
+.removeBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+  .formRow { flex-direction: column; }
+  .adminCard { flex-direction: column; gap: 12px; align-items: flex-start; }
+}

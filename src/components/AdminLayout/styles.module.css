@@ -1,0 +1,85 @@
+.loadingScreen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; gap: 16px; color: var(--text-muted);
+}
+.spinner {
+  width: 40px; height: 40px; border: 3px solid var(--border-light);
+  border-top-color: var(--ifm-color-primary); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; background: var(--surface-1); }
+
+/* Mobile Header */
+.mobileHeader {
+  display: none; position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  background: var(--surface-0); border-bottom: 1px solid var(--border-light);
+  z-index: 100; padding: 0 16px; align-items: center; gap: 12px;
+}
+.menuBtn {
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: transparent; font-size: 1.2rem; cursor: pointer; color: var(--text-primary);
+}
+.mobileTitle { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+
+/* Sidebar */
+.sidebar {
+  width: 260px; background: var(--surface-0); border-right: 1px solid var(--border-light);
+  display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0;
+  z-index: 200; transition: transform 0.3s ease;
+}
+.sidebarHeader {
+  display: flex; align-items: center; gap: 10px;
+  padding: 20px; border-bottom: 1px solid var(--border-light);
+}
+.sidebarLogo { font-size: 1.5rem; }
+.sidebarTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--text-primary); }
+
+.nav { flex: 1; padding: 12px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.navItem {
+  display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500;
+  color: var(--text-secondary); text-decoration: none; transition: all var(--transition-fast);
+}
+.navItem:hover { background: var(--surface-2); color: var(--text-primary); text-decoration: none; }
+.navActive { background: rgba(99,102,241,0.1); color: var(--ifm-color-primary); font-weight: 600; }
+
+.sidebarFooter { padding: 16px; border-top: 1px solid var(--border-light); }
+.userInfo { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.avatarPlaceholder {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--gradient-primary);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 0.9rem;
+}
+.userDetails { display: flex; flex-direction: column; min-width: 0; }
+.userName { font-weight: 600; font-size: 0.8rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.userEmail { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logoutBtn {
+  width: 100%; padding: 8px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: all var(--transition-fast);
+}
+.logoutBtn:hover { background: rgba(239,68,68,0.08); color: var(--color-danger); border-color: rgba(239,68,68,0.3); }
+
+.overlay { display: none; }
+
+/* Main */
+.main { flex: 1; margin-left: 260px; min-height: 100vh; }
+.pageHeader { padding: 24px 32px; border-bottom: 1px solid var(--border-light); background: var(--surface-0); }
+.pageTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; margin: 0; color: var(--text-primary); }
+.content { padding: 24px 32px; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .mobileHeader { display: flex; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebarOpen { transform: translateX(0); box-shadow: var(--shadow-xl); }
+  .overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; }
+  .main { margin-left: 0; padding-top: 56px; }
+  .pageHeader { padding: 20px 16px; }
+  .content { padding: 16px; }
+}

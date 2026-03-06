@@ -1,0 +1,13 @@
+.addBtn {
+  display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border: none; border-radius: var(--radius-sm);
+  background: var(--gradient-primary); color: white; font-weight: 600;
+  font-size: 0.85rem; cursor: pointer; transition: all var(--transition-fast);
+  margin-bottom: 20px;
+}
+.addBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-full);
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+}
