@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import AdminLayout from '@site/src/components/AdminLayout';
-import { getRoutine, saveRoutine } from '@site/src/auth/db';
+import { getRoutine, saveRoutine, getSettings, saveSettings } from '@site/src/auth/db';
 import styles from './routine-manager.module.css';
 
 export default function AdminRoutine() {
@@ -10,10 +10,24 @@ export default function AdminRoutine() {
   const [form, setForm] = useState({ subject: '', room: '', teacher: '', type: 'lecture' });
   const [saved, setSaved] = useState(false);
 
-  useEffect(() => { setRoutine(getRoutine()); }, []);
+  // Time slot editing
+  const [editingTime, setEditingTime] = useState(false);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [newTime, setNewTime] = useState('');
+
+  // Settings
+  const [settings, setSettings] = useState({ countryCode: 'BD' });
+
+  useEffect(() => {
+    const r = getRoutine();
+    setRoutine(r);
+    setTimeSlots(r?.timeSlots || []);
+    setSettings(getSettings());
+  }, []);
 
   if (!routine) return <Layout title="Routine — Admin"><AdminLayout title="🗓️ Manage Routine"><p>Loading...</p></AdminLayout></Layout>;
 
+  // ---- Cell editing ----
   const handleCellClick = (day, idx) => {
     const slot = routine.schedule[day]?.[idx];
     setEditing({ day, slotIdx: idx });
@@ -40,8 +54,26 @@ export default function AdminRoutine() {
     setEditing(null);
   };
 
+  // ---- Time Slots ----
+  const addTimeSlot = () => {
+    if (!newTime.trim() || timeSlots.includes(newTime.trim())) return;
+    const updated = [...timeSlots, newTime.trim()];
+    setTimeSlots(updated);
+    setRoutine(prev => ({ ...prev, timeSlots: updated }));
+    setNewTime('');
+  };
+
+  const removeTimeSlot = (time) => {
+    const updated = timeSlots.filter(t => t !== time);
+    setTimeSlots(updated);
+    setRoutine(prev => ({ ...prev, timeSlots: updated }));
+  };
+
+
+  // ---- Publish everything ----
   const handlePublish = () => {
     saveRoutine(routine);
+    saveSettings(settings);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -50,12 +82,37 @@ export default function AdminRoutine() {
     <Layout title="Manage Routine — Admin">
       <AdminLayout title="🗓️ Manage Weekly Routine">
         <div className={styles.toolbar}>
-          <p className={styles.hint}>Click any cell to edit. Click "Publish" to save.</p>
-          <button className={styles.publishBtn} onClick={handlePublish}>
-            {saved ? '✅ Saved!' : '💾 Publish Routine'}
-          </button>
+          <p className={styles.hint}>Click any cell to edit. Click "Publish" to save all changes.</p>
+          <div className={styles.toolbarBtns}>
+            <button className={styles.timeBtn} onClick={() => setEditingTime(!editingTime)}>
+              🕐 {editingTime ? 'Hide' : 'Edit'} Time Slots
+            </button>
+            <button className={styles.publishBtn} onClick={handlePublish}>
+              {saved ? '✅ Saved!' : '💾 Publish All'}
+            </button>
+          </div>
         </div>
 
+        {/* Time Slot Editor */}
+        {editingTime && (
+          <div className={styles.timeEditor}>
+            <h4 className={styles.timeEditorTitle}>🕐 Time Slots</h4>
+            <div className={styles.timeSlotList}>
+              {timeSlots.map(t => (
+                <div key={t} className={styles.timeSlotChip}>
+                  <span>{t}</span>
+                  <button className={styles.chipRemove} onClick={() => removeTimeSlot(t)}>✕</button>
+                </div>
+              ))}
+            </div>
+            <div className={styles.timeSlotAdd}>
+              <input type="text" value={newTime} onChange={e => setNewTime(e.target.value)} placeholder="e.g. 5:00" className={styles.timeInput} />
+              <button className={styles.timeAddBtn} onClick={addTimeSlot}>+ Add</button>
+            </div>
+          </div>
+        )}
+
+        {/* Schedule Table */}
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
@@ -89,6 +146,7 @@ export default function AdminRoutine() {
           </table>
         </div>
 
+        {/* Edit Cell Modal */}
         {editing && (
           <div className={styles.editOverlay} onClick={() => setEditing(null)}>
             <div className={styles.editModal} onClick={e => e.stopPropagation()}>

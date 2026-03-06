@@ -60,19 +60,6 @@
   margin-top: 48px;
 }
 
-/* Google Calendar sync */
-.calSyncSection {
-  margin-top: 24px; padding: 16px; background: var(--surface-card);
-  border: 1px solid var(--border-light); border-radius: var(--radius-md);
-}
-.calSyncTitle { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; margin: 0 0 8px; }
-.calSyncBtn {
-  display: inline-block; padding: 8px 16px; background: var(--gradient-primary);
-  color: white; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 600;
-  text-decoration: none; transition: all var(--transition-fast);
-}
-.calSyncBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); text-decoration: none; color: white; }
-
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 900px) {

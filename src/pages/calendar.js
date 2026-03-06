@@ -9,7 +9,6 @@ import styles from './calendar.module.css';
 
 export default function CalendarPage() {
   const [liveRoutine, setLiveRoutine] = useState(defaultRoutine);
-  const [googleCalUrl, setGoogleCalUrl] = useState('');
   const [countryCode, setCountryCode] = useState('BD');
   const [holidays, setHolidays] = useState([]);
 
@@ -18,11 +17,9 @@ export default function CalendarPage() {
       const saved = getRoutine();
       if (saved?.days) setLiveRoutine(saved);
       const settings = getSettings();
-      if (settings.googleCalendarUrl) setGoogleCalUrl(settings.googleCalendarUrl);
       if (settings.countryCode) setCountryCode(settings.countryCode);
     } catch {}
 
-    // Fetch public holidays
     fetchHolidays(countryCode);
   }, []);
 
@@ -44,7 +41,6 @@ export default function CalendarPage() {
     } catch {}
   };
 
-  // Merge events with holidays
   const allEvents = [...events, ...holidays];
 
   return (
@@ -81,16 +77,6 @@ export default function CalendarPage() {
                   </div>
                 ))}
             </div>
-
-            {/* Google Calendar Sync */}
-            {googleCalUrl && (
-              <div className={styles.calSyncSection}>
-                <h3 className={styles.calSyncTitle}>🔗 Google Calendar</h3>
-                <a href={googleCalUrl} target="_blank" rel="noopener noreferrer" className={styles.calSyncBtn}>
-                  Open in Google Calendar →
-                </a>
-              </div>
-            )}
           </div>
         </div>
 
