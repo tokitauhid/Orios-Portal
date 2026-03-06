@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const [counts, setCounts] = useState({});
   const [settings, setSettings] = useState({ welcomeText: '' });
   const [savedSettings, setSavedSettings] = useState(false);
+  const [demoCleared, setDemoCleared] = useState(false);
 
   useEffect(() => {
     async function loadCounts() {
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
     }
     loadCounts();
     setSettings(getSettings());
+    setDemoCleared(localStorage.getItem('orios_demo_cleared') === 'true');
   }, []);
 
   const handleSaveSettings = () => {
@@ -81,13 +83,15 @@ export default function AdminDashboard() {
               />
               <span className={styles.hint}>Displayed below "Welcome to Orios Class" on the homepage.</span>
             </div>
-            <div className={styles.field}>
-              <label className={styles.dangerLabel}>System Data</label>
-              <p className={styles.hint} style={{ margin: '0 0 8px' }}>Remove all dummy populated pre-fill site data in one click.</p>
-              <button className={styles.clearBtn} onClick={handleClearDemo}>
-                🗑️ Turn Off Demo Mode (Clear All Data)
-              </button>
-            </div>
+            {!demoCleared && (
+              <div className={styles.field}>
+                <label className={styles.dangerLabel}>System Data</label>
+                <p className={styles.hint} style={{ margin: '0 0 8px' }}>Remove all dummy populated pre-fill site data in one click.</p>
+                <button className={styles.clearBtn} onClick={handleClearDemo}>
+                  🗑️ Turn Off Demo Mode (Clear All Data)
+                </button>
+              </div>
+            )}
           </div>
         </section>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import SearchOverlay from '@site/src/components/SearchOverlay';
 import { getAll, getSubjects } from '@site/src/auth/db';

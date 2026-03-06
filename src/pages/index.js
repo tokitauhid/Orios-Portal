@@ -146,34 +146,34 @@ export default function Home() {
       <main className={styles.main}>
         {/* Quick Stats Row */}
         <section className={styles.statsRow}>
-          <div className={styles.statCard}>
+          <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📚</span>
             <div>
               <span className={styles.statNumber}>{todayClasses.length}</span>
               <span className={styles.statLabel}>Classes Today</span>
             </div>
-          </div>
-          <div className={styles.statCard}>
+          </a>
+          <a href="/assignments" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📋</span>
             <div>
               <span className={styles.statNumber}>{pendingAssignments}</span>
               <span className={styles.statLabel}>Pending Tasks</span>
             </div>
-          </div>
-          <div className={styles.statCard}>
+          </a>
+          <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📅</span>
             <div>
               <span className={styles.statNumber}>{upcomingEvents.length}</span>
               <span className={styles.statLabel}>Upcoming Events</span>
             </div>
-          </div>
-          <div className={styles.statCard}>
+          </a>
+          <a href="/notes" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📝</span>
             <div>
               <span className={styles.statNumber}>{notes.length}</span>
               <span className={styles.statLabel}>Total Notes</span>
             </div>
-          </div>
+          </a>
         </section>
 
         {/* Countdown Section */}
