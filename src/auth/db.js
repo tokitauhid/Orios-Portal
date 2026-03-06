@@ -33,8 +33,10 @@ const DEFAULT_SUBJECTS = [
 
 const DEFAULT_SETTINGS = {
   welcomeText: 'Semester 3/1',
-  googleCalendarUrl: '',
   countryCode: 'BD',
+  googleCalendars: [
+    // { id: 1, name: 'Class Schedule', url: 'https://calendar.google.com/calendar/ical/...', color: '#6366f1', enabled: true },
+  ],
 };
 
 // ----- HELPERS -----

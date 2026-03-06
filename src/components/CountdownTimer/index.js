@@ -63,26 +63,11 @@ export default function CountdownTimer({ title, targetDate, type = 'exam', icon 
           </div>
         </div>
       ) : (
-        /* Over 24 hours: show days + hours */
+        /* Over 24 hours: show ONLY days */
         <div className={styles.digits}>
           <div className={styles.unit}>
             <span className={styles.number}>{String(time.days).padStart(2, '0')}</span>
-            <span className={styles.label}>Days</span>
-          </div>
-          <span className={styles.colon}>:</span>
-          <div className={styles.unit}>
-            <span className={styles.number}>{String(time.hours).padStart(2, '0')}</span>
-            <span className={styles.label}>Hrs</span>
-          </div>
-          <span className={styles.colon}>:</span>
-          <div className={styles.unit}>
-            <span className={styles.number}>{String(time.minutes).padStart(2, '0')}</span>
-            <span className={styles.label}>Min</span>
-          </div>
-          <span className={styles.colon}>:</span>
-          <div className={styles.unit}>
-            <span className={`${styles.number} ${styles.seconds}`}>{String(time.seconds).padStart(2, '0')}</span>
-            <span className={styles.label}>Sec</span>
+            <span className={styles.label}>Days Left</span>
           </div>
         </div>
       )}
