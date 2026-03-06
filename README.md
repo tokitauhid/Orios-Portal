@@ -4,10 +4,10 @@
   <img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge" alt="License" />
 </p>
 
-<h1 align="center">🎓 Orios Class Portal</h1>
+<h1 align="center">🎓 Orios Portal</h1>
 
 <p align="center">
-  <strong>A gorgeous, mobile-first class companion website</strong><br/>
+  <strong>A gorgeous class companion website</strong><br/>
   Notes · Assignments · Calendar · Lab Reports · File Sharing · Teacher Directory
 </p>
 
