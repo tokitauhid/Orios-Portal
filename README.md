@@ -20,14 +20,16 @@
 |---------|-------------|
 | 📢 **Notice Board** | Animated scrolling banner with color-coded announcements |
 | 📝 **Notes Hub** | Subject-grouped notes with mixed-format support (PDFs, images, links, docs) — fully searchable |
-| 📋 **Assignments** | Track due dates, submission status, and days remaining |
-| 🔬 **Lab Reports** | Manage lab experiment reports organized by subject with grading |
+| 📋 **Assignments** | Track due dates, upload up to 50MB file attachments, and submit status |
+| 🔬 **Lab Reports** | Manage lab experiment reports, attach data files, and track grading |
 | 📅 **Interactive Calendar** | Monthly calendar grid with event dots, click-to-view details |
 | 🗓️ **Weekly Routine** | Class schedule table with current-day highlighting |
-| ⏳ **Exam Countdown** | Live ticking countdown timers for exams and events |
+| ⏳ **Exam Countdown** | Live ticking countdown timers for exams and events with native Datetime sync |
 | 🔍 **Global Search** | Full-screen overlay searching across all content types |
 | 👨‍🏫 **Teacher Directory** | Profile cards with contact info, office hours, and department filters |
 | 📁 **Secure File Sharing** | Password-protected downloads with modal authentication |
+| 🗄️ **Local Database** | High-performance IndexedDB storage backing up to 50MB of persistent file attachments |
+| 🛡️ **Setup Wizard** | Automatic Admin Super-user creation interface on first boot |
 | 🌗 **Light / Dark Mode** | System-aware theme toggle |
 | 📱 **Mobile-First** | Fully responsive, optimized for phones and tablets |
 

@@ -30,9 +30,7 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
-        docs: {
-          sidebarPath: './sidebars.js',
-        },
+        docs: false,
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
