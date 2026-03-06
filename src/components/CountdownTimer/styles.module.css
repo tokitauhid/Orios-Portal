@@ -1,0 +1,139 @@
+.countdown {
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  text-align: center;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.countdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+}
+
+.countdown:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.exam::before {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.event::before {
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+}
+
+.assignment::before {
+  background: linear-gradient(90deg, #f59e0b, #eab308);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.icon {
+  font-size: 1.2rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.digits {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+}
+
+.number {
+  font-family: 'Outfit', monospace;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  min-width: 52px;
+  display: inline-block;
+  transition: color var(--transition-fast);
+}
+
+.seconds {
+  color: var(--ifm-color-primary);
+}
+
+.colon {
+  font-family: 'Outfit', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.date {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.expired {
+  padding: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@media (max-width: 768px) {
+  .countdown {
+    padding: 16px;
+  }
+  .number {
+    font-size: 1.5rem;
+    min-width: 40px;
+    padding: 6px 8px;
+  }
+  .unit {
+    min-width: 40px;
+  }
+}

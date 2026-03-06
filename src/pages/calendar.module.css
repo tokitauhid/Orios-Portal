@@ -1,0 +1,70 @@
+.page { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
+
+.header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 32px 0 24px; border-bottom: 1px solid var(--border-light); margin-bottom: 32px;
+}
+.headerIcon { font-size: 2.5rem; }
+.title { font-family: var(--font-display); font-weight: 900; font-size: 2rem; margin: 0; color: var(--text-primary); }
+.subtitle { font-size: 0.9rem; color: var(--text-muted); margin: 2px 0 0; }
+
+.sectionTitle {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.2rem;
+  margin: 0 0 16px; color: var(--text-primary);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.calendarCol, .eventsCol {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.eventsCol {
+  animation-delay: 100ms;
+}
+
+.eventList {
+  display: flex; flex-direction: column; gap: 10px;
+  max-height: 500px; overflow-y: auto;
+  padding-right: 4px;
+}
+
+.eventCard {
+  display: flex; gap: 12px; padding: 12px 16px;
+  background: var(--surface-card); border: 1px solid var(--border-light);
+  border-left: 3px solid; border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+.eventCard:hover { box-shadow: var(--shadow-sm); transform: translateX(2px); }
+
+.eventDate {
+  font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+  color: var(--text-muted); white-space: nowrap; min-width: 48px;
+}
+
+.eventInfo { flex: 1; min-width: 0; }
+.eventBadge {
+  display: inline-block; font-size: 0.55rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: white; padding: 1px 6px; border-radius: var(--radius-full); margin-bottom: 4px;
+}
+.eventTitle { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; margin: 0 0 2px; color: var(--text-primary); }
+.eventDesc { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+
+.routineSection { margin-top: 16px; animation: fadeInUp 0.5s ease-out 200ms both; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .eventList { max-height: 300px; }
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 1.5rem; }
+}

@@ -1,0 +1,50 @@
+.page { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
+
+.header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 32px 0 24px; border-bottom: 1px solid var(--border-light); margin-bottom: 24px;
+}
+.headerIcon { font-size: 2.5rem; }
+.title { font-family: var(--font-display); font-weight: 900; font-size: 2rem; margin: 0; color: var(--text-primary); }
+.subtitle { font-size: 0.9rem; color: var(--text-muted); margin: 2px 0 0; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+.pill {
+  padding: 6px 14px; border: 1px solid var(--border-light); border-radius: var(--radius-full);
+  background: transparent; font-size: 0.78rem; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition-fast); white-space: nowrap;
+}
+.pill:hover { background: var(--surface-2); }
+.active { background: var(--ifm-color-primary); color: white; border-color: var(--ifm-color-primary); }
+.active:hover { background: var(--ifm-color-primary-dark); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+.card {
+  background: var(--surface-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
+  padding: 20px; display: flex; flex-direction: column; gap: 10px;
+  transition: all var(--transition-base); animation: fadeInUp 0.5s ease-out both; cursor: default;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.cardHeader { display: flex; align-items: center; justify-content: space-between; }
+.subject { font-size: 0.75rem; font-weight: 600; color: var(--ifm-color-primary); }
+.status {
+  font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 3px 10px; border-radius: var(--radius-full);
+}
+.cardTitle { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; margin: 0; color: var(--text-primary); }
+.cardDesc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin: 0; flex: 1; }
+.cardFooter { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border-light); }
+.dueDate { font-size: 0.75rem; color: var(--text-muted); }
+.daysLeft { font-size: 0.75rem; font-weight: 600; color: var(--color-warning); }
+.overdue { color: var(--color-danger); }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 0.65rem; font-weight: 500; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--surface-2); color: var(--text-muted); }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 768px) {
+  .title { font-size: 1.5rem; }
+  .grid { grid-template-columns: 1fr; }
+}

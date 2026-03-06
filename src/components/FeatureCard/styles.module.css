@@ -1,0 +1,113 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px 24px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease-out both;
+  cursor: pointer;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-glow);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--ifm-color-primary-lighter);
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card:hover .arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+.card:hover .iconWrap {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.iconWrap {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--gradient-card);
+  border: 1px solid var(--border-light);
+  margin-bottom: 16px;
+  transition: transform var(--transition-bounce);
+}
+
+.icon {
+  font-size: 1.6rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 6px;
+  color: var(--text-primary);
+}
+
+.description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  flex: 1;
+}
+
+.arrow {
+  position: absolute;
+  top: 28px;
+  right: 24px;
+  color: var(--ifm-color-primary);
+  opacity: 0;
+  transform: translateX(0);
+  transition: all var(--transition-base);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 20px;
+  }
+  .iconWrap {
+    width: 44px;
+    height: 44px;
+  }
+  .icon {
+    font-size: 1.3rem;
+  }
+}

@@ -1,0 +1,173 @@
+.wrapper {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table th,
+.table td {
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+}
+
+.table th:last-child,
+.table td:last-child {
+  border-right: none;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.timeHeader {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--surface-1);
+  min-width: 60px;
+}
+
+.dayHeader {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  position: relative;
+  padding-top: 14px;
+}
+
+.todayHeader {
+  color: var(--ifm-color-primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.todayDot {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+}
+
+.timeCell {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface-1);
+  white-space: nowrap;
+}
+
+.cell {
+  background: var(--surface-0);
+  transition: background var(--transition-fast);
+  min-width: 80px;
+}
+
+.todayCol {
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.lecture .slotContent {
+  background: rgba(99, 102, 241, 0.08);
+  border-left: 3px solid var(--ifm-color-primary);
+}
+
+.lab .slotContent {
+  background: rgba(16, 185, 129, 0.08);
+  border-left: 3px solid var(--color-success);
+}
+
+.slotContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+}
+
+.subject {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.room {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.free {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  padding: 12px 0;
+  justify-content: center;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.lectureDot {
+  background: rgba(99, 102, 241, 0.3);
+  border-left: 3px solid var(--ifm-color-primary);
+}
+
+.labDot {
+  background: rgba(16, 185, 129, 0.3);
+  border-left: 3px solid var(--color-success);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: 8px 4px;
+  }
+  .subject {
+    font-size: 0.65rem;
+  }
+}
