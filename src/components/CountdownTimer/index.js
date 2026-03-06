@@ -78,6 +78,7 @@ export default function CountdownTimer({ title, targetDate, type = 'exam', icon 
           day: 'numeric',
           year: 'numeric',
         })}
+        {targetDate && targetDate.includes('T') && ' · ' + new Date(targetDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
       </div>
     </div>
   );

@@ -21,7 +21,27 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
         setFormData({ ...initialData });
       } else {
         const defaults = {};
-        fields.forEach(f => { defaults[f.name] = f.defaultValue || ''; });
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        
+        const dateString = `${yyyy}-${mm}-${dd}`;
+        const dateTimeString = `${dateString}T${hh}:${min}`;
+
+        fields.forEach(f => { 
+          if (f.defaultValue) {
+             defaults[f.name] = f.defaultValue;
+          } else if (f.type === 'date') {
+             defaults[f.name] = dateString;
+          } else if (f.type === 'datetime-local') {
+             defaults[f.name] = dateTimeString;
+          } else {
+             defaults[f.name] = '';
+          }
+        });
         setFormData(defaults);
       }
     }

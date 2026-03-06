@@ -71,6 +71,11 @@ export default function CalendarPage() {
                   <div key={event.id} className={styles.eventCard} style={{ borderLeftColor: event.color }}>
                     <div className={styles.eventDate}>
                       {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {event.date && event.date.includes('T') && (
+                        <div style={{ fontSize: '0.8em', opacity: 0.8, marginTop: '2px' }}>
+                          {new Date(event.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                        </div>
+                      )}
                     </div>
                     <div className={styles.eventInfo}>
                       <span className={styles.eventBadge} style={{ background: event.color }}>{event.type}</span>

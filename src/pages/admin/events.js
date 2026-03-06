@@ -9,8 +9,8 @@ import styles from './shared.module.css';
 const fields = [
   { name: 'title', label: 'Event Title', type: 'text', required: true, placeholder: 'e.g. Mid-Term Examination' },
   { name: 'type', label: 'Type', type: 'select', required: true, options: ['exam', 'assignment', 'event'] },
-  { name: 'date', label: 'Start Date', type: 'date', required: true },
-  { name: 'endDate', label: 'End Date', type: 'date' },
+  { name: 'date', label: 'Start Date & Time', type: 'datetime-local', required: true },
+  { name: 'endDate', label: 'End Date & Time', type: 'datetime-local' },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true, placeholder: 'Event description...' },
   { name: 'color', label: 'Color', type: 'text', placeholder: '#ef4444' },
 ];
