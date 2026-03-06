@@ -4,12 +4,6 @@
   <img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge" alt="License" />
 </p>
 
-<p align="center">
-  <img src="./static/img/orio.png" alt="Orio" width="80" height="80" style="object-fit: contain;" />
-  <img src="./static/img/orio1.png" alt="Orio1" width="80" height="80" style="object-fit: contain;" />
-  <img src="./static/img/pucu.png" alt="Pucu" width="80" height="80" style="object-fit: contain;" />
-</p>
-
 <h1 align="center">🎓 Orios Portal</h1>
 
 <p align="center">
@@ -20,6 +14,7 @@
 ---
 
 ## ✨ Features
+<img src="./static/img/orio.png" align="right" width="100" />
 
 | Feature | Description |
 |---------|-------------|
@@ -37,6 +32,8 @@
 | 📱 **Mobile-First** | Fully responsive, optimized for phones and tablets |
 
 ## 🎨 Design
+
+<img src="./static/img/pucu.png" align="right" width="100" />
 
 - **Typography** — Inter + Outfit (Google Fonts)
 - **Effects** — Glassmorphism, backdrop blur, gradient orbs
@@ -112,6 +109,8 @@ orios_class/
 ```
 
 ## ⚙️ Customization
+
+<img src="./static/img/orio1.png" align="right" width="100" />
 
 ### Adding Your Own Data
 
