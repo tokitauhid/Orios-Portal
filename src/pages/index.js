@@ -5,14 +5,7 @@ import CountdownTimer from '@site/src/components/CountdownTimer';
 import FeatureCard from '@site/src/components/FeatureCard';
 import RoutineViewer from '@site/src/components/RoutineViewer';
 import SearchOverlay from '@site/src/components/SearchOverlay';
-import notices from '@site/src/data/notices';
-import events from '@site/src/data/events';
-import notes from '@site/src/data/notes';
-import assignments from '@site/src/data/assignments';
-import teachers from '@site/src/data/teachers';
-import files from '@site/src/data/files';
-import routine from '@site/src/data/routine';
-import { getSettings, getRoutine, autoUpdateStatuses } from '@site/src/auth/db';
+import { getSettings, getRoutine, autoUpdateStatuses, getAll } from '@site/src/auth/db';
 import styles from './index.module.css';
 
 // Get upcoming events sorted by date
@@ -76,7 +69,13 @@ const features = [
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [welcomeText, setWelcomeText] = useState('Semester 3/1');
-  const [liveRoutine, setLiveRoutine] = useState(routine);
+  const [liveRoutine, setLiveRoutine] = useState({ days: [], timeSlots: [], schedule: {} });
+  const [notices, setNotices] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [files, setFiles] = useState([]);
 
   useEffect(() => {
     try {
@@ -85,6 +84,13 @@ export default function Home() {
       if (settings.welcomeText) setWelcomeText(settings.welcomeText);
       const savedRoutine = getRoutine();
       if (savedRoutine?.days) setLiveRoutine(savedRoutine);
+
+      setNotices(getAll('notices'));
+      setEvents(getAll('events'));
+      setNotes(getAll('notes'));
+      setAssignments(getAll('assignments'));
+      setTeachers(getAll('teachers'));
+      setFiles(getAll('files'));
     } catch {}
   }, []);
 

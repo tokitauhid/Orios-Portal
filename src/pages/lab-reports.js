@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
-import labReportsData from '@site/src/data/labReports';
-import { autoUpdateStatuses } from '@site/src/auth/db';
+import { getAll, autoUpdateStatuses } from '@site/src/auth/db';
 import styles from './lab-reports.module.css';
 
 const statusConfig = {
@@ -19,11 +18,13 @@ function computeStatus(r) {
 
 export default function LabReportsPage() {
   const [filter, setFilter] = useState('all');
-  const [data, setData] = useState(labReportsData);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    try { autoUpdateStatuses(); } catch {}
-    setData(labReportsData.map(r => ({ ...r, status: computeStatus(r) })));
+    try { 
+      autoUpdateStatuses(); 
+      setData(getAll('labReports').map(r => ({ ...r, status: computeStatus(r) })));
+    } catch {}
   }, []);
 
   const subjects = [...new Set(data.map(r => r.subject))];

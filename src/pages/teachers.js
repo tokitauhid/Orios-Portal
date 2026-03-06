@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import TeacherCard from '@site/src/components/TeacherCard';
-import teachersData from '@site/src/data/teachers';
+import { getAll } from '@site/src/auth/db';
 import styles from './teachers.module.css';
 
 export default function TeachersPage() {
   const [query, setQuery] = useState('');
-  const departments = [...new Set(teachersData.map(t => t.department))];
   const [dept, setDept] = useState('All');
+  const [teachersData, setTeachersData] = useState([]);
+
+  useEffect(() => {
+    try { setTeachersData(getAll('teachers')); } catch {}
+  }, []);
+
+  const departments = [...new Set(teachersData.map(t => t.department))];
 
   const filtered = teachersData.filter(t => {
     const matchDept = dept === 'All' || t.department === dept;

@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import FileShareCard from '@site/src/components/FileShareCard';
-import filesData from '@site/src/data/files';
+import { getAll } from '@site/src/auth/db';
 import styles from './files.module.css';
 
 export default function FilesPage() {
   const [filter, setFilter] = useState('all');
+  const [filesData, setFilesData] = useState([]);
+
+  useEffect(() => {
+    try { setFilesData(getAll('files')); } catch {}
+  }, []);
+
   const subjects = [...new Set(filesData.map(f => f.subject))];
 
   const filtered = filter === 'all'

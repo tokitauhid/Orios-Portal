@@ -163,3 +163,26 @@ export function autoUpdateStatuses() {
     if (changed) saveData(col, items);
   });
 }
+
+// ----- CLEAR ALL DATA -----
+
+export function clearDemoData() {
+  // Clear all list collections
+  const keys = Object.values(COLLECTIONS).map(c => c.key);
+  keys.forEach(k => localStorage.setItem(k, JSON.stringify([])));
+
+  // Clear subjects
+  localStorage.setItem(SUBJECTS_KEY, JSON.stringify([]));
+
+  // Set flag so we don't show the clear button again
+  localStorage.setItem('orios_demo_cleared', 'true');
+
+  // Clear routine to empty slate, keeping structure
+  const routine = getRoutine();
+  const emptySchedule = {};
+  if (routine.days) {
+    routine.days.forEach(d => emptySchedule[d] = []);
+  }
+  routine.schedule = emptySchedule;
+  localStorage.setItem(ROUTINE_KEY, JSON.stringify(routine));
+}

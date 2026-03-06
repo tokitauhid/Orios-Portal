@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import AdminLayout from '@site/src/components/AdminLayout';
-import { getAll, getSettings, saveSettings } from '@site/src/auth/db';
+import { getAll, getSettings, saveSettings, clearDemoData } from '@site/src/auth/db';
 import styles from './dashboard.module.css';
 
 const statCards = [
@@ -52,6 +52,13 @@ export default function AdminDashboard() {
     setTimeout(() => setSavedSettings(false), 2000);
   };
 
+  const handleClearDemo = () => {
+    if (window.confirm("WARNING: This will delete ALL notices, events, assignments, lab reports, notes, teachers, files, and the routine!\\n\\nAre you absolutely sure you want to turn off demo mode?")) {
+      clearDemoData();
+      window.location.reload();
+    }
+  };
+
   return (
     <Layout title="Admin Dashboard — Orios Class" description="Admin dashboard">
       <AdminLayout title="📊 Dashboard">
@@ -73,6 +80,13 @@ export default function AdminDashboard() {
                 placeholder="Semester 3/1"
               />
               <span className={styles.hint}>Displayed below "Welcome to Orios Class" on the homepage.</span>
+            </div>
+            <div className={styles.field}>
+              <label className={styles.dangerLabel}>System Data</label>
+              <p className={styles.hint} style={{ margin: '0 0 8px' }}>Remove all dummy populated pre-fill site data in one click.</p>
+              <button className={styles.clearBtn} onClick={handleClearDemo}>
+                🗑️ Turn Off Demo Mode (Clear All Data)
+              </button>
             </div>
           </div>
         </section>

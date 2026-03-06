@@ -6,12 +6,10 @@
 const AUTH_KEY = 'orios_auth';
 const ADMINS_KEY = 'orios_admins';
 const ADMINS_VERSION_KEY = 'orios_admins_v';
-const CURRENT_VERSION = '2'; // bump this to reset stored admins
+const CURRENT_VERSION = '3'; // bump this to reset stored admins
 
-// Default admin credentials
-const DEFAULT_ADMINS = [
-  { email: 'admin', password: 'admin', role: 'super_admin', addedAt: new Date().toISOString() },
-];
+// Default admin credentials (empty so the owner must create one)
+const DEFAULT_ADMINS = [];
 
 // ----- ADMIN STORE -----
 

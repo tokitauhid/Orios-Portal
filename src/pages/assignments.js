@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
-import assignmentsData from '@site/src/data/assignments';
-import { autoUpdateStatuses } from '@site/src/auth/db';
+import { getAll, autoUpdateStatuses } from '@site/src/auth/db';
 import styles from './assignments.module.css';
 
 const statusColors = {
@@ -19,11 +18,13 @@ function computeStatus(a) {
 
 export default function AssignmentsPage() {
   const [filter, setFilter] = useState('all');
-  const [data, setData] = useState(assignmentsData);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    try { autoUpdateStatuses(); } catch {}
-    setData(assignmentsData.map(a => ({ ...a, status: computeStatus(a) })));
+    try { 
+      autoUpdateStatuses(); 
+      setData(getAll('assignments').map(a => ({ ...a, status: computeStatus(a) })));
+    } catch {}
   }, []);
 
   const subjects = [...new Set(data.map(a => a.subject))];

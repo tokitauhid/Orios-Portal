@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import SearchOverlay from '@site/src/components/SearchOverlay';
-import notesData, { subjects } from '@site/src/data/notes';
+import { getAll, getSubjects } from '@site/src/auth/db';
 import styles from './notes.module.css';
 
 export default function NotesPage() {
@@ -9,6 +9,15 @@ export default function NotesPage() {
   const [query, setQuery] = useState('');
   const [activeSubject, setActiveSubject] = useState('All');
   const [activeType, setActiveType] = useState('All');
+  const [notesData, setNotesData] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    try { 
+      setNotesData(getAll('notes')); 
+      setSubjects(getSubjects());
+    } catch {}
+  }, []);
 
   const types = ['All', 'doc', 'image', 'link'];
 

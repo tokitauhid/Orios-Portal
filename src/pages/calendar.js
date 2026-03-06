@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import EventCalendar from '@site/src/components/EventCalendar';
 import RoutineViewer from '@site/src/components/RoutineViewer';
-import events from '@site/src/data/events';
-import defaultRoutine from '@site/src/data/routine';
-import { getRoutine, getSettings } from '@site/src/auth/db';
+import { getRoutine, getSettings, getAll } from '@site/src/auth/db';
 import styles from './calendar.module.css';
 
 export default function CalendarPage() {
-  const [liveRoutine, setLiveRoutine] = useState(defaultRoutine);
+  const [liveRoutine, setLiveRoutine] = useState({ days: [], timeSlots: [], schedule: {} });
   const [countryCode, setCountryCode] = useState('BD');
   const [holidays, setHolidays] = useState([]);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     try {
@@ -18,6 +17,7 @@ export default function CalendarPage() {
       if (saved?.days) setLiveRoutine(saved);
       const settings = getSettings();
       if (settings.countryCode) setCountryCode(settings.countryCode);
+      setEvents(getAll('events'));
     } catch {}
 
     fetchHolidays(countryCode);
