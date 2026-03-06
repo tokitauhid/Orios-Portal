@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import AdminLayout from '@site/src/components/AdminLayout';
-import { getAll } from '@site/src/auth/db';
+import { getAll, getSettings, saveSettings } from '@site/src/auth/db';
 import styles from './dashboard.module.css';
 
 const statCards = [
@@ -23,11 +23,13 @@ const quickActions = [
   { label: 'Manage Teachers', to: '/admin/teachers-manager', icon: '👨‍🏫' },
   { label: 'Manage Files', to: '/admin/files-manager', icon: '📁' },
   { label: 'Edit Routine', to: '/admin/routine-manager', icon: '🗓️' },
-  { label: 'Admin Settings', to: '/admin/admins', icon: '👥' },
+  { label: 'Admin Users', to: '/admin/admins', icon: '👥' },
 ];
 
 export default function AdminDashboard() {
   const [counts, setCounts] = useState({});
+  const [settings, setSettings] = useState({ welcomeText: '' });
+  const [savedSettings, setSavedSettings] = useState(false);
 
   useEffect(() => {
     async function loadCounts() {
@@ -41,11 +43,41 @@ export default function AdminDashboard() {
       setCounts(results);
     }
     loadCounts();
+    setSettings(getSettings());
   }, []);
+
+  const handleSaveSettings = () => {
+    saveSettings(settings);
+    setSavedSettings(true);
+    setTimeout(() => setSavedSettings(false), 2000);
+  };
 
   return (
     <Layout title="Admin Dashboard — Orios Class" description="Admin dashboard">
       <AdminLayout title="📊 Dashboard">
+        {/* Settings Section */}
+        <section className={styles.settingsSection}>
+          <div className={styles.settingsHeader}>
+            <h2 className={styles.sectionTitle}>⚙️ Homepage Settings</h2>
+            <button className={styles.saveBtn} onClick={handleSaveSettings}>
+              {savedSettings ? '✅ Saved!' : '💾 Save Settings'}
+            </button>
+          </div>
+          <div className={styles.settingsGrid}>
+            <div className={styles.field}>
+              <label>Welcome Text</label>
+              <input
+                type="text"
+                value={settings.welcomeText}
+                onChange={e => setSettings({ ...settings, welcomeText: e.target.value })}
+                placeholder="Semester 3/1"
+              />
+              <span className={styles.hint}>Displayed below "Welcome to Orios Class" on the homepage.</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
         <section className={styles.stats}>
           {statCards.map((card, i) => (
             <a
@@ -61,6 +93,7 @@ export default function AdminDashboard() {
           ))}
         </section>
 
+        {/* Quick Actions */}
         <section className={styles.quickSection}>
           <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
           <div className={styles.quickGrid}>
