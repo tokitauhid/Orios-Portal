@@ -123,6 +123,7 @@ export default function Home() {
           <span className={styles.heroBadge}>🎓 Class Portal</span>
           <h1 className={styles.heroTitle}>
             Welcome to <span className={styles.gradient}>Orios Class</span>
+            <img src="/img/orio.png" alt="Orio" style={{ width: '40px', height: '40px', objectFit: 'contain', verticalAlign: 'middle', marginLeft: '10px', transform: 'rotate(15deg)' }} />
           </h1>
           <p className={styles.welcomeBox}>{welcomeText}</p>
           <p className={styles.heroSubtitle}>
@@ -181,7 +182,8 @@ export default function Home() {
 
         {/* Countdown Section */}
         <section className={styles.section}>
-          <div className={styles.sectionHeader}>
+          <div className={styles.sectionHeader} style={{ position: 'relative' }}>
+            <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', right: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
             <h2 className={styles.sectionTitle}>⏳ Upcoming Countdowns</h2>
             <p className={styles.sectionDesc}>Stay on top of exams and important dates</p>
           </div>
@@ -230,7 +232,8 @@ export default function Home() {
 
         {/* Quick Access Features */}
         <section className={styles.section}>
-          <div className={styles.sectionHeader}>
+          <div className={styles.sectionHeader} style={{ position: 'relative' }}>
+            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', left: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(5deg)', opacity: 0.9 }} />
             <h2 className={styles.sectionTitle}>🚀 Quick Access</h2>
             <p className={styles.sectionDesc}>Jump to what you need</p>
           </div>
