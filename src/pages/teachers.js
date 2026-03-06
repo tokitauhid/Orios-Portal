@@ -10,7 +10,10 @@ export default function TeachersPage() {
   const [teachersData, setTeachersData] = useState([]);
 
   useEffect(() => {
-    try { setTeachersData(getAll('teachers')); } catch {}
+    async function init() {
+      try { setTeachersData(await getAll('teachers')); } catch {}
+    }
+    init();
   }, []);
 
   const departments = [...new Set(teachersData.map(t => t.department))];
@@ -19,9 +22,9 @@ export default function TeachersPage() {
     const matchDept = dept === 'All' || t.department === dept;
     const q = query.toLowerCase();
     const matchQuery = !q ||
-      t.name.toLowerCase().includes(q) ||
-      t.department.toLowerCase().includes(q) ||
-      t.subjects.some(s => s.toLowerCase().includes(q));
+      (t.name || '').toLowerCase().includes(q) ||
+      (t.department || '').toLowerCase().includes(q) ||
+      (t.subjects || []).some(s => s.toLowerCase().includes(q));
     return matchDept && matchQuery;
   });
 

@@ -12,14 +12,17 @@ export default function CalendarPage() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    try {
-      const saved = getRoutine();
-      if (saved?.days) setLiveRoutine(saved);
-      const settings = getSettings();
-      if (settings.countryCode) setCountryCode(settings.countryCode);
-      setEvents(getAll('events'));
-    } catch {}
-
+    async function init() {
+      try {
+        const saved = getRoutine();
+        if (saved?.days) setLiveRoutine(saved);
+        const settings = getSettings();
+        if (settings.countryCode) setCountryCode(settings.countryCode);
+        setEvents(await getAll('events'));
+      } catch {}
+    }
+    init();
+    
     fetchHolidays(countryCode);
   }, []);
 

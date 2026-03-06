@@ -7,6 +7,7 @@ import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
 import styles from './shared.module.css';
 
 const fields = [
+  { name: 'fileData', label: 'Attachment (Max 50MB)', type: 'file' },
   { name: 'title', label: 'Title', type: 'text', required: true },
   { name: 'subject', label: 'Subject', type: 'text', required: true },
   { name: 'dueDate', label: 'Due Date', type: 'date', required: true },

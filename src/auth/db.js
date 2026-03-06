@@ -36,58 +36,106 @@ const DEFAULT_SETTINGS = {
   countryCode: 'BD',
 };
 
+// ----- INDEXEDDB WRAPPER -----
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('OriosClassDB', 1);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('collections')) {
+        db.createObjectStore('collections');
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function getIDB(key) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('collections', 'readonly');
+    const store = tx.objectStore('collections');
+    const req = store.get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  }));
+}
+
+function setIDB(key, value) {
+  return openDB().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction('collections', 'readwrite');
+    const store = tx.objectStore('collections');
+    const req = store.put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  }));
+}
+
 // ----- HELPERS -----
 
-function getData(collectionName) {
+async function getData(collectionName) {
   const config = COLLECTIONS[collectionName];
   if (!config) return [];
   try {
-    const stored = localStorage.getItem(config.key);
-    if (stored) return JSON.parse(stored);
-    localStorage.setItem(config.key, JSON.stringify(config.defaults));
-    return [...config.defaults];
+    const stored = await getIDB(config.key);
+    // If undefined in IDB, try migration from localStorage
+    if (stored === undefined) {
+      const lsStored = localStorage.getItem(config.key);
+      if (lsStored) {
+        const parsed = JSON.parse(lsStored);
+        await setIDB(config.key, parsed);
+        return parsed;
+      }
+      // Populate defaults
+      await setIDB(config.key, config.defaults);
+      return [...config.defaults];
+    }
+    return stored;
   } catch {
     return [...config.defaults];
   }
 }
 
-function saveData(collectionName, data) {
+async function saveData(collectionName, data) {
   const config = COLLECTIONS[collectionName];
-  if (config) localStorage.setItem(config.key, JSON.stringify(data));
+  if (config) await setIDB(config.key, data);
 }
 
 // ----- CRUD -----
 
-export function getAll(collectionName) {
-  return getData(collectionName);
+export async function getAll(collectionName) {
+  return await getData(collectionName);
 }
 
-export function getOne(collectionName, id) {
-  return getData(collectionName).find(item => String(item.id) === String(id)) || null;
+export async function getOne(collectionName, id) {
+  const data = await getData(collectionName);
+  return data.find(item => String(item.id) === String(id)) || null;
 }
 
-export function addItem(collectionName, item) {
+export async function addItem(collectionName, item) {
   const newItem = { ...item, id: Date.now() };
-  const items = getData(collectionName);
+  const items = await getData(collectionName);
   items.push(newItem);
-  saveData(collectionName, items);
+  await saveData(collectionName, items);
   return newItem;
 }
 
-export function updateItem(collectionName, id, updates) {
-  const items = getData(collectionName);
+export async function updateItem(collectionName, id, updates) {
+  const items = await getData(collectionName);
   const idx = items.findIndex(item => String(item.id) === String(id));
   if (idx !== -1) {
     items[idx] = { ...items[idx], ...updates };
-    saveData(collectionName, items);
+    await saveData(collectionName, items);
     return items[idx];
   }
   return null;
 }
 
-export function deleteItem(collectionName, id) {
-  const items = getData(collectionName).filter(item => String(item.id) !== String(id));
-  saveData(collectionName, items);
+export async function deleteItem(collectionName, id) {
+  const items = await getData(collectionName);
+  const filtered = items.filter(item => String(item.id) !== String(id));
+  await saveData(collectionName, filtered);
   return true;
 }
 
@@ -146,11 +194,11 @@ export function saveSubjects(subjects) {
  * Auto-update assignment/lab report statuses based on due dates.
  * pending → overdue if past due date.
  */
-export function autoUpdateStatuses() {
+export async function autoUpdateStatuses() {
   const now = new Date();
 
-  ['assignments', 'labReports'].forEach(col => {
-    const items = getData(col);
+  for (const col of ['assignments', 'labReports']) {
+    const items = await getData(col);
     let changed = false;
     items.forEach(item => {
       if (item.status === 'pending' && item.dueDate) {
@@ -160,18 +208,20 @@ export function autoUpdateStatuses() {
         }
       }
     });
-    if (changed) saveData(col, items);
-  });
+    if (changed) await saveData(col, items);
+  }
 }
 
 // ----- CLEAR ALL DATA -----
 
-export function clearDemoData() {
-  // Clear all list collections
+export async function clearDemoData() {
+  // Clear all list collections in IndexedDB
   const keys = Object.values(COLLECTIONS).map(c => c.key);
-  keys.forEach(k => localStorage.setItem(k, JSON.stringify([])));
+  for (const k of keys) {
+    await setIDB(k, []);
+  }
 
-  // Clear subjects
+  // Clear subjects from localStorage
   localStorage.setItem(SUBJECTS_KEY, JSON.stringify([]));
 
   // Set flag so we don't show the clear button again

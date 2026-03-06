@@ -7,10 +7,11 @@ import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
 import styles from './shared.module.css';
 
 const fields = [
+  { name: 'fileData', label: 'Upload File (Max 50MB)', type: 'file' },
   { name: 'name', label: 'File Name', type: 'text', required: true },
   { name: 'subject', label: 'Subject', type: 'text', required: true },
   { name: 'type', label: 'File Type', type: 'select', required: true, options: ['pdf', 'zip', 'image', 'doc', 'other'] },
-  { name: 'size', label: 'File Size', type: 'text', placeholder: '2.4 MB' },
+  { name: 'size', label: 'File Size', type: 'text', placeholder: 'Auto-detected' },
   { name: 'uploadedBy', label: 'Uploaded By', type: 'text' },
   { name: 'date', label: 'Date', type: 'date' },
   { name: 'password', label: 'Password (leave empty for public)', type: 'text' },

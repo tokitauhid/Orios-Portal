@@ -78,20 +78,23 @@ export default function Home() {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    try {
-      autoUpdateStatuses();
-      const settings = getSettings();
-      if (settings.welcomeText) setWelcomeText(settings.welcomeText);
-      const savedRoutine = getRoutine();
-      if (savedRoutine?.days) setLiveRoutine(savedRoutine);
+    async function init() {
+      try {
+        await autoUpdateStatuses();
+        const settings = getSettings();
+        if (settings.welcomeText) setWelcomeText(settings.welcomeText);
+        const savedRoutine = getRoutine();
+        if (savedRoutine?.days) setLiveRoutine(savedRoutine);
 
-      setNotices(getAll('notices'));
-      setEvents(getAll('events'));
-      setNotes(getAll('notes'));
-      setAssignments(getAll('assignments'));
-      setTeachers(getAll('teachers'));
-      setFiles(getAll('files'));
-    } catch {}
+        setNotices(await getAll('notices'));
+        setEvents(await getAll('events'));
+        setNotes(await getAll('notes'));
+        setAssignments(await getAll('assignments'));
+        setTeachers(await getAll('teachers'));
+        setFiles(await getAll('files'));
+      } catch {}
+    }
+    init();
   }, []);
 
   const upcomingEvents = getUpcomingEvents(events);

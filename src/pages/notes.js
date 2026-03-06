@@ -13,10 +13,13 @@ export default function NotesPage() {
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
-    try { 
-      setNotesData(getAll('notes')); 
-      setSubjects(getSubjects());
-    } catch {}
+    async function init() {
+      try { 
+        setNotesData(await getAll('notes')); 
+        setSubjects(getSubjects());
+      } catch {}
+    }
+    init();
   }, []);
 
   const types = ['All', 'doc', 'image', 'link'];
@@ -26,10 +29,10 @@ export default function NotesPage() {
     const matchType = activeType === 'All' || note.type === activeType;
     const q = query.toLowerCase();
     const matchQuery = !q ||
-      note.title.toLowerCase().includes(q) ||
-      note.subject.toLowerCase().includes(q) ||
-      note.description.toLowerCase().includes(q) ||
-      note.tags.some(t => t.toLowerCase().includes(q));
+      (note.title || '').toLowerCase().includes(q) ||
+      (note.subject || '').toLowerCase().includes(q) ||
+      (note.description || '').toLowerCase().includes(q) ||
+      (note.tags || []).some(t => t.toLowerCase().includes(q));
     return matchSubject && matchType && matchQuery;
   });
 
@@ -110,9 +113,10 @@ export default function NotesPage() {
                   {notes.map((note, i) => (
                     <a
                       key={note.id}
-                      href={note.url}
-                      target={note.type === 'link' ? '_blank' : undefined}
-                      rel={note.type === 'link' ? 'noopener noreferrer' : undefined}
+                      href={note.fileData || note.url || '#'}
+                      download={note.fileData ? (note.title + '.' + (note.format || 'bin').toLowerCase()) : undefined}
+                      target={(note.type === 'link' || !note.fileData) ? '_blank' : undefined}
+                      rel={(note.type === 'link' || !note.fileData) ? 'noopener noreferrer' : undefined}
                       className={styles.noteCard}
                       style={{ animationDelay: `${i * 60}ms` }}
                     >
@@ -127,7 +131,7 @@ export default function NotesPage() {
                         <span className={styles.noteDate}>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                       </div>
                       <div className={styles.noteTags}>
-                        {note.tags.map(tag => (
+                        {(note.tags || []).map(tag => (
                           <span key={tag} className={styles.tag}>#{tag}</span>
                         ))}
                       </div>

@@ -21,10 +21,14 @@ export default function AssignmentsPage() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    try { 
-      autoUpdateStatuses(); 
-      setData(getAll('assignments').map(a => ({ ...a, status: computeStatus(a) })));
-    } catch {}
+    async function init() {
+      try { 
+        await autoUpdateStatuses(); 
+        const items = await getAll('assignments');
+        setData(items.map(a => ({ ...a, status: computeStatus(a) })));
+      } catch {}
+    }
+    init();
   }, []);
 
   const subjects = [...new Set(data.map(a => a.subject))];
@@ -77,10 +81,23 @@ export default function AssignmentsPage() {
                 <h3 className={styles.cardTitle}>{a.title}</h3>
                 <p className={styles.cardDesc}>{a.description}</p>
                 <div className={styles.cardFooter}>
-                  <span className={styles.dueDate}>📅 {new Date(a.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                  <span className={`${styles.daysLeft} ${a.status === 'overdue' ? styles.overdue : ''}`}>
-                    {getDaysLeft(a.dueDate)}
-                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className={styles.dueDate}>📅 {new Date(a.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      <span className={`${styles.daysLeft} ${a.status === 'overdue' ? styles.overdue : ''}`}>
+                        {getDaysLeft(a.dueDate)}
+                      </span>
+                    </div>
+                    {a.fileData && (
+                      <a 
+                        href={a.fileData} 
+                        download={a.title + '.' + (a.format || 'bin').toLowerCase()} 
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
+                      >
+                        ⬇ Download Attachment
+                      </a>
+                    )}
+                  </div>
                 </div>
                 <div className={styles.tags}>
                   {(a.tags || []).map(t => <span key={t} className={styles.tag}>{t}</span>)}

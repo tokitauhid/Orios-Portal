@@ -9,7 +9,10 @@ export default function FilesPage() {
   const [filesData, setFilesData] = useState([]);
 
   useEffect(() => {
-    try { setFilesData(getAll('files')); } catch {}
+    async function init() {
+      try { setFilesData(await getAll('files')); } catch {}
+    }
+    init();
   }, []);
 
   const subjects = [...new Set(filesData.map(f => f.subject))];

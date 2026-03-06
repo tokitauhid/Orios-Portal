@@ -21,10 +21,14 @@ export default function LabReportsPage() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    try { 
-      autoUpdateStatuses(); 
-      setData(getAll('labReports').map(r => ({ ...r, status: computeStatus(r) })));
-    } catch {}
+    async function init() {
+      try { 
+        await autoUpdateStatuses(); 
+        const items = await getAll('labReports');
+        setData(items.map(r => ({ ...r, status: computeStatus(r) })));
+      } catch {}
+    }
+    init();
   }, []);
 
   const subjects = [...new Set(data.map(r => r.subject))];
@@ -71,8 +75,21 @@ export default function LabReportsPage() {
                 <span className={styles.subject}>{report.subject}</span>
                 <p className={styles.cardDesc}>{report.description}</p>
                 <div className={styles.cardFooter}>
-                  <span className={styles.date}>🧪 {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                  <span className={styles.due}>📅 Due: {new Date(report.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className={styles.date}>🧪 {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      <span className={styles.due}>📅 Due: {new Date(report.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    </div>
+                    {report.fileData && (
+                      <a 
+                        href={report.fileData} 
+                        download={report.title + '.' + (report.format || 'bin').toLowerCase()} 
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
+                      >
+                        ⬇ Download Attachment
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             );

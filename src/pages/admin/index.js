@@ -54,9 +54,9 @@ export default function AdminDashboard() {
     setTimeout(() => setSavedSettings(false), 2000);
   };
 
-  const handleClearDemo = () => {
+  const handleClearDemo = async () => {
     if (window.confirm("WARNING: This will delete ALL notices, events, assignments, lab reports, notes, teachers, files, and the routine!\\n\\nAre you absolutely sure you want to turn off demo mode?")) {
-      clearDemoData();
+      await clearDemoData();
       window.location.reload();
     }
   };

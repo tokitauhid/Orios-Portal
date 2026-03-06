@@ -7,9 +7,24 @@ export default function FileShareCard({ file, delay = 0 }) {
   const [error, setError] = useState('');
   const [unlocked, setUnlocked] = useState(!file.password);
 
+  const triggerDownload = () => {
+    if (file.fileData) {
+      const a = document.createElement('a');
+      a.href = file.fileData;
+      a.download = file.name || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else if (file.url) {
+      window.open(file.url, '_blank');
+    } else {
+      alert('Download started! (Demo — no actual file attached)');
+    }
+  };
+
   const handleDownload = () => {
-    if (!file.password) {
-      alert('Download started! (Demo — no actual file)');
+    if (!file.password || unlocked) {
+      triggerDownload();
       return;
     }
     setShowModal(true);
@@ -22,7 +37,7 @@ export default function FileShareCard({ file, delay = 0 }) {
     if (password === file.password) {
       setUnlocked(true);
       setShowModal(false);
-      alert('Access granted! Download started. (Demo — no actual file)');
+      triggerDownload();
     } else {
       setError('Incorrect password. Try again.');
     }

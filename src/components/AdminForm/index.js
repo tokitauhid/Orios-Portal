@@ -91,6 +91,55 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                     onChange={e => handleArrayChange(field.name, e.target.value)}
                     placeholder={field.placeholder || 'tag1, tag2, tag3'}
                   />
+                ) : field.type === 'file' ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <input
+                      type="file"
+                      className={styles.input}
+                      onChange={e => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+
+                        // LocalStorage limit safe-guard (increased to 50MB per user request)
+                        if (file.size > 50 * 1024 * 1024) {
+                          alert('File is too large! Max allowed size is 50MB.');
+                          e.target.value = '';
+                          return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const base64 = event.target.result;
+                          const kb = file.size / 1024;
+                          const sizeStr = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb.toFixed(1) + ' KB';
+                          
+                          let ext = file.name.split('.').pop().toLowerCase();
+                          let fileType = 'other';
+                          let icon = '📁';
+                          if (['pdf'].includes(ext)) { fileType = 'pdf'; icon = '📄'; }
+                          else if (['zip', 'rar'].includes(ext)) { fileType = 'zip'; icon = '📦'; }
+                          else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) { fileType = 'image'; icon = '🖼️'; }
+                          else if (['doc', 'docx'].includes(ext)) { fileType = 'doc'; icon = '📄'; }
+
+                          setFormData(prev => ({
+                            ...prev,
+                            [field.name]: base64,
+                            name: prev.name || file.name,
+                            title: prev.title || file.name.split('.')[0],
+                            size: prev.size || sizeStr,
+                            type: prev.type || fileType,
+                            format: prev.format || ext.toUpperCase(),
+                            icon: prev.icon || icon,
+                            // If there is a 'url' field and it's empty, use the base64 as the URL
+                            url: prev.url ? prev.url : base64
+                          }));
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                      required={field.required && !formData[field.name]}
+                    />
+                    {formData[field.name] && <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 'bold' }}>✅ File attached properly</span>}
+                  </div>
                 ) : (
                   <input
                     type={field.type || 'text'}
