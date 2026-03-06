@@ -4,6 +4,12 @@
   <img src="https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge" alt="License" />
 </p>
 
+<p align="center">
+  <img src="./static/img/orio.png" alt="Orio" width="80" height="80" style="object-fit: contain;" />
+  <img src="./static/img/orio1.png" alt="Orio1" width="80" height="80" style="object-fit: contain;" />
+  <img src="./static/img/pucu.png" alt="Pucu" width="80" height="80" style="object-fit: contain;" />
+</p>
+
 <h1 align="center">🎓 Orios Portal</h1>
 
 <p align="center">
