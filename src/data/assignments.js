@@ -1,0 +1,58 @@
+const assignments = [
+  {
+    id: 1,
+    title: 'Binary Trees & Graphs',
+    subject: 'Data Structures',
+    dueDate: '2026-03-15',
+    status: 'pending',
+    description: 'Implement BFS, DFS traversal algorithms and solve 5 graph problems.',
+    tags: ['coding', 'algorithms'],
+  },
+  {
+    id: 2,
+    title: 'Optics Lab Report',
+    subject: 'Physics',
+    dueDate: '2026-03-18',
+    status: 'pending',
+    description: 'Write a detailed report on the refraction experiment conducted in Lab 3.',
+    tags: ['lab', 'report'],
+  },
+  {
+    id: 3,
+    title: 'Linear Algebra Problem Set',
+    subject: 'Mathematics',
+    dueDate: '2026-03-12',
+    status: 'submitted',
+    description: 'Solve problems on eigenvalues, eigenvectors, and matrix decomposition.',
+    tags: ['math', 'problem-set'],
+  },
+  {
+    id: 4,
+    title: 'Database ER Diagram',
+    subject: 'Database Systems',
+    dueDate: '2026-03-22',
+    status: 'pending',
+    description: 'Design an ER diagram for a university management system.',
+    tags: ['design', 'database'],
+  },
+  {
+    id: 5,
+    title: 'Essay: Ethics in AI',
+    subject: 'English',
+    dueDate: '2026-03-10',
+    status: 'overdue',
+    description: 'Write a 2000-word essay on ethical considerations in artificial intelligence.',
+    tags: ['writing', 'essay'],
+  },
+  {
+    id: 6,
+    title: 'Circuit Analysis Report',
+    subject: 'Electronics',
+    dueDate: '2026-03-25',
+    status: 'pending',
+    description: 'Analyze and simulate the given RC circuit using SPICE.',
+    tags: ['lab', 'simulation'],
+  },
+];
+
+export default assignments;
