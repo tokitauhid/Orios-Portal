@@ -32,12 +32,27 @@ function getNextExam(eventList) {
     .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
 }
 
-// Get today's classes from routine
 function getTodayClasses(routineData) {
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const today = dayNames[new Date().getDay()];
   const slots = routineData?.schedule?.[today] || [];
   return slots.filter(Boolean);
+}
+
+// Helper to format time to AM/PM
+function formatTime(timeStr) {
+  try {
+    if (!timeStr.includes(':')) return timeStr;
+    const [hourStr, minStr] = timeStr.split(':');
+    let hour = parseInt(hourStr, 10);
+    let isPM = false;
+    if (hour >= 12) isPM = true;
+    else if (hour >= 1 && hour <= 7) isPM = true;
+    const suffix = isPM ? 'PM' : 'AM';
+    if (hour === 0) hour = 12;
+    else if (hour > 12) hour -= 12;
+    return `${hour}:${minStr || '00'} ${suffix}`;
+  } catch { return timeStr; }
 }
 
 // Get pending assignment count
@@ -187,7 +202,7 @@ export default function Home() {
             <div className={styles.todayGrid}>
               {todayClasses.map((cls, i) => (
                 <div key={i} className={`${styles.todayCard} ${styles[cls.type + 'Card']}`}>
-                  <span className={styles.todayTime}>{cls.time}</span>
+                  <span className={styles.todayTime}>{formatTime(cls.time)}</span>
                   <h4 className={styles.todaySubject}>{cls.subject}</h4>
                   <span className={styles.todayRoom}>{cls.room} · {cls.teacher}</span>
                   <span className={`${styles.todayBadge} ${cls.type === 'lab' ? styles.labBadge : ''}`}>

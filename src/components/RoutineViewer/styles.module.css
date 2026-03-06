@@ -32,55 +32,59 @@
   border-bottom: none;
 }
 
-.timeHeader {
+.dayHeaderCell {
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  font-size: 0.8rem;
   color: var(--text-muted);
   background: var(--surface-1);
   min-width: 60px;
 }
 
-.dayHeader {
+.timeHeader {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  background: var(--surface-1);
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.todayRow {
+  background: rgba(99, 102, 241, 0.03) !important;
+}
+
+.dayCell {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 0.8rem;
-  color: var(--text-primary);
+  color: var(--text-muted);
   background: var(--surface-1);
   position: relative;
-  padding-top: 14px;
+  text-transform: uppercase;
 }
 
-.todayHeader {
+.todayDayCell {
   color: var(--ifm-color-primary);
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(99, 102, 241, 0.08);
 }
 
 .todayDot {
   position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
+  top: 50%;
+  left: 4px;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--ifm-color-primary);
-}
-
-.timeCell {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: var(--surface-1);
-  white-space: nowrap;
 }
 
 .cell {
   background: var(--surface-0);
   transition: background var(--transition-fast);
-  min-width: 80px;
+  min-width: 90px;
 }
 
 .todayCol {

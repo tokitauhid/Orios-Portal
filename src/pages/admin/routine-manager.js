@@ -4,6 +4,22 @@ import AdminLayout from '@site/src/components/AdminLayout';
 import { getRoutine, saveRoutine, getSubjects, saveSubjects } from '@site/src/auth/db';
 import styles from './routine-manager.module.css';
 
+// Helper to format time (e.g. "1:00" -> "1:00 PM")
+const formatTime = (timeStr) => {
+  try {
+    if (!timeStr.includes(':')) return timeStr;
+    const [hourStr, minStr] = timeStr.split(':');
+    let hour = parseInt(hourStr, 10);
+    let isPM = false;
+    if (hour >= 12) isPM = true;
+    else if (hour >= 1 && hour <= 7) isPM = true;
+    const suffix = isPM ? 'PM' : 'AM';
+    if (hour === 0) hour = 12;
+    else if (hour > 12) hour -= 12;
+    return `${hour}:${minStr || '00'} ${suffix}`;
+  } catch { return timeStr; }
+};
+
 export default function AdminRoutine() {
   const [routine, setRoutine] = useState(null);
   const [subjects, setSubjects] = useState([]);
@@ -15,6 +31,10 @@ export default function AdminRoutine() {
   const [editingTime, setEditingTime] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [newTime, setNewTime] = useState('');
+  
+  // Days editing
+  const [days, setDays] = useState([]);
+  const [newDay, setNewDay] = useState('');
 
   // Subject management state
   const [newSubject, setNewSubject] = useState('');
@@ -25,6 +45,7 @@ export default function AdminRoutine() {
     const r = getRoutine();
     setRoutine(r);
     setTimeSlots(r?.timeSlots || []);
+    setDays(r?.days || []);
     setSubjects(getSubjects());
   }, []);
 
@@ -70,6 +91,34 @@ export default function AdminRoutine() {
     const updated = timeSlots.filter(t => t !== time);
     setTimeSlots(updated);
     setRoutine(prev => ({ ...prev, timeSlots: updated }));
+  };
+
+  // ---- Days ----
+  const addDay = () => {
+    const day = newDay.trim();
+    if (!day || days.includes(day)) return;
+    const updated = [...days, day];
+    setDays(updated);
+    setRoutine(prev => ({ ...prev, days: updated, schedule: { ...prev.schedule, [day]: [] } }));
+    setNewDay('');
+  };
+
+  const removeDay = (day) => {
+    const updated = days.filter(d => d !== day);
+    setDays(updated);
+    const updatedSchedule = { ...routine.schedule };
+    delete updatedSchedule[day];
+    setRoutine(prev => ({ ...prev, days: updated, schedule: updatedSchedule }));
+  };
+
+  const moveDay = (idx, direction) => {
+    if (idx + direction < 0 || idx + direction >= days.length) return;
+    const updated = [...days];
+    const temp = updated[idx];
+    updated[idx] = updated[idx + direction];
+    updated[idx + direction] = temp;
+    setDays(updated);
+    setRoutine(prev => ({ ...prev, days: updated }));
   };
 
   // ---- Subjects ----
@@ -138,51 +187,75 @@ export default function AdminRoutine() {
             <h2 className={styles.sectionTitle}>🗓️ Weekly Routine</h2>
             <div className={styles.toolbarBtns}>
               <button className={styles.timeBtn} onClick={() => setEditingTime(!editingTime)}>
-                🕐 {editingTime ? 'Hide' : 'Edit'} Time Slots
+                {editingTime ? 'Hide Structure Planner' : 'Edit Row/Cols Setup'}
               </button>
               <button className={styles.publishBtn} onClick={handlePublish}>
                 {saved ? '✅ Saved!' : '💾 Publish All'}
               </button>
             </div>
           </div>
-          <p className={styles.hint} style={{ marginBottom: '20px' }}>Click any cell in the table to edit. Click "Publish All" to save changes.</p>
+          <p className={styles.hint} style={{ marginBottom: '20px' }}>Click any cell in the table below to edit a subject. Click "Publish All" to save changes.</p>
 
-          {/* Time Slot Editor */}
+          {/* Table Structure Editor (Days & Times) */}
           {editingTime && (
-            <div className={styles.timeEditor}>
-              <h4 className={styles.timeEditorTitle}>🕐 Time Slots</h4>
-              <div className={styles.timeSlotList}>
-                {timeSlots.map(t => (
-                  <div key={t} className={styles.timeSlotChip}>
-                    <span>{t}</span>
-                    <button className={styles.chipRemove} onClick={() => removeTimeSlot(t)}>✕</button>
-                  </div>
-                ))}
+            <div className={styles.structureEditor}>
+              {/* Columns Editor */}
+              <div className={styles.timeEditor}>
+                <h4 className={styles.timeEditorTitle}>🕐 Time Slots (Columns)</h4>
+                <div className={styles.timeSlotList}>
+                  {timeSlots.map(t => (
+                    <div key={t} className={styles.timeSlotChip}>
+                      <span>{formatTime(t)}</span>
+                      <button className={styles.chipRemove} onClick={() => removeTimeSlot(t)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.timeSlotAdd}>
+                  <input type="text" value={newTime} onChange={e => setNewTime(e.target.value)} placeholder="e.g. 13:00" className={styles.input} style={{ width: '120px' }} />
+                  <button className={styles.addBtn} style={{ padding: '8px 14px' }} onClick={addTimeSlot}>+ Add Slot</button>
+                </div>
               </div>
-              <div className={styles.timeSlotAdd}>
-                <input type="text" value={newTime} onChange={e => setNewTime(e.target.value)} placeholder="e.g. 5:00" className={styles.input} style={{ width: '120px' }} />
-                <button className={styles.addBtn} style={{ padding: '8px 14px' }} onClick={addTimeSlot}>+ Add</button>
+
+              {/* Rows Editor */}
+              <div className={styles.timeEditor} style={{ marginTop: '16px' }}>
+                <h4 className={styles.timeEditorTitle}>📅 Days (Rows)</h4>
+                <div className={styles.timeSlotList}>
+                  {days.map((d, i) => (
+                    <div key={d} className={styles.timeSlotChip}>
+                      <button className={styles.chipMove} onClick={() => moveDay(i, -1)} disabled={i===0}>←</button>
+                      <span>{d}</span>
+                      <button className={styles.chipMove} onClick={() => moveDay(i, 1)} disabled={i===days.length-1}>→</button>
+                      <button className={styles.chipRemove} style={{ marginLeft: '4px' }} onClick={() => removeDay(d)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.timeSlotAdd}>
+                  <input type="text" value={newDay} onChange={e => setNewDay(e.target.value)} placeholder="e.g. Monday" className={styles.input} style={{ width: '150px' }} />
+                  <button className={styles.addBtn} style={{ padding: '8px 14px' }} onClick={addDay}>+ Add Day</button>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Schedule Table */}
+          {/* Schedule Table (Transposed) */}
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th className={styles.th}>Time</th>
-                  {routine.days.map(day => <th key={day} className={styles.th}>{day.slice(0, 3)}</th>)}
+                  <th className={styles.dayHeaderCell}>Day</th>
+                  {routine.timeSlots.map(time => (
+                    <th key={time} className={styles.timeHeader}>{formatTime(time)}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {routine.timeSlots.map((time, rowIdx) => (
-                  <tr key={time}>
-                    <td className={styles.timeCell}>{time}</td>
-                    {routine.days.map(day => {
-                      const slot = routine.schedule[day]?.[rowIdx];
+                {routine.days.map((day) => (
+                  <tr key={day}>
+                    <td className={styles.dayCell}>{day.slice(0, 3)}</td>
+                    {routine.timeSlots.map((time, colIdx) => {
+                      const slot = routine.schedule[day]?.[colIdx];
                       return (
-                        <td key={day} className={`${styles.cell} ${slot ? styles[slot.type] : ''}`} onClick={() => handleCellClick(day, rowIdx)}>
+                        <td key={time} className={`${styles.cell} ${slot ? styles[slot.type] : ''}`} onClick={() => handleCellClick(day, colIdx)}>
                           {slot ? (
                             <div className={styles.slotContent}>
                               <span className={styles.slotSubject}>{slot.subject}</span>
@@ -205,7 +278,7 @@ export default function AdminRoutine() {
         {editing && (
           <div className={styles.editOverlay} onClick={() => setEditing(null)}>
             <div className={styles.editModal} onClick={e => e.stopPropagation()}>
-              <h3 className={styles.modalTitle}>Edit: {editing.day} — {routine.timeSlots[editing.slotIdx]}</h3>
+              <h3 className={styles.modalTitle}>Edit: {editing.day} — {formatTime(routine.timeSlots[editing.slotIdx])}</h3>
               <div className={styles.formGrid}>
                 <div className={styles.field}><label>Subject</label>
                   <select value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })}>

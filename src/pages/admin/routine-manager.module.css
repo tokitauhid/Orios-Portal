@@ -59,10 +59,10 @@
 }
 .timeBtn:hover { border-color: var(--ifm-color-primary); color: var(--ifm-color-primary); }
 
-/* Time Slot Editor */
-.timeEditor {
-  padding: 16px 20px; background: var(--surface-1); border: 1px solid var(--border-light);
-  border-radius: var(--radius-md); margin-bottom: 20px; animation: fadeIn 0.2s ease-out;
+/* Structure Editor */
+.structureEditor {
+  padding: 20px; background: var(--surface-1); border: 1px solid var(--border-light);
+  border-radius: var(--radius-md); margin-bottom: 24px; animation: fadeIn 0.2s ease-out;
 }
 .timeEditorTitle { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; margin: 0 0 12px; color: var(--text-primary); }
 .timeSlotList { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
@@ -77,20 +77,32 @@
   font-size: 0.6rem; cursor: pointer; transition: all var(--transition-fast);
 }
 .chipRemove:hover { background: rgba(239,68,68,0.1); color: var(--color-danger); }
+.chipMove {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%; background: transparent; color: var(--text-muted);
+  font-size: 0.8rem; cursor: pointer; transition: all var(--transition-fast); padding: 0;
+}
+.chipMove:hover:not(:disabled) { background: var(--surface-2); color: var(--text-primary); }
+.chipMove:disabled { opacity: 0.3; cursor: not-allowed; }
 .timeSlotAdd { display: flex; gap: 8px; }
 
 /* Schedule Table */
 .tableWrap { overflow-x: auto; border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--surface-0); }
 .table { width: 100%; border-collapse: collapse; min-width: 650px; }
-.th {
-  padding: 12px 8px; text-align: center; font-size: 0.75rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
-  background: var(--surface-1); border-bottom: 1px solid var(--border-light);
+.dayHeaderCell {
+  padding: 12px 8px; text-align: center; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+  color: var(--text-muted);
+  background: var(--surface-1); border-bottom: 1px solid var(--border-light); min-width: 60px;
 }
-.timeCell {
-  padding: 10px 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted);
+.timeHeader {
+  padding: 12px 8px; text-align: center; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+  color: var(--text-primary);
+  background: var(--surface-1); border-bottom: 1px solid var(--border-light); min-width: 90px;
+}
+.dayCell {
+  padding: 10px 8px; font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
   background: var(--surface-1); text-align: center; border-right: 1px solid var(--border-light);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light); text-transform: uppercase;
 }
 .cell {
   padding: 6px; text-align: center; cursor: pointer; transition: background var(--transition-fast);
