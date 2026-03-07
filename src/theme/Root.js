@@ -1,14 +1,16 @@
 import React from 'react';
 import { useLocation } from '@docusaurus/router';
 import { ToastProvider } from '@site/src/components/Toast';
+import { clearDemoData } from '@site/src/auth/db';
 
 function ResetDemo() {
   if (process.env.NODE_ENV !== 'development') return null;
 
   return (
     <button 
-      onClick={() => {
+      onClick={async () => {
         if(window.confirm("Reload initial demo data? This will clear all current settings/files and restart the demo state.")){
+          await clearDemoData();
           localStorage.clear();
           sessionStorage.clear();
           window.location.href = '/';

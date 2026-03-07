@@ -88,28 +88,60 @@ async function saveAdminStore(admins) {
  * Sign in with email and password
  */
 export async function signIn(email, password) {
-  const admins = await getAdminStore();
-  const admin = admins.find(a => a.email === email);
+  // Generate auth token for KV
+  const token = btoa(`${email}:${password}`);
+  let user = null;
 
-  if (!admin) {
-    throw new Error('Account not found. Contact your super admin for access.');
-  }
-  if (admin.password !== password) {
-    throw new Error('Incorrect password. Please try again.');
-  }
+  if (await isApiAvailable()) {
+    // Authenticate against KV
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: 'verify', collection: 'admins' }), // collection is just to pass validation
+    });
 
-  const user = {
-    email: admin.email,
-    displayName: admin.email.split('@')[0],
-    role: admin.role,
-  };
+    if (!res.ok) {
+      if (res.status === 401) throw new Error('Incorrect email or password.');
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Login failed.');
+    }
+    
+    // Auth succeeded! Fetch admin details (without password obviously)
+    const adminsRes = await fetch(`${API_BASE}?collection=admins`);
+    const admins = await adminsRes.json();
+    const admin = admins.find(a => a.email === email);
+    if (!admin) throw new Error('Admin not found in directory.');
+    
+    user = {
+      email: admin.email,
+      displayName: admin.email.split('@')[0],
+      role: admin.role,
+    };
+  } else {
+    // Authenticate against localStorage (local dev)
+    const admins = await getAdminStore();
+    const admin = admins.find(a => a.email === email);
+
+    if (!admin) {
+      throw new Error('Account not found. Contact your super admin for access.');
+    }
+    if (admin.password !== password) {
+      throw new Error('Incorrect password. Please try again.');
+    }
+
+    user = {
+      email: admin.email,
+      displayName: admin.email.split('@')[0],
+      role: admin.role,
+    };
+  }
 
   // Store user info
   localStorage.setItem(AUTH_KEY, JSON.stringify(user));
   sessionStorage.setItem('orios_admin_verified', 'true');
-
-  // Generate auth token for KV writes: base64(email:password)
-  const token = btoa(`${email}:${password}`);
   sessionStorage.setItem(TOKEN_KEY, token);
 
   return user;

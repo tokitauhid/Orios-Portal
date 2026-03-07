@@ -204,6 +204,8 @@ async function isAuthorized(env, request) {
 
 export async function onRequestGet(context) {
   const { env } = context;
+  if (!env.ORIOS_DATA) return err('KV Binding "ORIOS_DATA" is missing in Cloudflare.', 500);
+
   const url = new URL(context.request.url);
   const collection = url.searchParams.get('collection');
 
@@ -223,6 +225,7 @@ export async function onRequestGet(context) {
 
 export async function onRequestPost(context) {
   const { env, request } = context;
+  if (!env.ORIOS_DATA) return err('KV Binding "ORIOS_DATA" is missing in Cloudflare.', 500);
 
   // Auth check for all writes
   if (!(await isAuthorized(env, request))) {
@@ -279,6 +282,11 @@ export async function onRequestPost(context) {
     case 'set': {
       // Wholesale replace (used by clearDemoData, bulk operations)
       await kvPut(env, collection, body.data);
+      return json({ ok: true });
+    }
+
+    case 'verify': {
+      // Just for auth verification
       return json({ ok: true });
     }
 
