@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useToast } from '@site/src/components/Toast';
 import styles from './styles.module.css';
 
 /**
  * AdminForm — Reusable modal form for CRUD operations.
- * @param {object} props
- * @param {boolean} props.isOpen - Whether the modal is visible
- * @param {function} props.onClose - Close handler
- * @param {function} props.onSubmit - Submit handler (receives form data)
- * @param {string} props.title - Modal title
- * @param {Array} props.fields - Array of field configs: { name, label, type, options, required, placeholder }
- * @param {object} props.initialData - Pre-fill data for editing
+ * Uses toast notifications instead of browser alerts.
  */
 export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [], initialData = null }) {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -63,9 +59,10 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
     setLoading(true);
     try {
       await onSubmit(formData);
+      showToast('Saved successfully!', 'success');
       onClose();
     } catch (err) {
-      alert('Error: ' + err.message);
+      showToast(err.message || 'Something went wrong', 'error', 6000);
     }
     setLoading(false);
   };
@@ -120,9 +117,8 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                         const file = e.target.files[0];
                         if (!file) return;
 
-                        // LocalStorage limit safe-guard (increased to 50MB per user request)
                         if (file.size > 50 * 1024 * 1024) {
-                          alert('File is too large! Max allowed size is 50MB.');
+                          showToast('File is too large! Max allowed size is 50MB.', 'warning', 5000);
                           e.target.value = '';
                           return;
                         }
@@ -150,7 +146,6 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                             type: prev.type || fileType,
                             format: prev.format || ext.toUpperCase(),
                             icon: prev.icon || icon,
-                            // If there is a 'url' field and it's empty, use the base64 as the URL
                             url: prev.url ? prev.url : base64
                           }));
                         };

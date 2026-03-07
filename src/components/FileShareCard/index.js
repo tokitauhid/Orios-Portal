@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useToast } from '@site/src/components/Toast';
 import styles from './styles.module.css';
 
 export default function FileShareCard({ file, delay = 0 }) {
@@ -6,6 +7,7 @@ export default function FileShareCard({ file, delay = 0 }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [unlocked, setUnlocked] = useState(!file.password);
+  const { showToast } = useToast();
 
   const triggerDownload = () => {
     if (file.fileData) {
@@ -18,7 +20,7 @@ export default function FileShareCard({ file, delay = 0 }) {
     } else if (file.url) {
       window.open(file.url, '_blank');
     } else {
-      alert('Download started! (Demo — no actual file attached)');
+      showToast('Download started! (Demo — no actual file attached)', 'info');
     }
   };
 

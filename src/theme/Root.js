@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation } from '@docusaurus/router';
+import { ToastProvider } from '@site/src/components/Toast';
 
 function ResetDemo() {
   if (process.env.NODE_ENV !== 'development') return null;
@@ -31,9 +32,10 @@ function ResetDemo() {
 // Default implementation, that you can customize
 export default function Root({children}) {
   return (
-    <>
+    <ToastProvider>
       {children}
       <ResetDemo />
-    </>
+    </ToastProvider>
   );
 }
+
