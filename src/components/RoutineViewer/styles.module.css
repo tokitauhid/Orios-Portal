@@ -1,5 +1,7 @@
 .wrapper {
   animation: fadeInUp 0.6s ease-out both;
+  width: 100%;
+  position: relative;
 }
 
 .tableScroll {
@@ -7,12 +9,32 @@
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-light) transparent;
+}
+
+/* Custom Webkit Scrollbar */
+.tableScroll::-webkit-scrollbar {
+  height: 8px;
+}
+.tableScroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+.tableScroll::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+.tableScroll::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 700px;
 }
 
 .table th,
@@ -39,6 +61,9 @@
   color: var(--text-muted);
   background: var(--surface-1);
   min-width: 60px;
+  position: sticky;
+  left: 0;
+  z-index: 2;
 }
 
 .timeHeader {
@@ -61,13 +86,15 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   background: var(--surface-1);
-  position: relative;
+  position: sticky;
+  left: 0;
+  z-index: 1;
   text-transform: uppercase;
 }
 
 .todayDayCell {
   color: var(--ifm-color-primary);
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(99, 102, 241, 0.08); /* slightly stronger than surface-1 */
 }
 
 .todayDot {
@@ -167,11 +194,14 @@
 }
 
 @media (max-width: 768px) {
-  .table th,
-  .table td {
-    padding: 8px 4px;
+  .tableScroll {
+    margin: 0 -20px;
+    padding: 0 20px;
+    width: 100vw;
+    border: none;
+    border-radius: 0;
   }
-  .subject {
-    font-size: 0.65rem;
+  .table {
+    min-width: 800px;
   }
 }
