@@ -245,8 +245,8 @@ export async function onRequestPost(context) {
     return err('Invalid or missing collection.');
   }
 
-  // ── Singular value stores (routine, settings, subjects, admins) ──
-  if (['routine', 'settings', 'subjects', 'admins'].includes(collection)) {
+  // ── Singular value stores (routine, settings, subjects) ──
+  if (['routine', 'settings', 'subjects'].includes(collection)) {
     if (action === 'set') {
       await kvPut(env, collection, body.data);
       return json({ ok: true });
@@ -292,6 +292,36 @@ export async function onRequestPost(context) {
       // Just for auth verification
       return json({ ok: true });
     }
+
+    // ── Admin specific actions ──
+    case 'add_admin': {
+      if (collection !== 'admins') return err('Invalid collection for this action.');
+      const admins = await kvGet(env, 'admins');
+      if (admins.some(a => a.email === body.admin.email)) return err('Admin already exists.');
+      admins.push(body.admin);
+      await kvPut(env, 'admins', admins);
+      return json({ ok: true });
+    }
+
+    case 'remove_admin': {
+      if (collection !== 'admins') return err('Invalid collection for this action.');
+      const admins = await kvGet(env, 'admins');
+      const filtered = admins.filter(a => a.email !== body.email);
+      await kvPut(env, 'admins', filtered);
+      return json({ ok: true });
+    }
+
+    case 'change_password': {
+      if (collection !== 'admins') return err('Invalid collection for this action.');
+      const admins = await kvGet(env, 'admins');
+      const idx = admins.findIndex(a => a.email === body.email);
+      if (idx === -1) return err('Admin not found.');
+      if (admins[idx].password !== body.oldPassword) return err('Current password incorrect.', 401);
+      admins[idx].password = body.newPassword;
+      await kvPut(env, 'admins', admins);
+      return json({ ok: true });
+    }
+
 
     default:
       return err('Invalid action. Use: add, update, delete, set.');

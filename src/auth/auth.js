@@ -170,7 +170,7 @@ export function getCurrentUser() {
  */
 export async function isAdmin(email) {
   if (!email) return false;
-  const admins = await getAdminStore();
+  const admins = await getAdmins();
   return admins.some(a => a.email === email);
 }
 
@@ -179,7 +179,7 @@ export async function isAdmin(email) {
  */
 export async function isSuperAdmin(email) {
   if (!email) return false;
-  const admins = await getAdminStore();
+  const admins = await getAdmins();
   return admins.some(a => a.email === email && a.role === 'super_admin');
 }
 
@@ -187,6 +187,12 @@ export async function isSuperAdmin(email) {
  * Get all admins (passwords stripped)
  */
 export async function getAdmins() {
+  if (await isApiAvailable()) {
+    try {
+      const res = await fetch(`${API_BASE}?collection=admins`);
+      if (res.ok) return await res.json();
+    } catch { /* fall back */ }
+  }
   const admins = await getAdminStore();
   return admins.map(({ password, ...rest }) => rest);
 }
@@ -195,30 +201,64 @@ export async function getAdmins() {
  * Add a new admin
  */
 export async function addAdmin(email, password, role = 'admin') {
-  const admins = await getAdminStore();
-  if (admins.some(a => a.email === email)) {
-    throw new Error('This email is already an admin.');
+  if (await isApiAvailable()) {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ action: 'add_admin', collection: 'admins', admin: { email, password, role, addedAt: new Date().toISOString() } }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to add admin.');
+    }
+  } else {
+    const admins = await getAdminStore();
+    if (admins.some(a => a.email === email)) throw new Error('This email is already an admin.');
+    admins.push({ email, password, role, addedAt: new Date().toISOString() });
+    await saveAdminStore(admins);
   }
-  admins.push({ email, password, role, addedAt: new Date().toISOString() });
-  await saveAdminStore(admins);
 }
 
 /**
  * Remove an admin
  */
 export async function removeAdmin(email) {
-  const admins = (await getAdminStore()).filter(a => a.email !== email);
-  await saveAdminStore(admins);
+  if (await isApiAvailable()) {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ action: 'remove_admin', collection: 'admins', email }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to remove admin.');
+    }
+  } else {
+    const admins = (await getAdminStore()).filter(a => a.email !== email);
+    await saveAdminStore(admins);
+  }
 }
 
 /**
  * Change password
  */
 export async function changePassword(email, oldPassword, newPassword) {
-  const admins = await getAdminStore();
-  const admin = admins.find(a => a.email === email);
-  if (!admin) throw new Error('Admin not found.');
-  if (admin.password !== oldPassword) throw new Error('Current password is incorrect.');
-  admin.password = newPassword;
-  await saveAdminStore(admins);
+  if (await isApiAvailable()) {
+    const res = await fetch(API_BASE, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ action: 'change_password', collection: 'admins', email, oldPassword, newPassword }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to change password.');
+    }
+  } else {
+    const admins = await getAdminStore();
+    const admin = admins.find(a => a.email === email);
+    if (!admin) throw new Error('Admin not found.');
+    if (admin.password !== oldPassword) throw new Error('Current password is incorrect.');
+    admin.password = newPassword;
+    await saveAdminStore(admins);
+  }
 }
