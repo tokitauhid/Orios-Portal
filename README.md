@@ -16,6 +16,8 @@
 ## ✨ Features
 <img src="./static/img/orio.png" align="right" width="100" />
 
+| Feature | Description |
+|---------|-------------|
 | 📢 **Notice Board** | Animated scrolling banner with color-coded announcements |
 | 📝 **Notes Hub** | Subject-grouped notes with mixed-format support (PDFs, images, links, docs) — fully searchable |
 | 📋 **Assignments** | Track due dates, upload up to 50MB file attachments, and submit status |
