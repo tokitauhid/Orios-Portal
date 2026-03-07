@@ -16,7 +16,7 @@ export default function NotesPage() {
     async function init() {
       try { 
         setNotesData(await getAll('notes')); 
-        setSubjects(getSubjects());
+        setSubjects(await getSubjects());
       } catch {}
     }
     init();

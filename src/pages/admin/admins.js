@@ -17,36 +17,39 @@ export default function AdminsPage() {
   const currentUser = getCurrentUser();
 
   useEffect(() => {
-    setAdmins(getAdmins());
-    if (currentUser?.email) {
-      setIsSuperAdm(isSuperAdmin(currentUser.email));
+    async function init() {
+      setAdmins(await getAdmins());
+      if (currentUser?.email) {
+        setIsSuperAdm(await isSuperAdmin(currentUser.email));
+      }
     }
+    init();
   }, []);
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!newEmail.trim() || !newPassword.trim()) return;
     setError(''); setSuccess('');
     try {
-      addAdmin(newEmail.trim(), newPassword, newRole);
+      await addAdmin(newEmail.trim(), newPassword, newRole);
       setNewEmail('');
       setNewPassword('');
       setSuccess(`Admin "${newEmail}" added successfully!`);
-      setAdmins(getAdmins());
+      setAdmins(await getAdmins());
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const handleRemove = (email) => {
+  const handleRemove = async (email) => {
     if (email === currentUser?.email) {
       setError("You can't remove yourself!");
       return;
     }
     setError(''); setSuccess('');
-    removeAdmin(email);
+    await removeAdmin(email);
     setSuccess(`Removed "${email}" from admins.`);
-    setAdmins(getAdmins());
+    setAdmins(await getAdmins());
   };
 
   return (

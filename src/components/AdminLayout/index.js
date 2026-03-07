@@ -24,23 +24,26 @@ export default function AdminLayout({ children, title }) {
   const history = useHistory();
 
   useEffect(() => {
-    const storedAuth = sessionStorage.getItem('orios_admin_verified');
-    const currentUser = getCurrentUser();
+    async function checkAuth() {
+      const storedAuth = sessionStorage.getItem('orios_admin_verified');
+      const currentUser = getCurrentUser();
 
-    if (!currentUser || !storedAuth) {
+      if (!currentUser || !storedAuth) {
+        setLoading(false);
+        history.push('/admin/login');
+        return;
+      }
+
+      setUser(currentUser);
+      const adminCheck = await isAdmin(currentUser.email);
+      if (!adminCheck) {
+        history.push('/admin/login');
+      } else {
+        setAuthorized(true);
+      }
       setLoading(false);
-      history.push('/admin/login');
-      return;
     }
-
-    setUser(currentUser);
-    const adminCheck = isAdmin(currentUser.email);
-    if (!adminCheck) {
-      history.push('/admin/login');
-    } else {
-      setAuthorized(true);
-    }
-    setLoading(false);
+    checkAuth();
   }, []);
 
   const handleLogout = () => {

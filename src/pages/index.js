@@ -81,9 +81,9 @@ export default function Home() {
     async function init() {
       try {
         await autoUpdateStatuses();
-        const settings = getSettings();
+        const settings = await getSettings();
         if (settings.welcomeText) setWelcomeText(settings.welcomeText);
-        const savedRoutine = getRoutine();
+        const savedRoutine = await getRoutine();
         if (savedRoutine?.days) setLiveRoutine(savedRoutine);
 
         setNotices(await getAll('notices'));

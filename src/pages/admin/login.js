@@ -11,13 +11,13 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const history = useHistory();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      signIn(email, password);
+      await signIn(email, password);
       history.push('/admin');
     } catch (err) {
       setError(err.message);

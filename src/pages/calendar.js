@@ -14,9 +14,9 @@ export default function CalendarPage() {
   useEffect(() => {
     async function init() {
       try {
-        const saved = getRoutine();
+        const saved = await getRoutine();
         if (saved?.days) setLiveRoutine(saved);
-        const settings = getSettings();
+        const settings = await getSettings();
         if (settings.countryCode) setCountryCode(settings.countryCode);
         setEvents(await getAll('events'));
       } catch {}

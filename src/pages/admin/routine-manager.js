@@ -42,11 +42,14 @@ export default function AdminRoutine() {
   const [subSuccess, setSubSuccess] = useState('');
 
   useEffect(() => {
-    const r = getRoutine();
-    setRoutine(r);
-    setTimeSlots(r?.timeSlots || []);
-    setDays(r?.days || []);
-    setSubjects(getSubjects());
+    async function init() {
+      const r = await getRoutine();
+      setRoutine(r);
+      setTimeSlots(r?.timeSlots || []);
+      setDays(r?.days || []);
+      setSubjects(await getSubjects());
+    }
+    init();
   }, []);
 
   if (!routine) return <Layout title="Routine & Subjects — Admin"><AdminLayout title="🗓️ Manage Routine & Subjects"><p>Loading...</p></AdminLayout></Layout>;
@@ -122,32 +125,32 @@ export default function AdminRoutine() {
   };
 
   // ---- Subjects ----
-  const handleAddSubject = (e) => {
+  const handleAddSubject = async (e) => {
     e.preventDefault();
     const name = newSubject.trim();
     if (!name) return;
     if (subjects.includes(name)) { setSubError('Subject already exists.'); return; }
     setSubError('');
     const updated = [...subjects, name];
-    saveSubjects(updated);
+    await saveSubjects(updated);
     setSubjects(updated);
     setNewSubject('');
     setSubSuccess(`"${name}" added!`);
     setTimeout(() => setSubSuccess(''), 2000);
   };
 
-  const handleRemoveSubject = (name) => {
+  const handleRemoveSubject = async (name) => {
     const updated = subjects.filter(s => s !== name);
-    saveSubjects(updated);
+    await saveSubjects(updated);
     setSubjects(updated);
     setSubSuccess(`"${name}" removed.`);
     setTimeout(() => setSubSuccess(''), 2000);
   };
 
   // ---- Publish everything ----
-  const handlePublish = () => {
-    saveRoutine(routine);
-    saveSubjects(subjects);
+  const handlePublish = async () => {
+    await saveRoutine(routine);
+    await saveSubjects(subjects);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

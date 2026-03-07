@@ -33,7 +33,7 @@ export default function AdminDashboard() {
   const [demoCleared, setDemoCleared] = useState(false);
 
   useEffect(() => {
-    async function loadCounts() {
+    async function init() {
       const results = {};
       for (const card of statCards) {
         try {
@@ -42,14 +42,14 @@ export default function AdminDashboard() {
         } catch { results[card.key] = 0; }
       }
       setCounts(results);
+      setSettings(await getSettings());
+      setDemoCleared(localStorage.getItem('orios_demo_cleared') === 'true');
     }
-    loadCounts();
-    setSettings(getSettings());
-    setDemoCleared(localStorage.getItem('orios_demo_cleared') === 'true');
+    init();
   }, []);
 
-  const handleSaveSettings = () => {
-    saveSettings(settings);
+  const handleSaveSettings = async () => {
+    await saveSettings(settings);
     setSavedSettings(true);
     setTimeout(() => setSavedSettings(false), 2000);
   };
