@@ -16,19 +16,18 @@
 ## ✨ Features
 <img src="./static/img/orio.png" align="right" width="100" />
 
-| Feature | Description |
-|---------|-------------|
 | 📢 **Notice Board** | Animated scrolling banner with color-coded announcements |
 | 📝 **Notes Hub** | Subject-grouped notes with mixed-format support (PDFs, images, links, docs) — fully searchable |
 | 📋 **Assignments** | Track due dates, upload up to 50MB file attachments, and submit status |
 | 🔬 **Lab Reports** | Manage lab experiment reports, attach data files, and track grading |
 | 📅 **Interactive Calendar** | Monthly calendar grid with event dots, click-to-view details |
-| 🗓️ **Weekly Routine** | Class schedule table with current-day highlighting |
+| 🗓️ **Weekly Routine** | Responsive, mobile-friendly class schedule table with current-day highlighting |
 | ⏳ **Exam Countdown** | Live ticking countdown timers for exams and events with native Datetime sync |
 | 🔍 **Global Search** | Full-screen overlay searching across all content types |
 | 👨‍🏫 **Teacher Directory** | Profile cards with contact info, office hours, and department filters |
 | 📁 **Secure File Sharing** | Password-protected downloads with modal authentication |
-| 🗄️ **Local Database** | High-performance IndexedDB storage backing up to 50MB of persistent file attachments |
+| ☁️ **Cloudflare KV Backend** | Serverless centralized database (`/api/data`) for persistent, shared content |
+| 🔔 **Toast Notifications** | Beautiful, animated slide-in toasts for success, error, and warning alerts |
 | 🛡️ **Setup Wizard** | Automatic Admin Super-user creation interface on first boot |
 | 🌗 **Light / Dark Mode** | System-aware theme toggle |
 | 📱 **Mobile-First** | Fully responsive, optimized for phones and tablets |
@@ -109,6 +108,22 @@ orios_class/
 │       └── files.js             # File sharing
 └── static/                      # Static assets
 ```
+
+## ☁️ Cloudflare Deployment & KV Database
+
+Orios Portal uses **Cloudflare Pages** for hosting and **Cloudflare KV** + **Pages Functions** for a free, serverless, centralized database. When an admin makes changes, they are saved to KV and instantly visible to all users.
+
+### One-Time Setup Instructions
+
+1. **Deploy to Cloudflare:** Connect your GitHub repository to Cloudflare Pages.
+2. **Create Database:** In your Cloudflare Dashboard, go to **Workers & Pages → KV** and create a new namespace named `ORIOS_DATA`.
+3. **Bind Database:** Go to your Pages project settings → **Settings → Bindings**:
+   - Add a KV namespace binding.
+   - Variable name: `ORIOS_DATA`
+   - Namespace: Select the KV you just created.
+4. **Redeploy:** Trigger a new deployment in Cloudflare so the API endpoints (`/functions/api/data.js`) can access the KV store.
+
+*Note: During local development (`npm run start`), the app will gracefully fall back to `localStorage` since the serverless API is only available on Cloudflare.*
 
 ## ⚙️ Customization
 
