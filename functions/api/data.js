@@ -251,6 +251,9 @@ export async function onRequestPost(context) {
       await kvPut(env, collection, body.data);
       return json({ ok: true });
     }
+    if (action === 'verify') {
+      return json({ ok: true });
+    }
     return err('For ' + collection + ', use action "set" with a "data" field.');
   }
 
