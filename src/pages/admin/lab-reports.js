@@ -40,6 +40,13 @@ export default function AdminLabReports() {
       addLabel="Add Lab Report"
       onSubmitModifier={(data) => {
         if (!data.status) data.status = 'pending';
+
+        // Auto-revert if deadline extended
+        if (data.status === 'overdue' && data.dueDate) {
+          const target = data.dueDate.includes('T') ? new Date(data.dueDate) : new Date(data.dueDate + 'T23:59:59');
+          if (target.getTime() > new Date().getTime()) data.status = 'pending';
+        }
+
         if (!data.labNumber) {
           const subjectReports = reports.filter(r => r.subject === data.subject);
           data.labNumber = subjectReports.length + 1;

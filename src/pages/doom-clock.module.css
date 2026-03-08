@@ -18,6 +18,7 @@
   margin: 0 0 12px;
   background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
   letter-spacing: -0.02em;
@@ -41,13 +42,47 @@
   background: var(--surface-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 24px;
+  padding: 0;
   position: relative;
   overflow: hidden;
   transition: all var(--transition-normal);
   text-decoration: none;
   display: flex;
   flex-direction: column;
+}
+
+.cardContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cardMediaContainer {
+  height: 140px;
+  width: 100%;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border-light);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cardPdf {
+  width: 100%;
+  height: 200%;
+  transform: scale(0.6);
+  transform-origin: top center;
+  pointer-events: none;
+  border: none;
 }
 
 .card:hover {
