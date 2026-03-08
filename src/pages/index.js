@@ -13,13 +13,13 @@ function getGlobalCountdowns(events, assignments, labReports, count = 3) {
   const mapped = [
     ...events
       .filter(e => new Date(e.date).getTime() > now)
-      .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: e.date, type: e.type, icon: e.type === 'exam' ? '📝' : '🎉' })),
+      .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: e.date, type: e.type, icon: e.type === 'exam' ? '📝' : '🎉', link: '/calendar' })),
     ...assignments
       .filter(a => a.status === 'pending' && new Date(a.dueDate).getTime() > now)
-      .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: a.dueDate, type: 'assignment', icon: '📋' })),
+      .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: a.dueDate, type: 'assignment', icon: '📋', link: '/assignments' })),
     ...labReports
       .filter(l => l.status === 'pending' && new Date(l.dueDate).getTime() > now)
-      .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: l.dueDate, type: 'lab report', icon: '🔬' }))
+      .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: l.dueDate, type: 'lab report', icon: '🔬', link: '/lab-reports' }))
   ];
   return mapped.sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, count);
 }
@@ -188,7 +188,7 @@ export default function Home() {
             <span className={styles.statIcon}>⏳</span>
             <div>
               <span className={styles.statNumber}>{upcomingEvents.length}</span>
-              <span className={styles.statLabel}>Doom Clock</span>
+              <span className={styles.statLabel}>Upcoming Events</span>
             </div>
           </a>
           <a href="/notes" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -204,21 +204,24 @@ export default function Home() {
         <section className={styles.section}>
           <div className={styles.sectionHeader} style={{ position: 'relative' }}>
             <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', right: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>⏳ Doom Clock</h2>
+            <h2 className={styles.sectionTitle}>⏳ Upcoming Events</h2>
             <p className={styles.sectionDesc}>Active countdowns for your next few events</p>
           </div>
           <div className={styles.countdownGrid}>
             {nextExam && (
-              <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
+              <a href="/calendar" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
+              </a>
             )}
             {upcomingEvents.map(event => (
-              <CountdownTimer
-                key={event.id}
-                title={event.title}
-                targetDate={event.date}
-                type={event.type}
-                icon={event.icon}
-              />
+              <a key={event.id} href={event.link} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <CountdownTimer
+                  title={event.title}
+                  targetDate={event.date}
+                  type={event.type}
+                  icon={event.icon}
+                />
+              </a>
             ))}
           </div>
         </section>
