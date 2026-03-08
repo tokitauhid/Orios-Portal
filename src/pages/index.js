@@ -7,13 +7,21 @@ import SearchOverlay from '@site/src/components/SearchOverlay';
 import { getSettings, getRoutine, autoUpdateStatuses, getAll } from '@site/src/auth/db';
 import styles from './index.module.css';
 
-// Get upcoming events sorted by date
-function getUpcomingEvents(eventList, count = 3) {
-  const now = new Date();
-  return eventList
-    .filter(e => new Date(e.date) > now)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, count);
+// Get upcoming deadlines across all collections (Doom Clock format)
+function getGlobalCountdowns(events, assignments, labReports, count = 3) {
+  const now = new Date().getTime();
+  const mapped = [
+    ...events
+      .filter(e => new Date(e.date).getTime() > now)
+      .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: e.date, type: e.type, icon: e.type === 'exam' ? '📝' : '🎉' })),
+    ...assignments
+      .filter(a => a.status === 'pending' && new Date(a.dueDate).getTime() > now)
+      .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: a.dueDate, type: 'assignment', icon: '📋' })),
+    ...labReports
+      .filter(l => l.status === 'pending' && new Date(l.dueDate).getTime() > now)
+      .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: l.dueDate, type: 'lab report', icon: '🔬' }))
+  ];
+  return mapped.sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, count);
 }
 
 // Get next exam
@@ -80,25 +88,36 @@ export default function Home() {
   useEffect(() => {
     async function init() {
       try {
-        await autoUpdateStatuses();
-        const settings = await getSettings();
+        try { await autoUpdateStatuses(); } catch (e) { console.warn("Auto-status skipped:", e); }
+        
+        const [settings, savedRoutine, noticesData, eventsData, notesData, asgnsData, teachersData, filesData, labsData] = await Promise.all([
+          getSettings(),
+          getRoutine(),
+          getAll('notices'),
+          getAll('events'),
+          getAll('notes'),
+          getAll('assignments'),
+          getAll('teachers'),
+          getAll('files'),
+          getAll('labReports')
+        ]);
+        
         if (settings.welcomeText) setWelcomeText(settings.welcomeText);
-        const savedRoutine = await getRoutine();
         if (savedRoutine?.days) setLiveRoutine(savedRoutine);
 
-        setNotices(await getAll('notices'));
-        setEvents(await getAll('events'));
-        setNotes(await getAll('notes'));
-        setAssignments(await getAll('assignments'));
-        setTeachers(await getAll('teachers'));
-        setFiles(await getAll('files'));
-        setLabReports(await getAll('labReports'));
-      } catch { }
+        setNotices(noticesData);
+        setEvents(eventsData);
+        setNotes(notesData);
+        setAssignments(asgnsData);
+        setTeachers(teachersData);
+        setFiles(filesData);
+        setLabReports(labsData);
+      } catch (err) { console.error("Home initialization failed:", err); }
     }
     init();
   }, []);
 
-  const upcomingEvents = getUpcomingEvents(events);
+  const upcomingEvents = getGlobalCountdowns(events, assignments, labReports);
   const nextExam = getNextExam(events);
   const todayClasses = getTodayClasses(liveRoutine);
   const pendingAssignments = getPendingCount(assignments);
@@ -198,7 +217,7 @@ export default function Home() {
                 title={event.title}
                 targetDate={event.date}
                 type={event.type}
-                icon={event.type === 'exam' ? '📝' : event.type === 'assignment' ? '📋' : '🎉'}
+                icon={event.icon}
               />
             ))}
           </div>
