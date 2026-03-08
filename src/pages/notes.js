@@ -112,33 +112,64 @@ export default function NotesPage() {
               <section key={subject} className={styles.subjectSection}>
                 <h2 className={styles.subjectTitle}>{subject}</h2>
                 <div className={styles.notesGrid}>
-                  {notes.map((note, i) => (
-                    <a
-                      key={note.id}
-                      href={note.fileData || note.url || '#'}
-                      download={note.fileData ? (note.title + '.' + (note.format || 'bin').toLowerCase()) : undefined}
-                      target={(note.type === 'link' || !note.fileData) ? '_blank' : undefined}
-                      rel={(note.type === 'link' || !note.fileData) ? 'noopener noreferrer' : undefined}
-                      className={styles.noteCard}
-                      style={{ animationDelay: `${i * 60}ms` }}
-                    >
-                      <div className={styles.noteHeader}>
-                        <span className={styles.noteIcon}>{note.icon}</span>
-                        <span className={styles.noteFormat}>{note.format}</span>
+                  {notes.map((note, i) => {
+                    const hasImage = note.fileData && note.fileData.startsWith('data:image');
+                    const hasPdf = note.fileData && note.fileData.startsWith('data:application/pdf');
+
+                    return (
+                      <div
+                        key={note.id}
+                        className={styles.noteCard}
+                        style={{ animationDelay: `${i * 60}ms` }}
+                      >
+                        {(hasImage || hasPdf) && (
+                          <div className={styles.cardMediaContainer}>
+                            {hasImage && <img src={note.fileData} className={styles.cardImage} alt="Cover Preview" />}
+                            {hasPdf && <object data={note.fileData + "#page=1&toolbar=0&navpanes=0&scrollbar=0"} type="application/pdf" className={styles.cardPdf} />}
+                          </div>
+                        )}
+                        <div className={styles.noteContent}>
+                          <div className={styles.noteHeader}>
+                            <span className={styles.noteIcon}>{note.icon}</span>
+                            <span className={styles.noteFormat}>{note.format}</span>
+                          </div>
+                          <h3 className={styles.noteTitle}>{note.title}</h3>
+                          <p className={styles.noteDesc}>{note.description}</p>
+                          <div className={styles.noteMeta}>
+                            <span className={styles.noteAuthor}>{note.author}</span>
+                            <span className={styles.noteDate}>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                          </div>
+                          <div className={styles.noteTags}>
+                            {(note.tags || []).map(tag => (
+                              <span key={tag} className={styles.tag}>#{tag}</span>
+                            ))}
+                          </div>
+
+                          {(note.fileData || note.url) && (
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                              {note.fileData && (
+                                <button 
+                                  onClick={(e) => { e.preventDefault(); window.open(note.fileData, '_blank'); }}
+                                  style={{ flex: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--surface-2)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}
+                                >
+                                  👀 View
+                                </button>
+                              )}
+                              <a 
+                                href={note.fileData || note.url || '#'} 
+                                download={note.fileData ? (note.title + '.' + (note.format || 'bin').toLowerCase()) : undefined}
+                                target={(note.type === 'link' || !note.fileData) ? '_blank' : undefined}
+                                rel={(note.type === 'link' || !note.fileData) ? 'noopener noreferrer' : undefined}
+                                style={{ flex: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
+                              >
+                                {note.fileData ? '⬇ Download' : '🔗 Open Link'}
+                              </a>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <h3 className={styles.noteTitle}>{note.title}</h3>
-                      <p className={styles.noteDesc}>{note.description}</p>
-                      <div className={styles.noteMeta}>
-                        <span className={styles.noteAuthor}>{note.author}</span>
-                        <span className={styles.noteDate}>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                      </div>
-                      <div className={styles.noteTags}>
-                        {(note.tags || []).map(tag => (
-                          <span key={tag} className={styles.tag}>#{tag}</span>
-                        ))}
-                      </div>
-                    </a>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             ))

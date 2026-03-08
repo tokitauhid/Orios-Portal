@@ -155,12 +155,10 @@
   gap: 16px;
 }
 
-/* Note Card */
 .noteCard {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px;
+  padding: 0;
   background: var(--surface-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
@@ -168,8 +166,23 @@
   color: inherit;
   transition: all var(--transition-base);
   animation: fadeInUp 0.5s ease-out both;
-  cursor: pointer;
+  overflow: hidden;
 }
+
+.noteContent {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.cardMediaContainer {
+  height: 140px; width: 100%; background: var(--surface-2); border-bottom: 1px solid var(--border-light);
+  overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
+}
+.cardImage { width: 100%; height: 100%; object-fit: cover; }
+.cardPdf { width: 100%; height: 200%; transform: scale(0.6); transform-origin: top center; pointer-events: none; border: none; }
 
 .noteCard:hover {
   transform: translateY(-3px);

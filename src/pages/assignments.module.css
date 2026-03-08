@@ -22,9 +22,19 @@
 
 .card {
   background: var(--surface-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg);
-  padding: 20px; display: flex; flex-direction: column; gap: 10px;
+  padding: 0; display: flex; flex-direction: column; overflow: hidden;
   transition: all var(--transition-base); animation: fadeInUp 0.5s ease-out both; cursor: default;
 }
+.cardContent {
+  padding: 20px; display: flex; flex-direction: column; gap: 10px; flex: 1;
+}
+
+.cardMediaContainer {
+  height: 140px; width: 100%; background: var(--surface-2); border-bottom: 1px solid var(--border-light);
+  overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
+}
+.cardImage { width: 100%; height: 100%; object-fit: cover; }
+.cardPdf { width: 100%; height: 200%; transform: scale(0.6); transform-origin: top center; pointer-events: none; border: none; }
 .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
 .cardHeader { display: flex; align-items: center; justify-content: space-between; }

@@ -73,37 +73,56 @@ export default function AssignmentsPage() {
         <div className={styles.grid}>
           {filtered.map((a, i) => {
             const status = statusColors[a.status] || statusColors.pending;
+            const hasImage = a.fileData && a.fileData.startsWith('data:image');
+            const hasPdf = a.fileData && a.fileData.startsWith('data:application/pdf');
+
             return (
               <div key={a.id} className={styles.card} style={{ animationDelay: `${i * 80}ms` }}>
-                <div className={styles.cardHeader}>
-                  <span className={styles.subject}>{a.subject}</span>
-                  <span className={styles.status} style={{ background: status.bg, color: status.color }}>
-                    {status.label}
-                  </span>
-                </div>
-                <h3 className={styles.cardTitle}>{a.title}</h3>
-                <p className={styles.cardDesc}>{a.description}</p>
-                <div className={styles.cardFooter}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span className={styles.dueDate}>📅 {new Date(a.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                      <span className={`${styles.daysLeft} ${a.status === 'overdue' ? styles.overdue : ''}`}>
-                        {getDaysLeft(a.dueDate)}
-                      </span>
-                    </div>
-                    {a.fileData && (
-                      <a 
-                        href={a.fileData} 
-                        download={a.title + '.' + (a.format || 'bin').toLowerCase()} 
-                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
-                      >
-                        ⬇ Download Attachment
-                      </a>
-                    )}
+                {(hasImage || hasPdf) && (
+                  <div className={styles.cardMediaContainer}>
+                    {hasImage && <img src={a.fileData} className={styles.cardImage} alt="Cover Preview" />}
+                    {hasPdf && <object data={a.fileData + "#page=1&toolbar=0&navpanes=0&scrollbar=0"} type="application/pdf" className={styles.cardPdf} />}
                   </div>
-                </div>
-                <div className={styles.tags}>
-                  {(a.tags || []).map(t => <span key={t} className={styles.tag}>{t}</span>)}
+                )}
+                <div className={styles.cardContent}>
+                  <div className={styles.cardHeader}>
+                    <span className={styles.subject}>{a.subject}</span>
+                    <span className={styles.status} style={{ background: status.bg, color: status.color }}>
+                      {status.label}
+                    </span>
+                  </div>
+                  <h3 className={styles.cardTitle}>{a.title}</h3>
+                  <p className={styles.cardDesc}>{a.description}</p>
+                  <div className={styles.cardFooter}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span className={styles.dueDate}>📅 {new Date(a.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        <span className={`${styles.daysLeft} ${a.status === 'overdue' ? styles.overdue : ''}`}>
+                          {getDaysLeft(a.dueDate)}
+                        </span>
+                      </div>
+                      {a.fileData && (
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                          <button 
+                            onClick={() => window.open(a.fileData, '_blank')}
+                            style={{ flex: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--surface-2)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}
+                          >
+                            👀 View
+                          </button>
+                          <a 
+                            href={a.fileData} 
+                            download={a.title + '.' + (a.format || 'bin').toLowerCase()} 
+                            style={{ flex: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
+                          >
+                            ⬇ Download
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.tags}>
+                    {(a.tags || []).map(t => <span key={t} className={styles.tag}>{t}</span>)}
+                  </div>
                 </div>
               </div>
             );
