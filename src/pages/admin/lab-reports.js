@@ -1,9 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import AdminLayout from '@site/src/components/AdminLayout';
-import DataTable from '@site/src/components/DataTable';
-import AdminForm from '@site/src/components/AdminForm';
-import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
+import React from 'react';
+import AdminCrud from '@site/src/components/AdminCrud';
 import styles from './shared.module.css';
 
 const fields = [
@@ -29,23 +25,15 @@ const columns = [
 ];
 
 export default function AdminLabReports() {
-  const [data, setData] = useState([]);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const load = async () => { setData(await getAll('labReports')); };
-  useEffect(() => { load(); }, []);
-
-  const handleSubmit = async (formData) => {
-    if (editing) { await updateItem('labReports', editing.id, formData); }
-    else { await addItem('labReports', formData); }
-    setEditing(null); await load();
-  };
-
   return (
-    <Layout title="Manage Lab Reports — Admin"><AdminLayout title="🔬 Manage Lab Reports">
-      <button className={styles.addBtn} onClick={() => { setEditing(null); setFormOpen(true); }}>➕ Add Lab Report</button>
-      <DataTable columns={columns} data={data} onEdit={r => { setEditing(r); setFormOpen(true); }} onDelete={async r => { await deleteItem('labReports', r.id); await load(); }} searchKeys={['title', 'subject', 'status']} />
-      <AdminForm isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} title={editing ? 'Edit Lab Report' : 'Add Lab Report'} fields={fields} initialData={editing} />
-    </AdminLayout></Layout>
+    <AdminCrud
+      title="Manage Lab Reports"
+      icon="🔬"
+      collection="labReports"
+      fields={fields}
+      columns={columns}
+      searchKeys={['title', 'subject', 'status']}
+      addLabel="Add Lab Report"
+    />
   );
 }

@@ -1,9 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import AdminLayout from '@site/src/components/AdminLayout';
-import DataTable from '@site/src/components/DataTable';
-import AdminForm from '@site/src/components/AdminForm';
-import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
+import React from 'react';
+import AdminCrud from '@site/src/components/AdminCrud';
 import styles from './shared.module.css';
 
 const fields = [
@@ -22,24 +18,15 @@ const columns = [
 ];
 
 export default function AdminEvents() {
-  const [data, setData] = useState([]);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-
-  const load = async () => { setData(await getAll('events')); };
-  useEffect(() => { load(); }, []);
-
-  const handleSubmit = async (formData) => {
-    if (editing) { await updateItem('events', editing.id, formData); }
-    else { await addItem('events', formData); }
-    setEditing(null); await load();
-  };
-
   return (
-    <Layout title="Manage Events — Admin"><AdminLayout title="📅 Manage Events">
-      <button className={styles.addBtn} onClick={() => { setEditing(null); setFormOpen(true); }}>➕ Add Event</button>
-      <DataTable columns={columns} data={data} onEdit={r => { setEditing(r); setFormOpen(true); }} onDelete={async r => { await deleteItem('events', r.id); await load(); }} searchKeys={['title', 'type', 'description']} />
-      <AdminForm isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} title={editing ? 'Edit Event' : 'Add Event'} fields={fields} initialData={editing} />
-    </AdminLayout></Layout>
+    <AdminCrud
+      title="Manage Events"
+      icon="📅"
+      collection="events"
+      fields={fields}
+      columns={columns}
+      searchKeys={['title', 'type', 'description']}
+      addLabel="Add Event"
+    />
   );
 }

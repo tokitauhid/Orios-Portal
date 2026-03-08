@@ -1,9 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import AdminLayout from '@site/src/components/AdminLayout';
-import DataTable from '@site/src/components/DataTable';
-import AdminForm from '@site/src/components/AdminForm';
-import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
+import React from 'react';
+import AdminCrud from '@site/src/components/AdminCrud';
 import styles from './shared.module.css';
 
 const fields = [
@@ -28,23 +24,15 @@ const columns = [
 ];
 
 export default function AdminFiles() {
-  const [data, setData] = useState([]);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const load = async () => { setData(await getAll('files')); };
-  useEffect(() => { load(); }, []);
-
-  const handleSubmit = async (formData) => {
-    if (editing) { await updateItem('files', editing.id, formData); }
-    else { await addItem('files', formData); }
-    setEditing(null); await load();
-  };
-
   return (
-    <Layout title="Manage Files — Admin"><AdminLayout title="📁 Manage Files">
-      <button className={styles.addBtn} onClick={() => { setEditing(null); setFormOpen(true); }}>➕ Add File</button>
-      <DataTable columns={columns} data={data} onEdit={r => { setEditing(r); setFormOpen(true); }} onDelete={async r => { await deleteItem('files', r.id); await load(); }} searchKeys={['name', 'subject', 'type']} />
-      <AdminForm isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} title={editing ? 'Edit File' : 'Add File'} fields={fields} initialData={editing} />
-    </AdminLayout></Layout>
+    <AdminCrud
+      title="Manage Files"
+      icon="📁"
+      collection="files"
+      fields={fields}
+      columns={columns}
+      searchKeys={['name', 'subject', 'type']}
+      addLabel="Add File"
+    />
   );
 }
