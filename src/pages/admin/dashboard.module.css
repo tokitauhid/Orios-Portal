@@ -43,7 +43,7 @@
   font-size: 0.85rem; cursor: pointer; transition: all var(--transition-fast);
 }
 .saveBtn:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
-.settingsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.settingsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
 .dangerLabel { font-size: 0.8rem; font-weight: 600; color: var(--color-danger) !important; }

@@ -67,10 +67,10 @@ export default function AdminLayout({ children, title }) {
   return (
     <div className={styles.layout}>
       <div className={styles.mobileHeader}>
+        <span className={styles.mobileTitle}>⚙️ Admin Panel</span>
         <button className={styles.menuBtn} onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? '✕' : '☰'}
         </button>
-        <span className={styles.mobileTitle}>⚙️ Admin</span>
       </div>
 
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>

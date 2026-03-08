@@ -165,11 +165,11 @@ export default function Home() {
               <span className={styles.statLabel}>Pending Tasks</span>
             </div>
           </a>
-          <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className={styles.statIcon}>📅</span>
+          <a href="/doom-clock" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <span className={styles.statIcon}>⏳</span>
             <div>
               <span className={styles.statNumber}>{upcomingEvents.length}</span>
-              <span className={styles.statLabel}>Upcoming Events</span>
+              <span className={styles.statLabel}>Doom Clock</span>
             </div>
           </a>
           <a href="/notes" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -185,8 +185,8 @@ export default function Home() {
         <section className={styles.section}>
           <div className={styles.sectionHeader} style={{ position: 'relative' }}>
             <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', right: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>⏳ Upcoming Countdowns</h2>
-            <p className={styles.sectionDesc}>Stay on top of exams and important dates</p>
+            <h2 className={styles.sectionTitle}>⏳ Doom Clock</h2>
+            <p className={styles.sectionDesc}>Active countdowns for your next few events</p>
           </div>
           <div className={styles.countdownGrid}>
             {nextExam && (
