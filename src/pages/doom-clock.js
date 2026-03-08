@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-import { getAll } from '@site/src/auth/db';
+import { getAll, getRoutine } from '@site/src/auth/db';
 import styles from './doom-clock.module.css';
 
 // Hook to calculate remaining time
@@ -85,24 +85,70 @@ export default function DoomClockPage() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [evs, asgns, labs] = await Promise.all([
+        const [evs, asgns, labs, routine] = await Promise.all([
           getAll('events'),
           getAll('assignments'),
-          getAll('labReports')
+          getAll('labReports'),
+          getRoutine()
         ]);
 
         const now = new Date().getTime();
 
+        const resolveDeadline = (dateStr, subject) => {
+          if (!dateStr) return new Date(0);
+          if (dateStr.includes('T')) return new Date(dateStr); // explicit time given
+
+          const endOfDay = new Date(dateStr + 'T23:59:59');
+
+          // Check if subject exists in routine
+          let hasSubject = false;
+          if (routine && routine.schedule) {
+            hasSubject = Object.values(routine.schedule).some(daily => 
+              daily.some(c => c && c.subject === subject)
+            );
+          }
+
+          if (!hasSubject) return endOfDay;
+
+          const baseDate = new Date(dateStr + 'T00:00:00');
+          const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+          // Search forward up to 14 days for the next class
+          for (let offset = 0; offset < 14; offset++) {
+            const checkDate = new Date(baseDate.getTime() + offset * 24 * 60 * 60 * 1000);
+            const dayName = daysMap[checkDate.getDay()];
+            const classes = routine.schedule[dayName] || [];
+            const subjectClasses = classes.filter(c => c && c.subject === subject);
+
+            if (subjectClasses.length > 0) {
+              // Find the earliest class on this day
+              const classTimes = subjectClasses.map(c => {
+                const [h, m] = c.time.split(':').map(Number);
+                const hour24 = h < 8 ? h + 12 : h; // Assume < 8 is PM
+                return { h: hour24, m };
+              });
+              classTimes.sort((a, b) => (a.h * 60 + a.m) - (b.h * 60 + b.m));
+              const first = classTimes[0];
+
+              const target = new Date(checkDate);
+              target.setHours(first.h, first.m, 0, 0);
+              return target;
+            }
+          }
+
+          return endOfDay; // Fallback
+        };
+
         const mapped = [
           ...evs
-            .filter(e => new Date(e.date).getTime() > now)
-            .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: e.date, type: e.type, color: e.color || '#10b981', link: '/calendar' })),
+            .filter(e => resolveDeadline(e.date, null).getTime() > now)
+            .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: resolveDeadline(e.date, null).toISOString(), type: e.type, color: e.color || '#10b981', link: '/calendar' })),
           ...asgns
-            .filter(a => a.status === 'pending' && new Date(a.dueDate).getTime() > now)
-            .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: a.dueDate, type: 'assignment', color: '#3b82f6', link: '/assignments' })),
+            .filter(a => a.status === 'pending' && resolveDeadline(a.dueDate, a.subject).getTime() > now)
+            .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: resolveDeadline(a.dueDate, a.subject).toISOString(), type: 'assignment', color: '#3b82f6', link: '/assignments' })),
           ...labs
-            .filter(l => l.status === 'pending' && new Date(l.dueDate).getTime() > now)
-            .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: l.dueDate, type: 'lab report', color: '#6366f1', link: '/lab-reports' }))
+            .filter(l => l.status === 'pending' && resolveDeadline(l.dueDate, l.subject).getTime() > now)
+            .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: resolveDeadline(l.dueDate, l.subject).toISOString(), type: 'lab report', color: '#6366f1', link: '/lab-reports' }))
         ];
 
         mapped.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());

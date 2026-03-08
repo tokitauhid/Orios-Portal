@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import AdminLayout from '@site/src/components/AdminLayout';
 import { getAll, getSettings, saveSettings } from '@site/src/auth/db';
+import { useToast } from '@site/src/components/Toast';
 import styles from './dashboard.module.css';
 
 const statCards = [
@@ -32,6 +33,7 @@ export default function AdminDashboard() {
   const [savedSettings, setSavedSettings] = useState(false);
   const [demoCleared, setDemoCleared] = useState(false);
   const [checkingApi, setCheckingApi] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function init() {
@@ -60,14 +62,14 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/data?collection=settings&kvName=' + encodeURIComponent(settings.kvBindingName || ''));
       if (res.status === 500) {
-        alert(`❌ KV Binding "${settings.kvBindingName || 'ORIOS_DATA'}" was not found in the Cloudflare environment.`);
+        showToast(`❌ KV Binding "${settings.kvBindingName || 'ORIOS_DATA'}" was not found in the Cloudflare environment.`, 'error');
       } else if (res.ok || res.status === 400 || res.status === 401) {
-        alert('✅ API is reachable and KV namespace is properly bound!');
+        showToast('✅ API is reachable and KV namespace is properly bound!', 'success');
       } else {
-        alert('⚠️ Unexpected response from API: ' + res.status);
+        showToast('⚠️ Unexpected response from API: ' + res.status, 'warning');
       }
     } catch (e) {
-      alert('❌ API is entirely unreachable. Are you running the Cloudflare worker backend locally?');
+      showToast('❌ API is entirely unreachable. Are you running the backend?', 'error');
     } finally {
       setCheckingApi(false);
     }
