@@ -65,52 +65,33 @@ export default function LabReportsPage() {
         <div className={styles.grid}>
           {filtered.map((report, i) => {
             const status = statusConfig[report.status] || statusConfig.pending;
-            const hasImage = report.fileData && report.fileData.startsWith('data:image');
-            const hasPdf = report.fileData && report.fileData.startsWith('data:application/pdf');
-
             return (
               <div key={report.id} className={styles.card} style={{ animationDelay: `${i * 80}ms` }}>
-                {(hasImage || hasPdf) && (
-                  <div className={styles.cardMediaContainer}>
-                    {hasImage && <img src={report.fileData} className={styles.cardImage} alt="Cover Preview" />}
-                    {hasPdf && <object data={report.fileData + "#page=1&toolbar=0&navpanes=0&scrollbar=0"} type="application/pdf" className={styles.cardPdf} />}
-                  </div>
-                )}
-                <div className={styles.cardContent}>
-                  <div className={styles.cardTop}>
-                    <div className={styles.labBadge}>Lab {report.labNumber}</div>
-                    <span className={styles.status} style={{ background: status.bg, color: status.color }}>
-                      {status.label}
-                      {report.grade && ` — ${report.grade}`}
-                    </span>
-                  </div>
-                  <h3 className={styles.cardTitle}>{report.title}</h3>
-                  <span className={styles.subject}>{report.subject}</span>
-                  <p className={styles.cardDesc}>{report.description}</p>
-                  <div className={styles.cardFooter}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span className={styles.date}>🧪 {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                        <span className={styles.due}>📅 Due: {new Date(report.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                      </div>
-                      {report.fileData && (
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-                          <button 
-                            onClick={() => window.open(report.fileData, '_blank')}
-                            style={{ flex: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--surface-2)', color: 'var(--text-primary)', border: '1px solid var(--border-light)', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}
-                          >
-                            👀 View
-                          </button>
-                          <a 
-                            href={report.fileData} 
-                            download={report.title + '.' + (report.format || 'bin').toLowerCase()} 
-                            style={{ flex: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
-                          >
-                            ⬇ Download
-                          </a>
-                        </div>
-                      )}
+                <div className={styles.cardTop}>
+                  <div className={styles.labBadge}>Lab {report.labNumber}</div>
+                  <span className={styles.status} style={{ background: status.bg, color: status.color }}>
+                    {status.label}
+                    {report.grade && ` — ${report.grade}`}
+                  </span>
+                </div>
+                <h3 className={styles.cardTitle}>{report.title}</h3>
+                <span className={styles.subject}>{report.subject}</span>
+                <p className={styles.cardDesc}>{report.description}</p>
+                <div className={styles.cardFooter}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className={styles.date}>🧪 {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      <span className={styles.due}>📅 Due: {new Date(report.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     </div>
+                    {report.fileData && (
+                      <a 
+                        href={report.fileData} 
+                        download={report.title + '.' + (report.format || 'bin').toLowerCase()} 
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: 'var(--ifm-color-primary)', color: 'white', borderRadius: '4px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 'bold' }}
+                      >
+                        ⬇ Download Attachment
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
