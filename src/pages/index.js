@@ -5,6 +5,7 @@ import CountdownTimer from '@site/src/components/CountdownTimer';
 import FeatureCard from '@site/src/components/FeatureCard';
 import RoutineViewer from '@site/src/components/RoutineViewer';
 import SearchOverlay from '@site/src/components/SearchOverlay';
+import EventCalendar from '@site/src/components/EventCalendar';
 import { getSettings, getRoutine, autoUpdateStatuses, getAll } from '@site/src/auth/db';
 import styles from './index.module.css';
 
@@ -76,6 +77,10 @@ export default function Home() {
   const [assignments, setAssignments] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [files, setFiles] = useState([]);
+  const [labReports, setLabReports] = useState([]);
+
+  // Toggle state
+  const [viewMode, setViewMode] = useState('routine'); // 'routine' | 'calendar'
 
   useEffect(() => {
     async function init() {
@@ -92,6 +97,7 @@ export default function Home() {
         setAssignments(await getAll('assignments'));
         setTeachers(await getAll('teachers'));
         setFiles(await getAll('files'));
+        setLabReports(await getAll('labReports'));
       } catch { }
     }
     init();
@@ -108,6 +114,18 @@ export default function Home() {
     ...teachers.map(t => ({ ...t, title: t.name, icon: t.avatar, type: 'teacher' })),
     ...files.map(f => ({ ...f, title: f.name, icon: f.icon })),
   ];
+
+  const allEvents = [
+    ...events,
+    ...assignments.map(a => ({
+      id: `asn-${a.id}`, type: 'assignment', title: `Due: ${a.title}`,
+      date: a.dueDate, color: '#f59e0b'
+    })),
+    ...labReports.map(lr => ({
+      id: `lab-${lr.id}`, type: 'lab-report', title: `Submission: ${lr.title}`,
+      date: lr.dueDate, color: '#a855f7'
+    }))
+  ].filter(e => e.date);
 
   return (
     <Layout
@@ -203,31 +221,37 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Today's Schedule */}
+        {/* Routine & Calendar Section */}
         <section className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>📚 Today's Schedule</h2>
-            <p className={styles.sectionDesc}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <div className={styles.sectionHeader} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h2 className={styles.sectionTitle}>📚 Interactive Schedule</h2>
+              <p className={styles.sectionDesc}>Toggle between Weekly Routine and Calendar View</p>
+            </div>
+            
+            <div className={styles.toggleGroup}>
+              <button 
+                className={`${styles.toggleBtn} ${viewMode === 'routine' ? styles.toggleActive : ''}`} 
+                onClick={() => setViewMode('routine')}
+              >
+                📅 Weekly Routine
+              </button>
+              <button 
+                className={`${styles.toggleBtn} ${viewMode === 'calendar' ? styles.toggleActive : ''}`} 
+                onClick={() => setViewMode('calendar')}
+              >
+                📆 Event Calendar
+              </button>
+            </div>
           </div>
-          {todayClasses.length > 0 ? (
-            <div className={styles.todayGrid}>
-              {todayClasses.map((cls, i) => (
-                <div key={i} className={`${styles.todayCard} ${styles[cls.type + 'Card']}`}>
-                  <span className={styles.todayTime}>{formatTime(cls.time)}</span>
-                  <h4 className={styles.todaySubject}>{cls.subject}</h4>
-                  <span className={styles.todayRoom}>{cls.room} · {cls.teacher}</span>
-                  <span className={`${styles.todayBadge} ${cls.type === 'lab' ? styles.labBadge : ''}`}>
-                    {cls.type === 'lab' ? '🔬 Lab' : '📖 Lecture'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.noClasses}>
-              <span>🎉</span>
-              <p>No classes today! Enjoy your day off.</p>
-            </div>
-          )}
+          
+          <div style={{ marginTop: '24px' }}>
+            {viewMode === 'routine' ? (
+              <RoutineViewer routine={liveRoutine} />
+            ) : (
+              <EventCalendar events={allEvents} />
+            )}
+          </div>
         </section>
 
         {/* Quick Access Features */}

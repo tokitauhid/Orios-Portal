@@ -59,9 +59,10 @@ const config = {
           { to: '/assignments', label: '📋 Assignments', position: 'left' },
           { to: '/lab-reports', label: '🔬 Lab Reports', position: 'left' },
           { to: '/calendar', label: '📅 Calendar', position: 'left' },
+          { to: '/doom-clock', label: '⏳ Doom Clock', position: 'left' },
           { to: '/teachers', label: '👨‍🏫 Teachers', position: 'left' },
           { to: '/files', label: '📁 Files', position: 'left' },
-          { to: '/admin/login', label: '⚙️ Admin', position: 'right' },
+          { to: '/admin', label: '⚙️ Admin Panel', position: 'right' },
         ],
       },
       footer: {

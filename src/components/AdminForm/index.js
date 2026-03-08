@@ -168,10 +168,10 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                     {formData[field.name] && <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 'bold' }}>✅ File attached properly</span>}
                   </div>
                 ) : field.type === 'select-with-custom' ? (
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                     <select
                       className={styles.input}
-                      style={{ flex: 1 }}
+                      style={{ flex: '1 1 150px' }}
                       value={field.options.includes(formData[field.name]) ? formData[field.name] : (formData[field.name] ? 'custom' : '')}
                       onChange={e => {
                         if (e.target.value !== 'custom') {
@@ -192,7 +192,7 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                       <input
                         type="text"
                         className={styles.input}
-                        style={{ flex: 1 }}
+                        style={{ flex: '1 1 150px' }}
                         value={formData[field.name] || ''}
                         onChange={e => handleChange(field.name, e.target.value)}
                         placeholder="Type custom value..."
