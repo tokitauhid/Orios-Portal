@@ -142,13 +142,13 @@ export default function DoomClockPage() {
         const mapped = [
           ...evs
             .filter(e => resolveDeadline(e.date, null).getTime() > now)
-            .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: resolveDeadline(e.date, null).toISOString(), type: e.type, color: e.color || '#10b981', link: '/calendar', fileData: null })),
+            .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: resolveDeadline(e.date, null).toISOString(), type: e.type, color: e.color || '#10b981', link: '/calendar' })),
           ...asgns
             .filter(a => a.status === 'pending' && resolveDeadline(a.dueDate, a.subject).getTime() > now)
-            .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: resolveDeadline(a.dueDate, a.subject).toISOString(), type: 'assignment', color: '#3b82f6', link: '/assignments', fileData: a.fileData })),
+            .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: resolveDeadline(a.dueDate, a.subject).toISOString(), type: 'assignment', color: '#3b82f6', link: '/assignments' })),
           ...labs
             .filter(l => l.status === 'pending' && resolveDeadline(l.dueDate, l.subject).getTime() > now)
-            .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: resolveDeadline(l.dueDate, l.subject).toISOString(), type: 'lab report', color: '#6366f1', link: '/lab-reports', fileData: l.fileData }))
+            .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: resolveDeadline(l.dueDate, l.subject).toISOString(), type: 'lab report', color: '#6366f1', link: '/lab-reports' }))
         ];
 
         mapped.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -180,33 +180,20 @@ export default function DoomClockPage() {
           </div>
         ) : (
           <div className={styles.activeList}>
-            {deadlines.map(d => {
-              const hasImage = d.fileData && d.fileData.startsWith('data:image');
-              const hasPdf = d.fileData && d.fileData.startsWith('data:application/pdf');
-
-              return (
-                <Link to={d.link} key={d.id} className={styles.card}>
-                  {(hasImage || hasPdf) && (
-                    <div className={styles.cardMediaContainer}>
-                      {hasImage && <img src={d.fileData} className={styles.cardImage} alt="Cover Preview" />}
-                      {hasPdf && <object data={d.fileData + "#page=1&toolbar=0&navpanes=0&scrollbar=0"} type="application/pdf" className={styles.cardPdf} />}
-                    </div>
-                  )}
-                  <div className={styles.cardContent}>
-                    <div className={styles.cardHeader}>
-                      <div>
-                        <h3 className={styles.cardTitle}>{d.title}</h3>
-                        <p className={styles.cardSubject}>{d.subject}</p>
-                      </div>
-                      <span className={styles.cardBadge} style={{ background: d.color }}>
-                        {d.type}
-                      </span>
-                    </div>
-                    <CountdownDisplay date={d.date} />
+            {deadlines.map(d => (
+              <Link to={d.link} key={d.id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h3 className={styles.cardTitle}>{d.title}</h3>
+                    <p className={styles.cardSubject}>{d.subject}</p>
                   </div>
-                </Link>
-              );
-            })}
+                  <span className={styles.cardBadge} style={{ background: d.color }}>
+                    {d.type}
+                  </span>
+                </div>
+                <CountdownDisplay date={d.date} />
+              </Link>
+            ))}
           </div>
         )}
       </div>
