@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   const [settings, setSettings] = useState({ welcomeText: '', kvBindingName: '' });
   const [savedSettings, setSavedSettings] = useState(false);
   const [demoCleared, setDemoCleared] = useState(false);
+  const [checkingApi, setCheckingApi] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -53,6 +54,24 @@ export default function AdminDashboard() {
     await saveSettings(settings);
     setSavedSettings(true);
     setTimeout(() => setSavedSettings(false), 2000);
+  };
+
+  const handleCheckApi = async () => {
+    setCheckingApi(true);
+    try {
+      const res = await fetch('/api/data?collection=settings&kvName=' + encodeURIComponent(settings.kvBindingName || ''));
+      if (res.status === 500) {
+        alert(`❌ KV Binding "${settings.kvBindingName || 'ORIOS_DATA'}" was not found in the Cloudflare environment.`);
+      } else if (res.ok || res.status === 400 || res.status === 401) {
+        alert('✅ API is reachable and KV namespace is properly bound!');
+      } else {
+        alert('⚠️ Unexpected response from API: ' + res.status);
+      }
+    } catch (e) {
+      alert('❌ API is entirely unreachable. Are you running the Cloudflare worker backend locally?');
+    } finally {
+      setCheckingApi(false);
+    }
   };
 
   const handleClearDemo = async () => {
@@ -94,12 +113,23 @@ export default function AdminDashboard() {
             </div>
             <div className={styles.field}>
               <label>Cloudflare KV Binding Name (Optional)</label>
-              <input
-                type="text"
-                value={settings.kvBindingName || ''}
-                onChange={e => setSettings({ ...settings, kvBindingName: e.target.value })}
-                placeholder="ORIOS_DATA"
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  value={settings.kvBindingName || ''}
+                  onChange={e => setSettings({ ...settings, kvBindingName: e.target.value })}
+                  placeholder="ORIOS_DATA"
+                  style={{ flex: 1 }}
+                />
+                <button 
+                  className={styles.saveBtn} 
+                  style={{ background: 'var(--surface-2)', color: 'var(--text-primary)', border: '1px solid var(--border-light)' }}
+                  onClick={handleCheckApi}
+                  disabled={checkingApi}
+                >
+                  {checkingApi ? '...' : '📡 Check API'}
+                </button>
+              </div>
               <span className={styles.hint}>The custom namespace bound in your wrangler.toml or Cloudflare dashboard.</span>
             </div>
             {!demoCleared && (
