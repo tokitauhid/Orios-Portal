@@ -8,12 +8,10 @@ import styles from './shared.module.css';
 
 const fields = [
   { name: 'name', label: 'Full Name', type: 'text', required: true },
-  { name: 'designation', label: 'Designation', type: 'select', required: true, options: ['Professor', 'Associate Professor', 'Assistant Professor', 'Lecturer', 'Senior Lecturer'] },
+  { name: 'designation', label: 'Designation', type: 'select-with-custom', required: true, options: ['Professor', 'Associate Professor', 'Assistant Professor', 'Lecturer', 'Senior Lecturer'] },
   { name: 'department', label: 'Department', type: 'text', required: true },
   { name: 'email', label: 'Email', type: 'email', required: true },
-  { name: 'phone', label: 'Phone', type: 'text' },
-  { name: 'office', label: 'Office Location', type: 'text' },
-  { name: 'officeHours', label: 'Office Hours', type: 'text', placeholder: 'Mon & Wed, 2-4 PM' },
+  { name: 'phone', label: 'Phone Numbers', type: 'tags', placeholder: '01xxxx, 01xxxx' },
   { name: 'subjects', label: 'Subjects', type: 'tags', placeholder: 'Subject 1, Subject 2' },
   { name: 'avatar', label: 'Avatar Emoji', type: 'text', placeholder: '👨‍🏫' },
 ];

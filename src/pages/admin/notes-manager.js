@@ -6,14 +6,10 @@ const fields = [
   { name: 'fileData', label: 'Upload File (Max 50MB)', type: 'file' },
   { name: 'url', label: 'URL / Link (Auto-fills if file attached)', type: 'text', required: true, placeholder: 'https://...' },
   { name: 'title', label: 'Title', type: 'text', required: true },
-  { name: 'subject', label: 'Subject', type: 'select', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
-  { name: 'type', label: 'Content Type', type: 'select', required: true, options: ['doc', 'image', 'link', 'pdf'] },
-  { name: 'format', label: 'Format', type: 'text', placeholder: 'Auto-detected' },
+  { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true },
-  { name: 'author', label: 'Author', type: 'text' },
   { name: 'date', label: 'Date', type: 'date' },
   { name: 'tags', label: 'Tags', type: 'tags', placeholder: 'tag1, tag2' },
-  { name: 'icon', label: 'Icon', type: 'select', options: ['📄', '🖼️', '🔗', '📹', '📊'] },
 ];
 
 const columns = [

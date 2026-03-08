@@ -4,11 +4,10 @@ import styles from './shared.module.css';
 
 const fields = [
   { name: 'title', label: 'Event Title', type: 'text', required: true, placeholder: 'e.g. Mid-Term Examination' },
-  { name: 'type', label: 'Type', type: 'select', required: true, options: ['exam', 'assignment', 'event'] },
+  { name: 'type', label: 'Type', type: 'select', required: true, options: ['exam', 'class test', 'event'] },
   { name: 'date', label: 'Start Date & Time', type: 'datetime-local', required: true },
   { name: 'endDate', label: 'End Date & Time', type: 'datetime-local' },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true, placeholder: 'Event description...' },
-  { name: 'color', label: 'Color', type: 'text', placeholder: '#ef4444' },
 ];
 
 const columns = [
@@ -27,6 +26,15 @@ export default function AdminEvents() {
       columns={columns}
       searchKeys={['title', 'type', 'description']}
       addLabel="Add Event"
+      onSubmitModifier={(data) => {
+        const colors = {
+          'exam': '#ef4444', 
+          'class test': '#f97316', 
+          'event': '#10b981', 
+        };
+        data.color = colors[data.type] || '#3b82f6';
+        return data;
+      }}
     />
   );
 }

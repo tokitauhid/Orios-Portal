@@ -18,7 +18,30 @@ export default function CalendarPage() {
         if (saved?.days) setLiveRoutine(saved);
         const settings = await getSettings();
         if (settings.countryCode) setCountryCode(settings.countryCode);
-        setEvents(await getAll('events'));
+        
+        const evs = await getAll('events');
+        const asgns = await getAll('assignments');
+        const labs = await getAll('labReports');
+
+        const mappedAsgns = asgns.map(a => ({
+          id: `asgn-${a.id}`,
+          title: `Assignment: ${a.title}`,
+          date: a.dueDate,
+          type: 'assignment',
+          description: `Due for ${a.subject}`,
+          color: '#3b82f6'
+        }));
+
+        const mappedLabs = labs.map(l => ({
+          id: `lab-${l.id}`,
+          title: `Lab Report: ${l.title}`,
+          date: l.dueDate,
+          type: 'lab',
+          description: `Due for ${l.subject}`,
+          color: '#6366f1'
+        }));
+
+        setEvents([...evs, ...mappedAsgns, ...mappedLabs]);
       } catch {}
     }
     init();

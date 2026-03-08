@@ -25,7 +25,7 @@ export default function AdminLayout({ children, title }) {
 
   useEffect(() => {
     async function checkAuth() {
-      const storedAuth = sessionStorage.getItem('orios_admin_verified');
+      const storedAuth = localStorage.getItem('orios_admin_verified');
       const currentUser = getCurrentUser();
 
       if (!currentUser || !storedAuth) {

@@ -6,7 +6,7 @@ import AdminForm from '@site/src/components/AdminForm';
 import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
 import styles from '@site/src/pages/admin/shared.module.css';
 
-export default function AdminCrud({ title, icon, collection, fields, columns, searchKeys, addLabel = "Add Item" }) {
+export default function AdminCrud({ title, icon, collection, fields, columns, searchKeys, addLabel = "Add Item", onSubmitModifier }) {
   const [data, setData] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -15,8 +15,13 @@ export default function AdminCrud({ title, icon, collection, fields, columns, se
   useEffect(() => { load(); }, [collection]);
 
   const handleSubmit = async (formData) => {
-    if (editing) { await updateItem(collection, editing.id, formData); }
-    else { await addItem(collection, formData); }
+    let finalData = { ...formData };
+    if (onSubmitModifier) {
+      finalData = onSubmitModifier(finalData);
+    }
+    
+    if (editing) { await updateItem(collection, editing.id, finalData); }
+    else { await addItem(collection, finalData); }
     setEditing(null); 
     await load();
   };

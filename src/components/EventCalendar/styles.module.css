@@ -211,8 +211,19 @@
   .grid {
     padding: 4px 8px 12px;
   }
+  .dayCell {
+    padding: 1px;
+    gap: 1px;
+  }
   .dayNumber {
     font-size: 0.75rem;
+  }
+  .eventDots {
+    gap: 1.5px;
+  }
+  .eventDot {
+    width: 3px;
+    height: 3px;
   }
   .eventPanel {
     padding: 16px;

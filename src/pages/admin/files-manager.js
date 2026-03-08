@@ -5,14 +5,11 @@ import styles from './shared.module.css';
 const fields = [
   { name: 'fileData', label: 'Upload File (Max 50MB)', type: 'file' },
   { name: 'name', label: 'File Name', type: 'text', required: true },
-  { name: 'subject', label: 'Subject', type: 'text', required: true },
-  { name: 'type', label: 'File Type', type: 'select', required: true, options: ['pdf', 'zip', 'image', 'doc', 'other'] },
-  { name: 'size', label: 'File Size', type: 'text', placeholder: 'Auto-detected' },
-  { name: 'uploadedBy', label: 'Uploaded By', type: 'text' },
+  { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
   { name: 'date', label: 'Date', type: 'date' },
   { name: 'password', label: 'Password (leave empty for public)', type: 'text' },
-  { name: 'icon', label: 'Icon', type: 'select', options: ['📄', '📦', '🖼️', '📁', '📊'] },
   { name: 'downloads', label: 'Download Count', type: 'number', defaultValue: '0' },
+  { name: 'tags', label: 'Tags', type: 'tags', placeholder: 'coding, assignment' }
 ];
 
 const columns = [

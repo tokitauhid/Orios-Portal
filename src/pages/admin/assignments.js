@@ -5,9 +5,8 @@ import styles from './shared.module.css';
 const fields = [
   { name: 'fileData', label: 'Attachment (Max 50MB)', type: 'file' },
   { name: 'title', label: 'Title', type: 'text', required: true },
-  { name: 'subject', label: 'Subject', type: 'text', required: true },
+  { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
   { name: 'dueDate', label: 'Due Date', type: 'date', required: true },
-  { name: 'status', label: 'Status', type: 'select', required: true, options: ['pending', 'submitted', 'overdue', 'graded'] },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true },
   { name: 'tags', label: 'Tags', type: 'tags', placeholder: 'coding, algorithms' },
 ];
@@ -32,6 +31,10 @@ export default function AdminAssignments() {
       columns={columns}
       searchKeys={['title', 'subject', 'status']}
       addLabel="Add Assignment"
+      onSubmitModifier={(data) => {
+        if (!data.status) data.status = 'pending';
+        return data;
+      }}
     />
   );
 }

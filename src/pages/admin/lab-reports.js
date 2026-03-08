@@ -5,12 +5,9 @@ import styles from './shared.module.css';
 const fields = [
   { name: 'fileData', label: 'Attachment (Max 50MB)', type: 'file' },
   { name: 'title', label: 'Title', type: 'text', required: true },
-  { name: 'subject', label: 'Subject', type: 'text', required: true },
-  { name: 'labNumber', label: 'Lab Number', type: 'number', required: true },
+  { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
   { name: 'date', label: 'Date', type: 'date', required: true },
   { name: 'dueDate', label: 'Due Date', type: 'date', required: true },
-  { name: 'status', label: 'Status', type: 'select', required: true, options: ['pending', 'submitted', 'graded'] },
-  { name: 'grade', label: 'Grade', type: 'text', placeholder: 'A, B+, etc.' },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true },
 ];
 
@@ -24,7 +21,14 @@ const columns = [
   }},
 ];
 
+import { getAll } from '@site/src/auth/db';
+
 export default function AdminLabReports() {
+  const [reports, setReports] = React.useState([]);
+  React.useEffect(() => {
+    getAll('labReports').then(setReports);
+  }, []);
+
   return (
     <AdminCrud
       title="Manage Lab Reports"
@@ -34,6 +38,14 @@ export default function AdminLabReports() {
       columns={columns}
       searchKeys={['title', 'subject', 'status']}
       addLabel="Add Lab Report"
+      onSubmitModifier={(data) => {
+        if (!data.status) data.status = 'pending';
+        if (!data.labNumber) {
+          const subjectReports = reports.filter(r => r.subject === data.subject);
+          data.labNumber = subjectReports.length + 1;
+        }
+        return data;
+      }}
     />
   );
 }

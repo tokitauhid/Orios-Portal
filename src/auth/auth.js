@@ -141,8 +141,8 @@ export async function signIn(email, password) {
 
   // Store user info
   localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-  sessionStorage.setItem('orios_admin_verified', 'true');
-  sessionStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem('orios_admin_verified', 'true');
+  localStorage.setItem(TOKEN_KEY, token);
 
   return user;
 }
@@ -152,8 +152,8 @@ export async function signIn(email, password) {
  */
 export function signOut() {
   localStorage.removeItem(AUTH_KEY);
-  sessionStorage.removeItem('orios_admin_verified');
-  sessionStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem('orios_admin_verified');
+  localStorage.removeItem(TOKEN_KEY);
 }
 
 /**

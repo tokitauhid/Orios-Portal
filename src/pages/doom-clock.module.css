@@ -1,0 +1,148 @@
+.page {
+  padding: 40px 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+  animation: slideDown 0.6s ease-out;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 3rem;
+  margin: 0 0 12px;
+  background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.activeList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+  border-color: var(--border-default);
+  text-decoration: none;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.cardBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  color: white;
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.cardSubject {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.clockContainer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-light);
+  text-align: center;
+}
+
+.clockDanger .timeValue { color: #ef4444 !important; }
+.clockWarning .timeValue { color: #f59e0b !important; }
+.clockSafe .timeValue { color: #10b981 !important; }
+
+.timeGrid {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.timeUnit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeValue {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeLabel {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .title { font-size: 2.2rem; }
+  .activeList { grid-template-columns: 1fr; }
+}

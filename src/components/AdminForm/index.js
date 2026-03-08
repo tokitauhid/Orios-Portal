@@ -137,23 +137,68 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                           else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) { fileType = 'image'; icon = '🖼️'; }
                           else if (['doc', 'docx'].includes(ext)) { fileType = 'doc'; icon = '📄'; }
 
-                          setFormData(prev => ({
-                            ...prev,
-                            [field.name]: base64,
-                            name: prev.name || file.name,
-                            title: prev.title || file.name.split('.')[0],
-                            size: prev.size || sizeStr,
-                            type: prev.type || fileType,
-                            format: prev.format || ext.toUpperCase(),
-                            icon: prev.icon || icon,
-                            url: prev.url ? prev.url : base64
-                          }));
+                          const titleWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                          const autoTags = titleWithoutExt.split(/[\s-_]+/).filter(t => t.length > 2).map(t => t.toLowerCase());
+
+                          setFormData(prev => {
+                            const updates = {
+                              ...prev,
+                              [field.name]: base64,
+                              name: prev.name || file.name,
+                              title: prev.title || titleWithoutExt,
+                              size: prev.size || sizeStr,
+                              type: prev.type || fileType,
+                              format: prev.format || ext.toUpperCase(),
+                              icon: prev.icon || icon,
+                              url: prev.url ? prev.url : base64
+                            };
+
+                            // Auto-populate tags if a tags field exists and is empty
+                            if (fields.some(f => f.name === 'tags') && (!updates.tags || updates.tags.length === 0)) {
+                              updates.tags = autoTags;
+                            }
+
+                            return updates;
+                          });
                         };
                         reader.readAsDataURL(file);
                       }}
                       required={field.required && !formData[field.name]}
                     />
                     {formData[field.name] && <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 'bold' }}>✅ File attached properly</span>}
+                  </div>
+                ) : field.type === 'select-with-custom' ? (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select
+                      className={styles.input}
+                      style={{ flex: 1 }}
+                      value={field.options.includes(formData[field.name]) ? formData[field.name] : (formData[field.name] ? 'custom' : '')}
+                      onChange={e => {
+                        if (e.target.value !== 'custom') {
+                          handleChange(field.name, e.target.value);
+                        } else {
+                          handleChange(field.name, ''); // Clear to allow typing custom
+                        }
+                      }}
+                      required={field.required && !formData[field.name]}
+                    >
+                      <option value="">Select...</option>
+                      {(field.options || []).map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                      <option value="custom">Other (Custom)</option>
+                    </select>
+                    {(!field.options.includes(formData[field.name]) && formData[field.name] !== undefined) && (
+                      <input
+                        type="text"
+                        className={styles.input}
+                        style={{ flex: 1 }}
+                        value={formData[field.name] || ''}
+                        onChange={e => handleChange(field.name, e.target.value)}
+                        placeholder="Type custom value..."
+                        required={field.required}
+                      />
+                    )}
                   </div>
                 ) : (
                   <input

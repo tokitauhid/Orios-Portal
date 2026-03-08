@@ -31,7 +31,7 @@ const API_BASE = '/api/data';
 
 function getAuthToken() {
   try {
-    return sessionStorage.getItem('orios_admin_token') || '';
+    return localStorage.getItem('orios_admin_token') || '';
   } catch {
     return '';
   }
@@ -87,8 +87,8 @@ export async function getAll(collectionName) {
       if (res.ok) return await res.json();
     } catch { /* fall through */ }
   }
-  // Fallback
-  return lsGet(`orios_${collectionName}`, LOCAL_DEFAULTS[collectionName] || []);
+  // No local fallback reading anymore. Just return empty.
+  return [];
 }
 
 export async function getOne(collectionName, id) {
@@ -108,16 +108,10 @@ export async function addItem(collectionName, item) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || 'Failed to add item');
     } catch (e) {
-      if (e.message.includes('Unauthorized')) throw e;
-      /* fall through to local */
+      throw e;
     }
   }
-  // Fallback
-  const newItem = { ...item, id: Date.now() };
-  const items = lsGet(`orios_${collectionName}`, LOCAL_DEFAULTS[collectionName] || []);
-  items.push(newItem);
-  lsSet(`orios_${collectionName}`, items);
-  return newItem;
+  throw new Error('Database API is unavailable. Cannot add item.');
 }
 
 export async function updateItem(collectionName, id, updates) {
@@ -132,18 +126,10 @@ export async function updateItem(collectionName, id, updates) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || 'Failed to update');
     } catch (e) {
-      if (e.message.includes('Unauthorized')) throw e;
+      throw e;
     }
   }
-  // Fallback
-  const items = lsGet(`orios_${collectionName}`, LOCAL_DEFAULTS[collectionName] || []);
-  const idx = items.findIndex(i => String(i.id) === String(id));
-  if (idx !== -1) {
-    items[idx] = { ...items[idx], ...updates };
-    lsSet(`orios_${collectionName}`, items);
-    return items[idx];
-  }
-  return null;
+  throw new Error('Database API is unavailable. Cannot update item.');
 }
 
 export async function deleteItem(collectionName, id) {
@@ -158,14 +144,10 @@ export async function deleteItem(collectionName, id) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || 'Failed to delete');
     } catch (e) {
-      if (e.message.includes('Unauthorized')) throw e;
+      throw e;
     }
   }
-  // Fallback
-  const items = lsGet(`orios_${collectionName}`, LOCAL_DEFAULTS[collectionName] || []);
-  const filtered = items.filter(i => String(i.id) !== String(id));
-  lsSet(`orios_${collectionName}`, filtered);
-  return true;
+  throw new Error('Database API is unavailable. Cannot delete item.');
 }
 
 // ── Routine ──
@@ -276,9 +258,9 @@ export async function autoUpdateStatuses() {
             headers: authHeaders(),
             body: JSON.stringify({ action: 'set', collection: col, data: items }),
           });
-        } catch { /* ignore */ }
+        } catch { throw new Error('Failed to auto-update statuses via KV'); }
       } else {
-        lsSet(`orios_${col}`, items);
+        throw new Error('API unavailable, cannot auto-update statuses');
       }
     }
   }
@@ -319,14 +301,7 @@ export async function clearDemoData() {
       });
     } catch { /* ignore */ }
   } else {
-    // Local fallback
-    for (const col of collections) lsSet(`orios_${col}`, []);
-    lsSet('orios_subjects', []);
-    const routine = lsGet('orios_routine', defaultRoutine);
-    const emptySchedule = {};
-    if (routine.days) routine.days.forEach(d => emptySchedule[d] = []);
-    routine.schedule = emptySchedule;
-    lsSet('orios_routine', routine);
+    throw new Error('API unavailable, cannot clear demo data');
   }
   localStorage.setItem('orios_demo_cleared', 'true');
 }
