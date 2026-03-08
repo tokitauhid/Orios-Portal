@@ -117,8 +117,8 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
                         const file = e.target.files[0];
                         if (!file) return;
 
-                        if (file.size > 50 * 1024 * 1024) {
-                          showToast('File is too large! Max allowed size is 50MB.', 'warning', 5000);
+                        if (file.size > 25 * 1024 * 1024) {
+                          showToast('File is too large! Max allowed size is 25MB for KV Storage.', 'warning', 5000);
                           e.target.value = '';
                           return;
                         }

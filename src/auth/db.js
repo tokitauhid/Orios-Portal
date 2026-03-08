@@ -6,23 +6,15 @@
  * All admin writes go through POST /api/data with Authorization header
  */
 
-import defaultNotices from '../data/notices';
-import defaultEvents from '../data/events';
-import defaultAssignments from '../data/assignments';
-import defaultLabReports from '../data/labReports';
-import defaultTeachers from '../data/teachers';
-import defaultFiles from '../data/files';
-import defaultRoutine from '../data/routine';
-import defaultNotes from '../data/notes';
 
 const LOCAL_DEFAULTS = {
-  notices: defaultNotices,
-  events: defaultEvents,
-  assignments: defaultAssignments,
-  labReports: defaultLabReports,
-  teachers: defaultTeachers,
-  files: defaultFiles,
-  notes: defaultNotes,
+  notices: [],
+  events: [],
+  assignments: [],
+  labReports: [],
+  teachers: [],
+  files: [],
+  notes: [],
 };
 
 const API_BASE = '/api/data';
@@ -166,7 +158,7 @@ export async function getRoutine() {
       if (res.ok) return await res.json();
     } catch { /* fall through */ }
   }
-  return lsGet('orios_routine', defaultRoutine);
+  return lsGet('orios_routine', { timeSlots: [], days: [], schedule: {} });
 }
 
 export async function saveRoutine(data) {

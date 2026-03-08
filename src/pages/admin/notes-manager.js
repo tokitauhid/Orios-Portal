@@ -3,7 +3,7 @@ import AdminCrud from '@site/src/components/AdminCrud';
 import styles from './shared.module.css';
 
 const fields = [
-  { name: 'fileData', label: 'Upload File (Max 50MB)', type: 'file' },
+  { name: 'fileData', label: 'Upload File (Max 25MB)', type: 'file' },
   { name: 'url', label: 'URL / Link (Auto-fills if file attached)', type: 'text', required: true, placeholder: 'https://...' },
   { name: 'title', label: 'Title', type: 'text', required: true },
   { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },

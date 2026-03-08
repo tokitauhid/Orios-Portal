@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import AdminLayout from '@site/src/components/AdminLayout';
-import { getAll, getSettings, saveSettings, clearDemoData, restoreDemoData } from '@site/src/auth/db';
+import { getAll, getSettings, saveSettings } from '@site/src/auth/db';
 import styles from './dashboard.module.css';
 
 const statCards = [
@@ -45,7 +45,6 @@ export default function AdminDashboard() {
       setCounts(results);
       const remoteSettings = await getSettings();
       setSettings(remoteSettings);
-      setDemoCleared(localStorage.getItem('orios_demo_cleared') === 'true');
     }
     init();
   }, []);
@@ -71,20 +70,6 @@ export default function AdminDashboard() {
       alert('❌ API is entirely unreachable. Are you running the Cloudflare worker backend locally?');
     } finally {
       setCheckingApi(false);
-    }
-  };
-
-  const handleClearDemo = async () => {
-    if (window.confirm("WARNING: This will delete ALL notices, events, assignments, lab reports, notes, teachers, files, and the routine!\\n\\nAre you absolutely sure you want to turn off demo mode?")) {
-      await clearDemoData();
-      window.location.reload();
-    }
-  };
-
-  const handleRestoreDemo = async () => {
-    if (window.confirm("This will overwrite any existing data and restore the original demo defaults.\\n\\nProceed?")) {
-      await restoreDemoData();
-      window.location.reload();
     }
   };
 
@@ -132,24 +117,6 @@ export default function AdminDashboard() {
               </div>
               <span className={styles.hint}>The custom namespace bound in your wrangler.toml or Cloudflare dashboard.</span>
             </div>
-            {!demoCleared && (
-              <div className={styles.field}>
-                <label className={styles.dangerLabel}>System Data</label>
-                <p className={styles.hint} style={{ margin: '0 0 8px' }}>Remove all dummy populated pre-fill site data in one click.</p>
-                <button className={styles.clearBtn} onClick={handleClearDemo}>
-                  🗑️ Turn Off Demo Mode (Clear All Data)
-                </button>
-              </div>
-            )}
-            {demoCleared && (
-              <div className={styles.field}>
-                <label style={{ color: '#10b981' }}>System Data</label>
-                <p className={styles.hint} style={{ margin: '0 0 8px' }}>Restore the original dummy data for testing purposes.</p>
-                <button className={styles.clearBtn} style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid currentColor' }} onClick={handleRestoreDemo}>
-                  🔄 Restore Demo Data
-                </button>
-              </div>
-            )}
           </div>
         </section>
 
