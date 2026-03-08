@@ -61,7 +61,7 @@ async function isApiAvailable() {
   if (_apiAvailable !== null) return _apiAvailable;
   try {
     const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET' });
-    _apiAvailable = res.ok || res.status === 400; // 400 = api exists but bad param
+    _apiAvailable = res.status !== 404; // 404 means the api endpoint physically doesn't exist
     return _apiAvailable;
   } catch {
     _apiAvailable = false;
