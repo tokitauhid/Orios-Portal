@@ -10,12 +10,9 @@ const AUTH_KEY = 'orios_auth';
 const TOKEN_KEY = 'orios_admin_token';
 const ADMINS_KEY = 'orios_admins';
 const ADMINS_VERSION_KEY = 'orios_admins_v';
-const CURRENT_VERSION = '5'; // bump — KV migration
+const CURRENT_VERSION = '6';
 
-// Default admin credentials — centralised; only super-admins can add more from /admin/admins
-const DEFAULT_ADMINS = [
-  { email: 'admin', password: 'admin123', role: 'super_admin', addedAt: '2026-01-01T00:00:00.000Z' },
-];
+const DEFAULT_ADMINS = [];
 
 const API_BASE = '/api/data';
 
@@ -63,13 +60,13 @@ async function getAdminStore() {
     if (ver !== CURRENT_VERSION) {
       localStorage.setItem(ADMINS_KEY, JSON.stringify(DEFAULT_ADMINS));
       localStorage.setItem(ADMINS_VERSION_KEY, CURRENT_VERSION);
-      return [...DEFAULT_ADMINS];
+      return [];
     }
     const data = localStorage.getItem(ADMINS_KEY);
     if (data) return JSON.parse(data);
     localStorage.setItem(ADMINS_KEY, JSON.stringify(DEFAULT_ADMINS));
-    return [...DEFAULT_ADMINS];
-  } catch { return [...DEFAULT_ADMINS]; }
+    return [];
+  } catch { return []; }
 }
 
 async function saveAdminStore(admins) {
@@ -98,7 +95,7 @@ export async function signIn(email, password) {
 
   if (await isApiAvailable()) {
     // Authenticate against KV
-    const res = await fetch(getAPIUrl(API_BASE), {
+    let res = await fetch(getAPIUrl(API_BASE), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,6 +103,30 @@ export async function signIn(email, password) {
       },
       body: JSON.stringify({ action: 'verify', collection: 'admins' }), // collection is just to pass validation
     });
+
+    // One-time bootstrap: first successful login creates initial super admin when no admins exist yet.
+    if (res.status === 401) {
+      const bootstrapRes = await fetch(getAPIUrl(API_BASE), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'bootstrap_admin',
+          collection: 'admins',
+          admin: { email, password, role: 'super_admin', addedAt: new Date().toISOString() },
+        }),
+      });
+
+      if (bootstrapRes.ok) {
+        res = await fetch(getAPIUrl(API_BASE), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ action: 'verify', collection: 'admins' }),
+        });
+      }
+    }
 
     if (!res.ok) {
       if (res.status === 401) throw new Error('Incorrect email or password.');
@@ -126,7 +147,13 @@ export async function signIn(email, password) {
     };
   } else {
     // Authenticate against localStorage (local dev)
-    const admins = await getAdminStore();
+    let admins = await getAdminStore();
+
+    if (admins.length === 0) {
+      admins = [{ email, password, role: 'super_admin', addedAt: new Date().toISOString() }];
+      await saveAdminStore(admins);
+    }
+
     const admin = admins.find(a => a.email === email);
 
     if (!admin) {
