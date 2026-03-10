@@ -5,13 +5,13 @@ import { getAll, getSettings, saveSettings } from '@site/src/auth/db';
 import styles from './dashboard.module.css';
 
 const statCards = [
-  { key: 'notices', label: 'Notices', icon: '📢', color: '#f59e0b' },
-  { key: 'events', label: 'Events', icon: '📅', color: '#6366f1' },
-  { key: 'assignments', label: 'Assignments', icon: '📋', color: '#10b981' },
-  { key: 'labReports', label: 'Lab Reports', icon: '🔬', color: '#a855f7' },
-  { key: 'notes', label: 'Notes', icon: '📝', color: '#ec4899' },
-  { key: 'teachers', label: 'Teachers', icon: '👨‍🏫', color: '#06b6d4' },
-  { key: 'files', label: 'Files', icon: '📁', color: '#f97316' },
+  { key: 'notices', label: 'Notices', icon: '📢', color: '#f59e0b', bentoClass: 'bentoLarge' },
+  { key: 'events', label: 'Events', icon: '📅', color: '#6366f1', bentoClass: 'bentoMedium' },
+  { key: 'assignments', label: 'Assignments', icon: '📋', color: '#10b981', bentoClass: 'bentoMedium' },
+  { key: 'labReports', label: 'Lab Reports', icon: '🔬', color: '#a855f7', bentoClass: 'bentoSmall' },
+  { key: 'notes', label: 'Notes', icon: '📝', color: '#ec4899', bentoClass: 'bentoSmall' },
+  { key: 'teachers', label: 'Teachers', icon: '👨‍🏫', color: '#06b6d4', bentoClass: 'bentoWide' },
+  { key: 'files', label: 'Files', icon: '📁', color: '#f97316', bentoClass: 'bentoTall' },
 ];
 
 const quickActions = [
@@ -30,7 +30,6 @@ export default function AdminDashboard() {
   const [counts, setCounts] = useState({});
   const [settings, setSettings] = useState({ welcomeText: '', kvBindingName: '' });
   const [savedSettings, setSavedSettings] = useState(false);
-  const [demoCleared, setDemoCleared] = useState(false);
   const [checkingApi, setCheckingApi] = useState(false);
 
   useEffect(() => {
@@ -76,13 +75,52 @@ export default function AdminDashboard() {
   return (
     <Layout title="Admin Dashboard — Orios Class" description="Admin dashboard">
       <AdminLayout title="📊 Dashboard">
+        {/* Stats Section */}
+        <section>
+          <div className={styles.statsGrid}>
+            {statCards.map((card, i) => (
+              <a
+                key={card.key}
+                href={`/admin/${card.key === 'labReports' ? 'lab-reports' : card.key === 'notes' ? 'notes-manager' : card.key === 'teachers' ? 'teachers-manager' : card.key === 'files' ? 'files-manager' : card.key}`}
+                className={`${styles.statCard} ${styles[card.bentoClass]}`}
+                style={{ borderTopColor: card.color, '--card-color': card.color }}
+              >
+                <div className={styles.statIconWrap} style={{ background: `${card.color}1A`, color: card.color }}>
+                  <span className={styles.statIcon}>{card.icon}</span>
+                </div>
+                <div className={styles.statContent}>
+                  <span className={styles.statCount}>{counts[card.key] ?? '...'}</span>
+                  <span className={styles.statLabel}>{card.label}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* Quick Actions */}
+        <section>
+          <div className={styles.sectionHeader}>
+            <img src="/img/pucu.png" alt="Pucu" className={styles.sectionIcon} />
+            <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
+          </div>
+          <div className={styles.quickGrid}>
+            {quickActions.map((action, i) => (
+              <a key={action.to} href={action.to} className={styles.quickCard}>
+                <span className={styles.quickIcon}>{action.icon}</span>
+                <span className={styles.quickLabel}>{action.label}</span>
+                <span className={styles.quickArrow}>→</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
         {/* Settings Section */}
         <section className={styles.settingsSection}>
-          <div className={styles.settingsHeader} style={{ position: 'relative' }}>
-            <img src="/img/orio.png" alt="Orio" style={{ position: 'absolute', left: '-40px', top: '-30px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-15deg)', opacity: 0.9 }} />
+          <div className={styles.settingsHeader}>
+            <img src="/img/orio.png" alt="Orio" className={styles.sectionIcon} />
             <h2 className={styles.sectionTitle}>⚙️ Homepage Settings</h2>
             <button className={styles.saveBtn} onClick={handleSaveSettings}>
-              {savedSettings ? '✅ Saved!' : '💾 Save Settings'}
+              {savedSettings ? '✅ Saved!' : '💾 Save'}
             </button>
           </div>
           <div className={styles.settingsGrid}>
@@ -98,7 +136,7 @@ export default function AdminDashboard() {
             </div>
             <div className={styles.field}>
               <label>Cloudflare KV Binding Name (Optional)</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
                 <input
                   type="text"
                   value={settings.kvBindingName || ''}
@@ -112,44 +150,11 @@ export default function AdminDashboard() {
                   onClick={handleCheckApi}
                   disabled={checkingApi}
                 >
-                  {checkingApi ? '...' : '📡 Check API'}
+                  {checkingApi ? '...' : '📡 Check'}
                 </button>
               </div>
               <span className={styles.hint}>The custom namespace bound in your wrangler.toml or Cloudflare dashboard.</span>
             </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className={styles.stats}>
-          {statCards.map((card, i) => (
-            <a
-              key={card.key}
-              href={`/admin/${card.key === 'labReports' ? 'lab-reports' : card.key === 'notes' ? 'notes-manager' : card.key === 'teachers' ? 'teachers-manager' : card.key === 'files' ? 'files-manager' : card.key}`}
-              className={styles.statCard}
-              style={{ animationDelay: `${i * 60}ms`, borderTopColor: card.color }}
-            >
-              <span className={styles.statIcon}>{card.icon}</span>
-              <span className={styles.statCount}>{counts[card.key] ?? '...'}</span>
-              <span className={styles.statLabel}>{card.label}</span>
-            </a>
-          ))}
-        </section>
-
-        {/* Quick Actions */}
-        <section className={styles.quickSection}>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', right: '-50px', top: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(10deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
-          </div>
-          <div className={styles.quickGrid}>
-            {quickActions.map((action, i) => (
-              <a key={action.to} href={action.to} className={styles.quickCard} style={{ animationDelay: `${i * 40}ms` }}>
-                <span className={styles.quickIcon}>{action.icon}</span>
-                <span className={styles.quickLabel}>{action.label}</span>
-                <span className={styles.quickArrow}>→</span>
-              </a>
-            ))}
           </div>
         </section>
       </AdminLayout>

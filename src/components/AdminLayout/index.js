@@ -12,7 +12,7 @@ const navItems = [
   { label: '📝 Notes', to: '/admin/notes-manager' },
   { label: '👨‍🏫 Teachers', to: '/admin/teachers-manager' },
   { label: '📁 Files', to: '/admin/files-manager' },
-  { label: '🗓️ Routine & Subjects', to: '/admin/routine-manager' },
+  { label: '🗓️ Routine', to: '/admin/routine-manager' },
   { label: '👥 Admins', to: '/admin/admins' },
 ];
 
@@ -65,14 +65,22 @@ export default function AdminLayout({ children, title }) {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 
   return (
-    <div className={styles.layout}>
-      <div className={styles.mobileHeader}>
-        <span className={styles.mobileTitle}>⚙️ Admin Panel</span>
+    <div className={styles.adminRoot}>
+      {/* Background Mesh (Absolute) */}
+      <div className={styles.bgMesh}></div>
+
+      {/* Mobile Sticky Header */}
+      <header className={styles.mobileHeader}>
+        <div className={styles.mobileBrand}>
+          <span className={styles.sidebarLogo}>⚙️</span>
+          <span className={styles.mobileTitle}>Orios Admin</span>
+        </div>
         <button className={styles.menuBtn} onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? '✕' : '☰'}
         </button>
-      </div>
+      </header>
 
+      {/* Sidebar (Sticky Desktop, Drawer Mobile) */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarHeader}>
           <span className={styles.sidebarLogo}>⚙️</span>
@@ -80,16 +88,21 @@ export default function AdminLayout({ children, title }) {
         </div>
 
         <nav className={styles.nav}>
-          {navItems.map(item => (
-            <a
-              key={item.to}
-              href={item.to}
-              className={`${styles.navItem} ${currentPath === item.to || currentPath === item.to + '/' ? styles.navActive : ''}`}
-              onClick={() => setSidebarOpen(false)}
-            >
-              {item.label}
-            </a>
-          ))}
+          <div className={styles.navLabel}>Menu</div>
+          {navItems.map(item => {
+            const isActive = currentPath === item.to || currentPath === item.to + '/';
+            return (
+              <a
+                key={item.to}
+                href={item.to}
+                className={`${styles.navItem} ${isActive ? styles.navActive : ''}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <span className={styles.navIcon}>{item.label.split(' ')[0]}</span>
+                <span className={styles.navText}>{item.label.split(' ').slice(1).join(' ')}</span>
+              </a>
+            );
+          })}
         </nav>
 
         <div className={styles.sidebarFooter}>
@@ -100,21 +113,26 @@ export default function AdminLayout({ children, title }) {
               <span className={styles.userEmail}>{user?.email}</span>
             </div>
           </div>
-          <button className={styles.logoutBtn} onClick={handleLogout}>🚪 Logout</button>
+          <button className={styles.logoutBtn} onClick={handleLogout}>
+            <span>🚪</span> Logout
+          </button>
         </div>
       </aside>
 
+      {/* Mobile Overlay */}
       {sidebarOpen && <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />}
 
+      {/* Main Content Area */}
       <main className={styles.main}>
         {title && (
           <header className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>{title}</h1>
+            <div className={styles.headerGlow}></div>
           </header>
         )}
-        <div className={styles.content}>
+        <section className={styles.contentArea}>
           {children}
-        </div>
+        </section>
       </main>
     </div>
   );
