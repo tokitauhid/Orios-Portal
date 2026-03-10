@@ -41,30 +41,14 @@ function authHeaders() {
 // We cache the result so we only probe once.
 
 function getAPIUrl(basePath) {
-  const kvName = lsGet('orios_kv_name', '');
-  if (!kvName) return basePath;
-  const sep = basePath.includes('?') ? '&' : '?';
-  return `${basePath}${sep}kvName=${encodeURIComponent(kvName)}`;
+  return basePath;
 }
 
 let _apiAvailable = null;
 
-async function syncSharedKvName() {
-  try {
-    const res = await fetch(`${API_BASE}?collection=settings`, { method: 'GET', cache: 'no-store' });
-    if (!res.ok) return;
-    const settings = await res.json();
-    const kvName = typeof settings?.kvBindingName === 'string' ? settings.kvBindingName.trim() : '';
-    if (kvName) lsSet('orios_kv_name', kvName);
-  } catch {
-    // Ignore discovery failures; API availability probe below will still decide fallback.
-  }
-}
-
 async function isApiAvailable() {
   if (_apiAvailable !== null) return _apiAvailable;
   try {
-    await syncSharedKvName();
     const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET', cache: 'no-store' });
     _apiAvailable = res.status !== 404; // 404 means the api endpoint physically doesn't exist
     return _apiAvailable;
@@ -197,9 +181,6 @@ export async function getSettings() {
       const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { cache: 'no-store' });
       if (res.ok) {
         const remoteSettings = await res.json();
-        if (typeof remoteSettings?.kvBindingName === 'string' && remoteSettings.kvBindingName.trim()) {
-          lsSet('orios_kv_name', remoteSettings.kvBindingName.trim());
-        }
         return { ...defaults, ...remoteSettings };
       }
     } catch { /* fall through */ }
@@ -210,18 +191,6 @@ export async function getSettings() {
 export async function saveSettings(data) {
   if (await isApiAvailable()) {
     try {
-      // Persist kv name locally so this browser starts targeting the configured namespace.
-      if (data.kvBindingName) {
-        lsSet('orios_kv_name', data.kvBindingName);
-      }
-
-      // Save settings in the default binding so other browsers can discover kvBindingName.
-      await fetch(API_BASE, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ action: 'set', collection: 'settings', data }),
-      });
-
       const res = await fetch(getAPIUrl(API_BASE), {
         method: 'POST',
         headers: authHeaders(),

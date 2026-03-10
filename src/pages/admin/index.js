@@ -28,7 +28,7 @@ const quickActions = [
 
 export default function AdminDashboard() {
   const [counts, setCounts] = useState({});
-  const [settings, setSettings] = useState({ welcomeText: '', kvBindingName: '' });
+  const [settings, setSettings] = useState({ welcomeText: '' });
   const [savedSettings, setSavedSettings] = useState(false);
   const [checkingApi, setCheckingApi] = useState(false);
 
@@ -57,9 +57,9 @@ export default function AdminDashboard() {
   const handleCheckApi = async () => {
     setCheckingApi(true);
     try {
-      const res = await fetch('/api/data?collection=settings&kvName=' + encodeURIComponent(settings.kvBindingName || ''));
+      const res = await fetch('/api/data?collection=settings');
       if (res.status === 500) {
-        alert(`❌ KV Binding "${settings.kvBindingName || 'ORIOS_DATA'}" was not found in the Cloudflare environment.`);
+        alert('❌ KV binding is not found in Cloudflare. Check kv_config.js and your environment binding.');
       } else if (res.ok || res.status === 400 || res.status === 401) {
         alert('✅ API is reachable and KV namespace is properly bound!');
       } else {
@@ -135,15 +135,8 @@ export default function AdminDashboard() {
               <span className={styles.hint}>Displayed below "Welcome to Orios Class" on the homepage.</span>
             </div>
             <div className={styles.field}>
-              <label>Cloudflare KV Binding Name (Optional)</label>
+              <label>KV Connectivity Check</label>
               <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
-                <input
-                  type="text"
-                  value={settings.kvBindingName || ''}
-                  onChange={e => setSettings({ ...settings, kvBindingName: e.target.value })}
-                  placeholder="ORIOS_DATA"
-                  style={{ flex: 1 }}
-                />
                 <button 
                   className={styles.saveBtn} 
                   style={{ background: 'var(--surface-2)', color: 'var(--text-primary)', border: '1px solid var(--border-light)' }}
@@ -153,7 +146,7 @@ export default function AdminDashboard() {
                   {checkingApi ? '...' : '📡 Check'}
                 </button>
               </div>
-              <span className={styles.hint}>The custom namespace bound in your wrangler.toml or Cloudflare dashboard.</span>
+              <span className={styles.hint}>Binding name is controlled in kv_config.js and Cloudflare environment.</span>
             </div>
           </div>
         </section>

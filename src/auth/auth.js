@@ -22,35 +22,13 @@ const API_BASE = '/api/data';
 // ── API availability (cached) ──
 let _apiAvailable = null;
 
-async function syncSharedKvName() {
-  try {
-    const res = await fetch(`${API_BASE}?collection=settings`, { method: 'GET', cache: 'no-store' });
-    if (!res.ok) return;
-    const settings = await res.json();
-    const kvName = typeof settings?.kvBindingName === 'string' ? settings.kvBindingName.trim() : '';
-    if (kvName) {
-      localStorage.setItem('orios_kv_name', JSON.stringify(kvName));
-    }
-  } catch {
-    // Ignore discovery failures and let normal API probing continue.
-  }
-}
-
 function getAPIUrl(basePath) {
-  try {
-    const kvName = localStorage.getItem('orios_kv_name');
-    if (!kvName) return basePath;
-    const sep = basePath.includes('?') ? '&' : '?';
-    return `${basePath}${sep}kvName=${encodeURIComponent(JSON.parse(kvName) || kvName)}`;
-  } catch {
-    return basePath;
-  }
+  return basePath;
 }
 
 async function isApiAvailable() {
   if (_apiAvailable !== null) return _apiAvailable;
   try {
-    await syncSharedKvName();
     const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET', cache: 'no-store' });
     _apiAvailable = res.ok || res.status === 400;
     return _apiAvailable;
