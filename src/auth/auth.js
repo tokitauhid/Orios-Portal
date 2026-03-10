@@ -22,6 +22,20 @@ const API_BASE = '/api/data';
 // ── API availability (cached) ──
 let _apiAvailable = null;
 
+async function syncSharedKvName() {
+  try {
+    const res = await fetch(`${API_BASE}?collection=settings`, { method: 'GET', cache: 'no-store' });
+    if (!res.ok) return;
+    const settings = await res.json();
+    const kvName = typeof settings?.kvBindingName === 'string' ? settings.kvBindingName.trim() : '';
+    if (kvName) {
+      localStorage.setItem('orios_kv_name', JSON.stringify(kvName));
+    }
+  } catch {
+    // Ignore discovery failures and let normal API probing continue.
+  }
+}
+
 function getAPIUrl(basePath) {
   try {
     const kvName = localStorage.getItem('orios_kv_name');
@@ -36,7 +50,8 @@ function getAPIUrl(basePath) {
 async function isApiAvailable() {
   if (_apiAvailable !== null) return _apiAvailable;
   try {
-    const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET' });
+    await syncSharedKvName();
+    const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET', cache: 'no-store' });
     _apiAvailable = res.ok || res.status === 400;
     return _apiAvailable;
   } catch {
@@ -121,7 +136,7 @@ export async function signIn(email, password) {
     }
     
     // Auth succeeded! Fetch admin details (without password obviously)
-    const adminsRes = await fetch(getAPIUrl(`${API_BASE}?collection=admins`));
+    const adminsRes = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), { cache: 'no-store' });
     const admins = await adminsRes.json();
     const admin = admins.find(a => a.email === email);
     if (!admin) throw new Error('Admin not found in directory.');
@@ -200,7 +215,7 @@ export async function isSuperAdmin(email) {
 export async function getAdmins() {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=admins`));
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), { cache: 'no-store' });
       if (res.ok) return await res.json();
     } catch { /* fall back */ }
   }

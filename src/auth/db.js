@@ -49,10 +49,23 @@ function getAPIUrl(basePath) {
 
 let _apiAvailable = null;
 
+async function syncSharedKvName() {
+  try {
+    const res = await fetch(`${API_BASE}?collection=settings`, { method: 'GET', cache: 'no-store' });
+    if (!res.ok) return;
+    const settings = await res.json();
+    const kvName = typeof settings?.kvBindingName === 'string' ? settings.kvBindingName.trim() : '';
+    if (kvName) lsSet('orios_kv_name', kvName);
+  } catch {
+    // Ignore discovery failures; API availability probe below will still decide fallback.
+  }
+}
+
 async function isApiAvailable() {
   if (_apiAvailable !== null) return _apiAvailable;
   try {
-    const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET' });
+    await syncSharedKvName();
+    const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET', cache: 'no-store' });
     _apiAvailable = res.status !== 404; // 404 means the api endpoint physically doesn't exist
     return _apiAvailable;
   } catch {
@@ -82,7 +95,7 @@ function lsSet(key, value) {
 export async function getAll(collectionName) {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=${collectionName}`));
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=${collectionName}`), { cache: 'no-store' });
       if (res.ok) return await res.json();
     } catch { /* fall through */ }
   }
@@ -154,7 +167,7 @@ export async function deleteItem(collectionName, id) {
 export async function getRoutine() {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=routine`));
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=routine`), { cache: 'no-store' });
       if (res.ok) return await res.json();
     } catch { /* fall through */ }
   }
@@ -181,9 +194,12 @@ export async function getSettings() {
   const defaults = { welcomeText: 'Semester 3/1', countryCode: 'BD' };
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`));
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { cache: 'no-store' });
       if (res.ok) {
         const remoteSettings = await res.json();
+        if (typeof remoteSettings?.kvBindingName === 'string' && remoteSettings.kvBindingName.trim()) {
+          lsSet('orios_kv_name', remoteSettings.kvBindingName.trim());
+        }
         return { ...defaults, ...remoteSettings };
       }
     } catch { /* fall through */ }
@@ -194,11 +210,18 @@ export async function getSettings() {
 export async function saveSettings(data) {
   if (await isApiAvailable()) {
     try {
-      // Save the custom KV name to localStorage immediately
+      // Persist kv name locally so this browser starts targeting the configured namespace.
       if (data.kvBindingName) {
         lsSet('orios_kv_name', data.kvBindingName);
       }
-      
+
+      // Save settings in the default binding so other browsers can discover kvBindingName.
+      await fetch(API_BASE, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ action: 'set', collection: 'settings', data }),
+      });
+
       const res = await fetch(getAPIUrl(API_BASE), {
         method: 'POST',
         headers: authHeaders(),
