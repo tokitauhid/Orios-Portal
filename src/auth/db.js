@@ -7,16 +7,6 @@
  */
 
 
-const LOCAL_DEFAULTS = {
-  notices: [],
-  events: [],
-  assignments: [],
-  labReports: [],
-  teachers: [],
-  files: [],
-  notes: [],
-};
-
 const API_BASE = '/api/data';
 
 // ── Auth token helper ──
@@ -175,7 +165,7 @@ export async function saveRoutine(data) {
 // ── Settings ──
 
 export async function getSettings() {
-  const defaults = { welcomeText: 'Semester 3/1', countryCode: 'BD' };
+  const defaults = { welcomeText: '', countryCode: 'BD' };
   if (await isApiAvailable()) {
     try {
       const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { cache: 'no-store' });
@@ -204,10 +194,7 @@ export async function saveSettings(data) {
 
 // ── Subjects ──
 
-const DEFAULT_SUBJECTS = [
-  'Data Structures', 'Physics', 'Mathematics', 'Database Systems',
-  'Electronics', 'English', 'Chemistry',
-];
+const DEFAULT_SUBJECTS = [];
 
 export async function getSubjects() {
   if (await isApiAvailable()) {
@@ -265,58 +252,3 @@ export async function autoUpdateStatuses() {
   }
 }
 
-// ── Clear and Reset Data ──
-
-export async function clearDemoData() {
-  const collections = ['notices', 'events', 'assignments', 'labReports', 'teachers', 'files', 'notes'];
-
-  if (await isApiAvailable()) {
-    for (const col of collections) {
-      try {
-        await fetch(getAPIUrl(API_BASE), {
-          method: 'POST',
-          headers: authHeaders(),
-          body: JSON.stringify({ action: 'set', collection: col, data: [] }),
-        });
-      } catch { /* ignore */ }
-    }
-    try {
-      await fetch(getAPIUrl(API_BASE), {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ action: 'set', collection: 'subjects', data: [] }),
-      });
-    } catch { /* ignore */ }
-    // Clear routine schedules
-    const routine = await getRoutine();
-    const emptySchedule = {};
-    if (routine.days) routine.days.forEach(d => emptySchedule[d] = []);
-    routine.schedule = emptySchedule;
-    try {
-      await fetch(getAPIUrl(API_BASE), {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ action: 'set', collection: 'routine', data: routine }),
-      });
-    } catch { /* ignore */ }
-  } else {
-    throw new Error('API unavailable, cannot clear demo data');
-  }
-  localStorage.setItem('orios_demo_cleared', 'true');
-}
-
-export async function restoreDemoData() {
-  if (await isApiAvailable()) {
-    try {
-      const res = await fetch(getAPIUrl(API_BASE), {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ action: 'restore_defaults', collection: 'settings' }),
-      });
-      if (!res.ok) throw new Error("Failed to restore defaults");
-    } catch (e) {
-      throw new Error(`Cloudflare API unavailable: ${e.message}`);
-    }
-  }
-  localStorage.removeItem('orios_demo_cleared');
-}

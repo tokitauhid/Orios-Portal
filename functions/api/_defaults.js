@@ -20,13 +20,11 @@ export const DEFAULT_ROUTINE = {
   },
 };
 
-export const DEFAULT_SETTINGS = { welcomeText: 'Semester 3/1', countryCode: 'BD' };
+export const DEFAULT_SETTINGS = { welcomeText: '', countryCode: 'BD' };
 
 export const DEFAULT_SUBJECTS = [];
 
-export const DEFAULT_ADMINS = [
-  { email: 'admin', password: 'admin123', role: 'super_admin', addedAt: '2026-01-01T00:00:00.000Z' },
-];
+export const DEFAULT_ADMINS = [];
 
 export const DEFAULTS = {
   notices: DEFAULT_NOTICES,

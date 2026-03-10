@@ -119,11 +119,11 @@ Orios Portal uses **Cloudflare Pages** for hosting and **Cloudflare KV** + **Pag
 ### One-Time Setup Instructions
 
 1. **Deploy to Cloudflare:** Connect your GitHub repository to Cloudflare Pages.
-2. **Create Database:** In your Cloudflare Dashboard, go to **Workers & Pages → KV** and create a new namespace named `orios_data_test`.
+2. **Create Database:** In your Cloudflare Dashboard, go to **Workers & Pages → KV** and create a new namespace named `ORIOS_DATA`.
 3. **Bind Database:** Go to your Pages project settings → **Settings → Bindings**:
    - Add a KV namespace binding.
 
-- Variable name: `orios_data_test`
+- Variable name: `ORIOS_DATA`
 - Namespace: Select the KV you just created.
 
 4. **Redeploy:** Trigger a new deployment in Cloudflare so the API endpoints (`/functions/api/data.js`) can access the KV store.

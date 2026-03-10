@@ -20,7 +20,7 @@ export default function FileShareCard({ file, delay = 0 }) {
     } else if (file.url) {
       window.open(file.url, '_blank');
     } else {
-      showToast('Download started! (Demo — no actual file attached)', 'info');
+      showToast('No file source is attached for this item.', 'info');
     }
   };
 

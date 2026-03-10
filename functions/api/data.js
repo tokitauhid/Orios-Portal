@@ -110,11 +110,6 @@ export async function onRequestPost(context) {
   const binding = getKVBinding(env);
   if (!binding) return err(`No KV Binding found. Configure env.${KV_BINDING_NAME} in Cloudflare.`, 500);
 
-  // Auth check for all writes
-  if (!(await isAuthorized(env, request))) {
-    return err('Unauthorized. Provide a valid admin token.', 401);
-  }
-
   let body;
   try {
     body = await request.json();
@@ -128,6 +123,28 @@ export async function onRequestPost(context) {
     return err('Invalid or missing collection.');
   }
 
+  // Allow one-time bootstrap only when no admins exist.
+  if (action === 'bootstrap_admin' && collection === 'admins') {
+    const admins = await kvGet(env, 'admins');
+    if (admins.length > 0) return err('Bootstrap already completed.', 409);
+    if (!body.admin?.email || !body.admin?.password) return err('Missing bootstrap admin credentials.');
+
+    const firstAdmin = {
+      email: body.admin.email,
+      password: body.admin.password,
+      role: 'super_admin',
+      addedAt: new Date().toISOString(),
+    };
+
+    await kvPut(env, 'admins', [firstAdmin]);
+    return json({ ok: true });
+  }
+
+  // Auth check for all regular writes
+  if (!(await isAuthorized(env, request))) {
+    return err('Unauthorized. Provide a valid admin token.', 401);
+  }
+
   // ── Singular value stores (routine, settings, subjects) ──
   if (['routine', 'settings', 'subjects'].includes(collection)) {
     if (action === 'set') {
@@ -135,13 +152,6 @@ export async function onRequestPost(context) {
       return json({ ok: true });
     }
     if (action === 'verify') {
-      return json({ ok: true });
-    }
-    if (action === 'restore_defaults') {
-      // Just delete all the keys entirely to trigger re-seeding next time
-      for (const col of VALID_COLLECTIONS) {
-        if (col !== 'admins') await binding.delete(col);
-      }
       return json({ ok: true });
     }
     return err('For ' + collection + ', use action "set" with a "data" field.');
@@ -173,7 +183,6 @@ export async function onRequestPost(context) {
     }
 
     case 'set': {
-      // Wholesale replace (used by clearDemoData, bulk operations)
       await kvPut(env, collection, body.data);
       return json({ ok: true });
     }
