@@ -7,7 +7,7 @@
 .statsGrid { 
   display: grid; 
   grid-template-columns: repeat(4, 1fr); 
-  grid-auto-rows: 140px; /* Base unified height for bentos */
+  grid-auto-rows: 124px; /* Base unified height for bentos */
   gap: var(--sp-lg); 
 }
 
@@ -32,26 +32,26 @@
 .statCard:hover::before { opacity: 0.15; }
 
 .statIconWrap {
-  width: 48px; height: 48px; border-radius: var(--rad-md); 
+  width: 42px; height: 42px; border-radius: var(--rad-md); 
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.3s ease;
 }
 .statCard:hover .statIconWrap { transform: scale(1.1) rotate(-5deg); }
-.statIcon { font-size: 1.5rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+.statIcon { font-size: 1.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
 
 .statContent { display: flex; flex-direction: column; gap: var(--sp-xs); }
-.statCount { font-family: var(--font-display); font-weight: 800; font-size: 2.2rem; color: var(--text-primary); line-height: 1; letter-spacing: -0.04em; }
+.statCount { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; color: var(--text-primary); line-height: 1; letter-spacing: -0.03em; }
 .statLabel { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* Bento Sizing Rules */
 .bentoLarge { grid-column: span 2; grid-row: span 2; }
-.bentoLarge .statCount { font-size: 4rem; }
-.bentoLarge .statIconWrap { width: 64px; height: 64px; border-radius: var(--rad-lg); }
-.bentoLarge .statIcon { font-size: 2rem; }
+.bentoLarge .statCount { font-size: 3rem; }
+.bentoLarge .statIconWrap { width: 54px; height: 54px; border-radius: var(--rad-lg); }
+.bentoLarge .statIcon { font-size: 1.6rem; }
 .bentoWide { grid-column: span 2; grid-row: span 1; flex-direction: row; align-items: center; }
 .bentoWide .statContent { flex: 1; align-items: flex-end; }
 .bentoTall { grid-column: span 1; grid-row: span 2; }
-.bentoTall .statCount { font-size: 3rem; margin-top: auto; }
+.bentoTall .statCount { font-size: 2.3rem; margin-top: auto; }
 .bentoMedium, .bentoSmall { grid-column: span 1; grid-row: span 1; }
 
 /* Section Generic Definitions */
@@ -59,7 +59,7 @@
   display: flex; align-items: center; gap: var(--sp-md);
   margin-bottom: var(--sp-lg); position: relative;
 }
-.sectionTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; margin: 0; color: var(--text-primary); letter-spacing: -0.02em; }
+.sectionTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; margin: 0; color: var(--text-primary); letter-spacing: -0.02em; }
 .sectionIcon { width: 48px; height: 48px; object-fit: contain; position: absolute; left: -40px; top: -16px; transform: rotate(-10deg); opacity: 0.8; pointer-events: none;}
 
 /* Quick Actions */
@@ -102,7 +102,7 @@
 .field { display: flex; flex-direction: column; gap: var(--sp-sm); }
 .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase; }
 .field input {
-  padding: 14px 16px; border: 2px solid var(--border-light);
+  padding: 12px 14px; border: 2px solid var(--border-light);
   border-radius: var(--rad-md); background: var(--surface-1);
   font-size: 0.95rem; color: var(--text-primary); outline: none;
   font-family: var(--ifm-font-family-base); transition: all 0.2s ease;

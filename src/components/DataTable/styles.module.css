@@ -17,10 +17,10 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 }
 .tableMeta { display: flex; align-items: center; gap: var(--sp-md); }
-.tableTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--text-primary); margin: 0; letter-spacing: -0.02em; }
+.tableTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--text-primary); margin: 0; letter-spacing: -0.01em; }
 .countBadge { 
   font-size: 0.8rem; color: var(--ifm-color-primary); font-weight: 700; 
-  padding: var(--sp-sm) var(--sp-md); background: rgba(99,102,241,0.1); border-radius: var(--rad-full); 
+  padding: 6px 12px; background: rgba(99,102,241,0.1); border-radius: var(--rad-full); 
 }
 
 /* Search Bar */
@@ -29,9 +29,9 @@
 }
 .searchIcon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1rem; opacity: 0.5; pointer-events: none; }
 .searchInput {
-  width: 100%; padding: 12px 16px 12px 42px; border: 2px solid var(--glass-border);
+  width: 100%; padding: 10px 14px 10px 40px; border: 2px solid var(--glass-border);
   border-radius: var(--rad-md); background: rgba(255,255,255,0.4);
-  font-size: 0.95rem; color: var(--text-primary); transition: all 0.2s ease;
+  font-size: 0.9rem; color: var(--text-primary); transition: all 0.2s ease;
   font-family: inherit;
 }
 :global([data-theme="dark"]) .searchInput { background: rgba(0,0,0,0.2); }
@@ -72,7 +72,7 @@
 
 /* Cells & Typo */
 .th, .td { padding-right: var(--sp-md); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.td { font-size: 0.95rem; color: var(--text-primary); font-weight: 500;}
+.td { font-size: 0.9rem; color: var(--text-primary); font-weight: 500;}
 .cellText { 
   display: -webkit-box; overflow: hidden; text-overflow: ellipsis; 
   line-clamp: 2; -webkit-line-clamp: 2; 

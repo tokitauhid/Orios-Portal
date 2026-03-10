@@ -6,9 +6,9 @@
   --sp-xs: 4px;
   --sp-sm: 8px;
   --sp-md: 16px;
-  --sp-lg: 24px;
-  --sp-xl: 32px;
-  --sp-2xl: 48px;
+  --sp-lg: 20px;
+  --sp-xl: 28px;
+  --sp-2xl: 36px;
 
   /* Strict Radii */
   --rad-sm: 8px;
@@ -18,7 +18,7 @@
 
   /* System Metrics */
   --nav-height: var(--ifm-navbar-height, 60px);
-  --sidebar-w: 280px;
+  --sidebar-w: 250px;
 
   /* Glassmorphism Defaults */
   --glass-bg: rgba(255, 255, 255, 0.7);
@@ -78,8 +78,8 @@
   gap: var(--sp-md);
   flex-shrink: 0;
 }
-.sidebarLogo { font-size: 1.8rem; line-height: 1; }
-.sidebarTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--text-primary); letter-spacing: -0.02em; }
+.sidebarLogo { font-size: 1.5rem; line-height: 1; }
+.sidebarTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--text-primary); letter-spacing: -0.02em; }
 
 .navLabel {
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
@@ -100,8 +100,8 @@
 
 .navItem {
   display: flex; align-items: center; gap: var(--sp-md);
-  padding: var(--sp-md); border-radius: var(--rad-md);
-  font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
+  padding: 12px var(--sp-md); border-radius: var(--rad-md);
+  font-size: 0.88rem; font-weight: 600; color: var(--text-secondary);
   text-decoration: none; position: relative; overflow: hidden;
   transition: all 0.2s ease;
 }
@@ -148,17 +148,17 @@
 .main {
   flex: 1; min-width: 0;
   display: flex; flex-direction: column;
-  padding: var(--sp-lg) var(--sp-2xl) var(--sp-2xl) 0; /* Align top padding with sidebar top margin, 0 left since sidebar has right margin */
+  padding: var(--sp-lg) var(--sp-xl) var(--sp-xl) 0; /* Align top padding with sidebar top margin, 0 left since sidebar has right margin */
 }
 
 /* Page Header */
 .pageHeader {
   display: flex; flex-direction: column; justify-content: center;
   padding: 0 0 var(--sp-lg);
-  min-height: 60px; /* Aligns visually near sidebar header */
+  min-height: 52px; /* Aligns visually near sidebar header */
   position: relative;
 }
-.pageTitle { font-family: var(--font-display); font-weight: 800; font-size: 2.2rem; margin: 0; color: var(--text-primary); letter-spacing: -0.04em; line-height: 1; }
+.pageTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.75rem; margin: 0; color: var(--text-primary); letter-spacing: -0.03em; line-height: 1.1; }
 .headerGlow { position: absolute; top: -50px; left: 0%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%); border-radius: var(--rad-full); pointer-events: none; z-index: -1; }
 
 /* The injection point for Dashboard/Tables */
