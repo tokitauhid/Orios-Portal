@@ -68,113 +68,169 @@ export default function AdminForm({ isOpen, onClose, onSubmit, title, fields = [
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>{title}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+    <div className={`${styles.overlay} ${isOpen ? styles.open : ''}`} onClick={onClose}>
+      <div 
+        className={`${styles.drawer} ${isOpen ? styles.open : ''}`} 
+        onClick={e => e.stopPropagation()}
+      >
+        <div className={styles.drawerHeader}>
+          <h2 className={styles.drawerTitle}>{title}</h2>
+          <button className={styles.closeBtn} onClick={onClose} title="Close (ESC)">×</button>
         </div>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formGrid}>
-            {fields.map(field => (
-              <div key={field.name} className={`${styles.fieldGroup} ${field.fullWidth ? styles.fullWidth : ''}`}>
-                <label className={styles.label}>{field.label}</label>
-                {field.type === 'select' ? (
-                  <select
-                    className={styles.input}
-                    value={formData[field.name] || ''}
-                    onChange={e => handleChange(field.name, e.target.value)}
-                    required={field.required}
-                  >
-                    <option value="">Select...</option>
-                    {(field.options || []).map(opt => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                ) : field.type === 'textarea' ? (
-                  <textarea
-                    className={`${styles.input} ${styles.textarea}`}
-                    value={formData[field.name] || ''}
-                    onChange={e => handleChange(field.name, e.target.value)}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                    rows={3}
-                  />
-                ) : field.type === 'tags' ? (
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={Array.isArray(formData[field.name]) ? formData[field.name].join(', ') : formData[field.name] || ''}
-                    onChange={e => handleArrayChange(field.name, e.target.value)}
-                    placeholder={field.placeholder || 'tag1, tag2, tag3'}
-                  />
-                ) : field.type === 'file' ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <input
-                      type="file"
+
+        <div className={styles.drawerContent}>
+          <form className={styles.form} onSubmit={handleSubmit} id="admin-form">
+            <div className={styles.formGrid}>
+              {fields.map((field) => (
+                <div key={field.name} className={`${styles.fieldGroup} ${field.fullWidth ? styles.fullWidth : ''}`}>
+                  <label htmlFor={field.name} className={styles.label}>
+                    {field.label} {field.required && <span className={styles.required}>*</span>}
+                  </label>
+                  
+                  {field.type === 'select' ? (
+                    <select
                       className={styles.input}
-                      onChange={e => {
-                        const file = e.target.files[0];
-                        if (!file) return;
-
-                        if (file.size > 50 * 1024 * 1024) {
-                          showToast('File is too large! Max allowed size is 50MB.', 'warning', 5000);
-                          e.target.value = '';
-                          return;
-                        }
-
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          const base64 = event.target.result;
-                          const kb = file.size / 1024;
-                          const sizeStr = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb.toFixed(1) + ' KB';
-                          
-                          let ext = file.name.split('.').pop().toLowerCase();
-                          let fileType = 'other';
-                          let icon = '📁';
-                          if (['pdf'].includes(ext)) { fileType = 'pdf'; icon = '📄'; }
-                          else if (['zip', 'rar'].includes(ext)) { fileType = 'zip'; icon = '📦'; }
-                          else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) { fileType = 'image'; icon = '🖼️'; }
-                          else if (['doc', 'docx'].includes(ext)) { fileType = 'doc'; icon = '📄'; }
-
-                          setFormData(prev => ({
-                            ...prev,
-                            [field.name]: base64,
-                            name: prev.name || file.name,
-                            title: prev.title || file.name.split('.')[0],
-                            size: prev.size || sizeStr,
-                            type: prev.type || fileType,
-                            format: prev.format || ext.toUpperCase(),
-                            icon: prev.icon || icon,
-                            url: prev.url ? prev.url : base64
-                          }));
-                        };
-                        reader.readAsDataURL(file);
-                      }}
-                      required={field.required && !formData[field.name]}
+                      value={formData[field.name] || ''}
+                      onChange={e => handleChange(field.name, e.target.value)}
+                      required={field.required}
+                    >
+                      <option value="">Select...</option>
+                      {(field.options || []).map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : field.type === 'textarea' ? (
+                    <textarea
+                      className={`${styles.input} ${styles.textarea}`}
+                      value={formData[field.name] || ''}
+                      onChange={e => handleChange(field.name, e.target.value)}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      rows={4}
                     />
-                    {formData[field.name] && <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 'bold' }}>✅ File attached properly</span>}
-                  </div>
-                ) : (
-                  <input
-                    type={field.type || 'text'}
-                    className={styles.input}
-                    value={formData[field.name] || ''}
-                    onChange={e => handleChange(field.name, e.target.value)}
-                    placeholder={field.placeholder}
-                    required={field.required}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className={styles.formActions}>
-            <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>
-            <button type="submit" className={styles.submitBtn} disabled={loading}>
-              {loading ? 'Saving...' : (initialData ? 'Update' : 'Create')}
-            </button>
-          </div>
-        </form>
+                  ) : field.type === 'tags' ? (
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={Array.isArray(formData[field.name]) ? formData[field.name].join(', ') : formData[field.name] || ''}
+                      onChange={e => handleArrayChange(field.name, e.target.value)}
+                      placeholder={field.placeholder || 'tag1, tag2, tag3'}
+                    />
+                  ) : field.type === 'file' ? (
+                    <div className={styles.fileWrap}>
+                      <input
+                        type="file"
+                        className={styles.input}
+                        onChange={e => {
+                          const file = e.target.files[0];
+                          if (!file) return;
+
+                          if (file.size > 25 * 1024 * 1024) {
+                            showToast('File is too large! Max allowed size is 25MB.', 'warning', 5000);
+                            e.target.value = '';
+                            return;
+                          }
+
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const base64 = event.target.result;
+                            const kb = file.size / 1024;
+                            const sizeStr = kb > 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb.toFixed(1) + ' KB';
+                            
+                            let ext = file.name.split('.').pop().toLowerCase();
+                            let fileType = 'other';
+                            let icon = '📁';
+                            if (['pdf'].includes(ext)) { fileType = 'pdf'; icon = '📄'; }
+                            else if (['zip', 'rar'].includes(ext)) { fileType = 'zip'; icon = '📦'; }
+                            else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) { fileType = 'image'; icon = '🖼️'; }
+                            else if (['doc', 'docx'].includes(ext)) { fileType = 'doc'; icon = '📄'; }
+
+                            const titleWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                            const autoTags = titleWithoutExt.split(/[\s-_]+/).filter(t => t.length > 2).map(t => t.toLowerCase());
+
+                            setFormData(prev => {
+                              const updates = {
+                                ...prev,
+                                [field.name]: base64,
+                                name: prev.name || file.name,
+                                title: prev.title || titleWithoutExt,
+                                size: prev.size || sizeStr,
+                                type: prev.type || fileType,
+                                format: prev.format || ext.toUpperCase(),
+                                icon: prev.icon || icon,
+                                url: prev.url ? prev.url : base64
+                              };
+
+                              if (fields.some(f => f.name === 'tags') && (!updates.tags || updates.tags.length === 0)) {
+                                updates.tags = autoTags;
+                              }
+
+                              return updates;
+                            });
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                        required={field.required && !formData[field.name]}
+                      />
+                      {formData[field.name] && <span className={styles.fileSuccess}>✅ File attached properly</span>}
+                    </div>
+                  ) : field.type === 'select-with-custom' ? (
+                    <div className={styles.customSelectWrap}>
+                      <select
+                        className={styles.input}
+                        style={{ flex: '1 1 150px' }}
+                        value={field.options.includes(formData[field.name]) ? formData[field.name] : (formData[field.name] ? 'custom' : '')}
+                        onChange={e => {
+                          if (e.target.value !== 'custom') {
+                            handleChange(field.name, e.target.value);
+                          } else {
+                            handleChange(field.name, '');
+                          }
+                        }}
+                        required={field.required && !formData[field.name]}
+                      >
+                        <option value="">Select...</option>
+                        {(field.options || []).map(opt => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                        <option value="custom">Other (Custom)</option>
+                      </select>
+                      {(!field.options.includes(formData[field.name]) && formData[field.name] !== undefined) && (
+                        <input
+                          type="text"
+                          className={styles.input}
+                          style={{ flex: '1 1 150px' }}
+                          value={formData[field.name] || ''}
+                          onChange={e => handleChange(field.name, e.target.value)}
+                          placeholder="Type custom value..."
+                          required={field.required}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <input
+                      type={field.type || 'text'}
+                      className={styles.input}
+                      value={formData[field.name] || ''}
+                      onChange={e => handleChange(field.name, e.target.value)}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </form>
+        </div>
+
+        <div className={styles.drawerFooter}>
+          <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={loading}>
+            Cancel
+          </button>
+          <button type="submit" form="admin-form" className={styles.submitBtn} disabled={loading}>
+            {loading ? 'Saving...' : (initialData ? 'Update Item' : 'Create Item')}
+          </button>
+        </div>
       </div>
     </div>
   );

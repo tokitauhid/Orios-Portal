@@ -22,10 +22,14 @@ const API_BASE = '/api/data';
 // ── API availability (cached) ──
 let _apiAvailable = null;
 
+function getAPIUrl(basePath) {
+  return basePath;
+}
+
 async function isApiAvailable() {
   if (_apiAvailable !== null) return _apiAvailable;
   try {
-    const res = await fetch(`${API_BASE}?collection=settings`, { method: 'GET' });
+    const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { method: 'GET', cache: 'no-store' });
     _apiAvailable = res.ok || res.status === 400;
     return _apiAvailable;
   } catch {
@@ -73,7 +77,7 @@ async function saveAdminStore(admins) {
   // Also sync to KV
   if (await isApiAvailable()) {
     try {
-      await fetch(API_BASE, {
+      await fetch(getAPIUrl(API_BASE), {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ action: 'set', collection: 'admins', data: admins }),
@@ -94,7 +98,7 @@ export async function signIn(email, password) {
 
   if (await isApiAvailable()) {
     // Authenticate against KV
-    const res = await fetch(API_BASE, {
+    const res = await fetch(getAPIUrl(API_BASE), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,7 +114,7 @@ export async function signIn(email, password) {
     }
     
     // Auth succeeded! Fetch admin details (without password obviously)
-    const adminsRes = await fetch(`${API_BASE}?collection=admins`);
+    const adminsRes = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), { cache: 'no-store' });
     const admins = await adminsRes.json();
     const admin = admins.find(a => a.email === email);
     if (!admin) throw new Error('Admin not found in directory.');
@@ -141,8 +145,8 @@ export async function signIn(email, password) {
 
   // Store user info
   localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-  sessionStorage.setItem('orios_admin_verified', 'true');
-  sessionStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem('orios_admin_verified', 'true');
+  localStorage.setItem(TOKEN_KEY, token);
 
   return user;
 }
@@ -152,8 +156,8 @@ export async function signIn(email, password) {
  */
 export function signOut() {
   localStorage.removeItem(AUTH_KEY);
-  sessionStorage.removeItem('orios_admin_verified');
-  sessionStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem('orios_admin_verified');
+  localStorage.removeItem(TOKEN_KEY);
 }
 
 /**
@@ -189,7 +193,7 @@ export async function isSuperAdmin(email) {
 export async function getAdmins() {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(`${API_BASE}?collection=admins`);
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), { cache: 'no-store' });
       if (res.ok) return await res.json();
     } catch { /* fall back */ }
   }
@@ -202,7 +206,7 @@ export async function getAdmins() {
  */
 export async function addAdmin(email, password, role = 'admin') {
   if (await isApiAvailable()) {
-    const res = await fetch(API_BASE, {
+    const res = await fetch(getAPIUrl(API_BASE), {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({ action: 'add_admin', collection: 'admins', admin: { email, password, role, addedAt: new Date().toISOString() } }),
@@ -224,7 +228,7 @@ export async function addAdmin(email, password, role = 'admin') {
  */
 export async function removeAdmin(email) {
   if (await isApiAvailable()) {
-    const res = await fetch(API_BASE, {
+    const res = await fetch(getAPIUrl(API_BASE), {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({ action: 'remove_admin', collection: 'admins', email }),
@@ -244,7 +248,7 @@ export async function removeAdmin(email) {
  */
 export async function changePassword(email, oldPassword, newPassword) {
   if (await isApiAvailable()) {
-    const res = await fetch(API_BASE, {
+    const res = await fetch(getAPIUrl(API_BASE), {
       method: 'POST',
       headers: authHeaders(),
       body: JSON.stringify({ action: 'change_password', collection: 'admins', email, oldPassword, newPassword }),

@@ -3,18 +3,25 @@ import Layout from '@theme/Layout';
 import NoticeBanner from '@site/src/components/NoticeBanner';
 import CountdownTimer from '@site/src/components/CountdownTimer';
 import FeatureCard from '@site/src/components/FeatureCard';
-import RoutineViewer from '@site/src/components/RoutineViewer';
 import SearchOverlay from '@site/src/components/SearchOverlay';
 import { getSettings, getRoutine, autoUpdateStatuses, getAll } from '@site/src/auth/db';
 import styles from './index.module.css';
 
-// Get upcoming events sorted by date
-function getUpcomingEvents(eventList, count = 3) {
-  const now = new Date();
-  return eventList
-    .filter(e => new Date(e.date) > now)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, count);
+// Get upcoming deadlines across all collections (Doom Clock format)
+function getGlobalCountdowns(events, assignments, labReports, count = 3) {
+  const now = new Date().getTime();
+  const mapped = [
+    ...events
+      .filter(e => new Date(e.date).getTime() > now)
+      .map(e => ({ id: `ev-${e.id}`, title: e.title, subject: 'Event/Exam', date: e.date, type: e.type, icon: e.type === 'exam' ? '📝' : '🎉', link: '/calendar' })),
+    ...assignments
+      .filter(a => a.status === 'pending' && new Date(a.dueDate).getTime() > now)
+      .map(a => ({ id: `asgn-${a.id}`, title: a.title, subject: a.subject, date: a.dueDate, type: 'assignment', icon: '📋', link: '/assignments' })),
+    ...labReports
+      .filter(l => l.status === 'pending' && new Date(l.dueDate).getTime() > now)
+      .map(l => ({ id: `lab-${l.id}`, title: l.title, subject: l.subject, date: l.dueDate, type: 'lab report', icon: '🔬', link: '/lab-reports' }))
+  ];
+  return mapped.sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, count);
 }
 
 // Get next exam
@@ -76,28 +83,41 @@ export default function Home() {
   const [assignments, setAssignments] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [files, setFiles] = useState([]);
+  const [labReports, setLabReports] = useState([]);
 
   useEffect(() => {
     async function init() {
       try {
-        await autoUpdateStatuses();
-        const settings = await getSettings();
+        try { await autoUpdateStatuses(); } catch (e) { console.warn("Auto-status skipped:", e); }
+        
+        const [settings, savedRoutine, noticesData, eventsData, notesData, asgnsData, teachersData, filesData, labsData] = await Promise.all([
+          getSettings(),
+          getRoutine(),
+          getAll('notices'),
+          getAll('events'),
+          getAll('notes'),
+          getAll('assignments'),
+          getAll('teachers'),
+          getAll('files'),
+          getAll('labReports')
+        ]);
+        
         if (settings.welcomeText) setWelcomeText(settings.welcomeText);
-        const savedRoutine = await getRoutine();
         if (savedRoutine?.days) setLiveRoutine(savedRoutine);
 
-        setNotices(await getAll('notices'));
-        setEvents(await getAll('events'));
-        setNotes(await getAll('notes'));
-        setAssignments(await getAll('assignments'));
-        setTeachers(await getAll('teachers'));
-        setFiles(await getAll('files'));
-      } catch { }
+        setNotices(noticesData);
+        setEvents(eventsData);
+        setNotes(notesData);
+        setAssignments(asgnsData);
+        setTeachers(teachersData);
+        setFiles(filesData);
+        setLabReports(labsData);
+      } catch (err) { console.error("Home initialization failed:", err); }
     }
     init();
   }, []);
 
-  const upcomingEvents = getUpcomingEvents(events);
+  const upcomingEvents = getGlobalCountdowns(events, assignments, labReports);
   const nextExam = getNextExam(events);
   const todayClasses = getTodayClasses(liveRoutine);
   const pendingAssignments = getPendingCount(assignments);
@@ -164,8 +184,8 @@ export default function Home() {
               <span className={styles.statLabel}>Pending Tasks</span>
             </div>
           </a>
-          <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className={styles.statIcon}>📅</span>
+          <a href="/doom-clock" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <span className={styles.statIcon}>⏳</span>
             <div>
               <span className={styles.statNumber}>{upcomingEvents.length}</span>
               <span className={styles.statLabel}>Upcoming Events</span>
@@ -184,21 +204,24 @@ export default function Home() {
         <section className={styles.section}>
           <div className={styles.sectionHeader} style={{ position: 'relative' }}>
             <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', right: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>⏳ Upcoming Countdowns</h2>
-            <p className={styles.sectionDesc}>Stay on top of exams and important dates</p>
+            <h2 className={styles.sectionTitle}>⏳ Upcoming Events</h2>
+            <p className={styles.sectionDesc}>Active countdowns for your next few events</p>
           </div>
           <div className={styles.countdownGrid}>
             {nextExam && (
-              <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
+              <a href="/calendar" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
+              </a>
             )}
             {upcomingEvents.map(event => (
-              <CountdownTimer
-                key={event.id}
-                title={event.title}
-                targetDate={event.date}
-                type={event.type}
-                icon={event.type === 'exam' ? '📝' : event.type === 'assignment' ? '📋' : '🎉'}
-              />
+              <a key={event.id} href={event.link} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                <CountdownTimer
+                  title={event.title}
+                  targetDate={event.date}
+                  type={event.type}
+                  icon={event.icon}
+                />
+              </a>
             ))}
           </div>
         </section>

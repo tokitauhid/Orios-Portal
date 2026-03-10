@@ -1,20 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import AdminLayout from '@site/src/components/AdminLayout';
-import DataTable from '@site/src/components/DataTable';
-import AdminForm from '@site/src/components/AdminForm';
-import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
+import React from 'react';
+import AdminCrud from '@site/src/components/AdminCrud';
 import styles from './shared.module.css';
 
 const fields = [
-  { name: 'fileData', label: 'Attachment (Max 50MB)', type: 'file' },
+  { name: 'fileData', label: 'Attachment (Max 25MB)', type: 'file' },
   { name: 'title', label: 'Title', type: 'text', required: true },
-  { name: 'subject', label: 'Subject', type: 'text', required: true },
-  { name: 'labNumber', label: 'Lab Number', type: 'number', required: true },
+  { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
   { name: 'date', label: 'Date', type: 'date', required: true },
   { name: 'dueDate', label: 'Due Date', type: 'date', required: true },
-  { name: 'status', label: 'Status', type: 'select', required: true, options: ['pending', 'submitted', 'graded'] },
-  { name: 'grade', label: 'Grade', type: 'text', placeholder: 'A, B+, etc.' },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true },
 ];
 
@@ -28,24 +21,38 @@ const columns = [
   }},
 ];
 
-export default function AdminLabReports() {
-  const [data, setData] = useState([]);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const load = async () => { setData(await getAll('labReports')); };
-  useEffect(() => { load(); }, []);
+import { getAll } from '@site/src/auth/db';
 
-  const handleSubmit = async (formData) => {
-    if (editing) { await updateItem('labReports', editing.id, formData); }
-    else { await addItem('labReports', formData); }
-    setEditing(null); await load();
-  };
+export default function AdminLabReports() {
+  const [reports, setReports] = React.useState([]);
+  React.useEffect(() => {
+    getAll('labReports').then(setReports);
+  }, []);
 
   return (
-    <Layout title="Manage Lab Reports — Admin"><AdminLayout title="🔬 Manage Lab Reports">
-      <button className={styles.addBtn} onClick={() => { setEditing(null); setFormOpen(true); }}>➕ Add Lab Report</button>
-      <DataTable columns={columns} data={data} onEdit={r => { setEditing(r); setFormOpen(true); }} onDelete={async r => { await deleteItem('labReports', r.id); await load(); }} searchKeys={['title', 'subject', 'status']} />
-      <AdminForm isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} title={editing ? 'Edit Lab Report' : 'Add Lab Report'} fields={fields} initialData={editing} />
-    </AdminLayout></Layout>
+    <AdminCrud
+      title="Manage Lab Reports"
+      icon="🔬"
+      collection="labReports"
+      fields={fields}
+      columns={columns}
+      searchKeys={['title', 'subject', 'status']}
+      addLabel="Add Lab Report"
+      onSubmitModifier={(data) => {
+        if (!data.status) data.status = 'pending';
+
+        // Auto-revert if deadline extended
+        if (data.status === 'overdue' && data.dueDate) {
+          const target = data.dueDate.includes('T') ? new Date(data.dueDate) : new Date(data.dueDate + 'T23:59:59');
+          if (target.getTime() > new Date().getTime()) data.status = 'pending';
+        }
+
+        if (!data.labNumber) {
+          const subjectReports = reports.filter(r => r.subject === data.subject);
+          data.labNumber = subjectReports.length + 1;
+        }
+        return data;
+      }}
+    />
   );
 }

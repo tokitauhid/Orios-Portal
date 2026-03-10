@@ -23,10 +23,10 @@ export default function LabReportsPage() {
   useEffect(() => {
     async function init() {
       try { 
-        await autoUpdateStatuses(); 
+        try { await autoUpdateStatuses(); } catch (e) {} 
         const items = await getAll('labReports');
         setData(items.map(r => ({ ...r, status: computeStatus(r) })));
-      } catch {}
+      } catch (err) { console.error(err); }
     }
     init();
   }, []);
