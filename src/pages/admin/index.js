@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '@theme/Layout';
 import AdminLayout from '@site/src/components/AdminLayout';
-import { getAll, getSettings, saveSettings, clearDemoData } from '@site/src/auth/db';
+import { getAll, getSettings, saveSettings } from '@site/src/auth/db';
 import styles from './dashboard.module.css';
 
 const statCards = [
-  { key: 'notices', label: 'Notices', icon: '📢', color: '#f59e0b' },
-  { key: 'events', label: 'Events', icon: '📅', color: '#6366f1' },
-  { key: 'assignments', label: 'Assignments', icon: '📋', color: '#10b981' },
-  { key: 'labReports', label: 'Lab Reports', icon: '🔬', color: '#a855f7' },
-  { key: 'notes', label: 'Notes', icon: '📝', color: '#ec4899' },
-  { key: 'teachers', label: 'Teachers', icon: '👨‍🏫', color: '#06b6d4' },
-  { key: 'files', label: 'Files', icon: '📁', color: '#f97316' },
+  { key: 'notices', label: 'Notices', icon: '📢', color: '#f59e0b', bentoClass: 'bentoLarge' },
+  { key: 'events', label: 'Events', icon: '📅', color: '#6366f1', bentoClass: 'bentoMedium' },
+  { key: 'assignments', label: 'Assignments', icon: '📋', color: '#10b981', bentoClass: 'bentoMedium' },
+  { key: 'labReports', label: 'Lab Reports', icon: '🔬', color: '#a855f7', bentoClass: 'bentoSmall' },
+  { key: 'notes', label: 'Notes', icon: '📝', color: '#ec4899', bentoClass: 'bentoSmall' },
+  { key: 'teachers', label: 'Teachers', icon: '👨‍🏫', color: '#06b6d4', bentoClass: 'bentoWide' },
+  { key: 'files', label: 'Files', icon: '📁', color: '#f97316', bentoClass: 'bentoTall' },
 ];
 
 const quickActions = [
@@ -30,7 +30,7 @@ export default function AdminDashboard() {
   const [counts, setCounts] = useState({});
   const [settings, setSettings] = useState({ welcomeText: '' });
   const [savedSettings, setSavedSettings] = useState(false);
-  const [demoCleared, setDemoCleared] = useState(false);
+  const [checkingApi, setCheckingApi] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -42,8 +42,8 @@ export default function AdminDashboard() {
         } catch { results[card.key] = 0; }
       }
       setCounts(results);
-      setSettings(await getSettings());
-      setDemoCleared(localStorage.getItem('orios_demo_cleared') === 'true');
+      const remoteSettings = await getSettings();
+      setSettings(remoteSettings);
     }
     init();
   }, []);
@@ -54,23 +54,73 @@ export default function AdminDashboard() {
     setTimeout(() => setSavedSettings(false), 2000);
   };
 
-  const handleClearDemo = async () => {
-    if (window.confirm("WARNING: This will delete ALL notices, events, assignments, lab reports, notes, teachers, files, and the routine!\\n\\nAre you absolutely sure you want to turn off demo mode?")) {
-      await clearDemoData();
-      window.location.reload();
+  const handleCheckApi = async () => {
+    setCheckingApi(true);
+    try {
+      const res = await fetch('/api/data?collection=settings');
+      if (res.status === 500) {
+        alert('❌ KV binding is not found in Cloudflare. Check kv_config.js and your environment binding.');
+      } else if (res.ok || res.status === 400 || res.status === 401) {
+        alert('✅ API is reachable and KV namespace is properly bound!');
+      } else {
+        alert('⚠️ Unexpected response from API: ' + res.status);
+      }
+    } catch (e) {
+      alert('❌ API is entirely unreachable. Are you running the Cloudflare worker backend locally?');
+    } finally {
+      setCheckingApi(false);
     }
   };
 
   return (
     <Layout title="Admin Dashboard — Orios Class" description="Admin dashboard">
       <AdminLayout title="📊 Dashboard">
+        {/* Stats Section */}
+        <section>
+          <div className={styles.statsGrid}>
+            {statCards.map((card, i) => (
+              <a
+                key={card.key}
+                href={`/admin/${card.key === 'labReports' ? 'lab-reports' : card.key === 'notes' ? 'notes-manager' : card.key === 'teachers' ? 'teachers-manager' : card.key === 'files' ? 'files-manager' : card.key}`}
+                className={`${styles.statCard} ${styles[card.bentoClass]}`}
+                style={{ borderTopColor: card.color, '--card-color': card.color }}
+              >
+                <div className={styles.statIconWrap} style={{ background: `${card.color}1A`, color: card.color }}>
+                  <span className={styles.statIcon}>{card.icon}</span>
+                </div>
+                <div className={styles.statContent}>
+                  <span className={styles.statCount}>{counts[card.key] ?? '...'}</span>
+                  <span className={styles.statLabel}>{card.label}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* Quick Actions */}
+        <section>
+          <div className={styles.sectionHeader}>
+            <img src="/img/pucu.png" alt="Pucu" className={styles.sectionIcon} />
+            <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
+          </div>
+          <div className={styles.quickGrid}>
+            {quickActions.map((action, i) => (
+              <a key={action.to} href={action.to} className={styles.quickCard}>
+                <span className={styles.quickIcon}>{action.icon}</span>
+                <span className={styles.quickLabel}>{action.label}</span>
+                <span className={styles.quickArrow}>→</span>
+              </a>
+            ))}
+          </div>
+        </section>
+
         {/* Settings Section */}
         <section className={styles.settingsSection}>
-          <div className={styles.settingsHeader} style={{ position: 'relative' }}>
-            <img src="/img/orio.png" alt="Orio" style={{ position: 'absolute', left: '-40px', top: '-30px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-15deg)', opacity: 0.9 }} />
+          <div className={styles.settingsHeader}>
+            <img src="/img/orio.png" alt="Orio" className={styles.sectionIcon} />
             <h2 className={styles.sectionTitle}>⚙️ Homepage Settings</h2>
             <button className={styles.saveBtn} onClick={handleSaveSettings}>
-              {savedSettings ? '✅ Saved!' : '💾 Save Settings'}
+              {savedSettings ? '✅ Saved!' : '💾 Save'}
             </button>
           </div>
           <div className={styles.settingsGrid}>
@@ -78,54 +128,26 @@ export default function AdminDashboard() {
               <label>Welcome Text</label>
               <input
                 type="text"
-                value={settings.welcomeText}
+                value={settings.welcomeText || ''}
                 onChange={e => setSettings({ ...settings, welcomeText: e.target.value })}
                 placeholder="Semester 3/1"
               />
               <span className={styles.hint}>Displayed below "Welcome to Orios Class" on the homepage.</span>
             </div>
-            {!demoCleared && (
-              <div className={styles.field}>
-                <label className={styles.dangerLabel}>System Data</label>
-                <p className={styles.hint} style={{ margin: '0 0 8px' }}>Remove all dummy populated pre-fill site data in one click.</p>
-                <button className={styles.clearBtn} onClick={handleClearDemo}>
-                  🗑️ Turn Off Demo Mode (Clear All Data)
+            <div className={styles.field}>
+              <label>KV Connectivity Check</label>
+              <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
+                <button 
+                  className={styles.saveBtn} 
+                  style={{ background: 'var(--surface-2)', color: 'var(--text-primary)', border: '1px solid var(--border-light)' }}
+                  onClick={handleCheckApi}
+                  disabled={checkingApi}
+                >
+                  {checkingApi ? '...' : '📡 Check'}
                 </button>
               </div>
-            )}
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className={styles.stats}>
-          {statCards.map((card, i) => (
-            <a
-              key={card.key}
-              href={`/admin/${card.key === 'labReports' ? 'lab-reports' : card.key === 'notes' ? 'notes-manager' : card.key === 'teachers' ? 'teachers-manager' : card.key === 'files' ? 'files-manager' : card.key}`}
-              className={styles.statCard}
-              style={{ animationDelay: `${i * 60}ms`, borderTopColor: card.color }}
-            >
-              <span className={styles.statIcon}>{card.icon}</span>
-              <span className={styles.statCount}>{counts[card.key] ?? '...'}</span>
-              <span className={styles.statLabel}>{card.label}</span>
-            </a>
-          ))}
-        </section>
-
-        {/* Quick Actions */}
-        <section className={styles.quickSection}>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', right: '-50px', top: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(10deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>🚀 Quick Actions</h2>
-          </div>
-          <div className={styles.quickGrid}>
-            {quickActions.map((action, i) => (
-              <a key={action.to} href={action.to} className={styles.quickCard} style={{ animationDelay: `${i * 40}ms` }}>
-                <span className={styles.quickIcon}>{action.icon}</span>
-                <span className={styles.quickLabel}>{action.label}</span>
-                <span className={styles.quickArrow}>→</span>
-              </a>
-            ))}
+              <span className={styles.hint}>Binding name is controlled in kv_config.js and Cloudflare environment.</span>
+            </div>
           </div>
         </section>
       </AdminLayout>

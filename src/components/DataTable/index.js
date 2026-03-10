@@ -35,65 +35,81 @@ export default function DataTable({ columns, data, onEdit, onDelete, searchKeys 
     }
   };
 
+  // Generate dynamic grid-template-columns inline based on column count
+  const gridTemplateColumns = `repeat(${columns.length}, 1fr) 100px`;
+
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.toolbar}>
-        <input
-          type="text"
-          placeholder="🔍 Search..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          className={styles.searchInput}
-        />
-        <span className={styles.count}>{filtered.length} item{filtered.length !== 1 ? 's' : ''}</span>
+    <div className={styles.container}>
+      <div className={styles.tableHeader}>
+        <div className={styles.tableMeta}>
+          <h2 className={styles.tableTitle}>Records</h2>
+          <span className={styles.countBadge}>{filtered.length} items</span>
+        </div>
+        
+        <div className={styles.searchWrap}>
+          <span className={styles.searchIcon}>🔍</span>
+          <input
+            type="text"
+            placeholder="Search all columns..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+          {query && (
+            <button className={styles.clearSearch} onClick={() => setQuery('')}>×</button>
+          )}
+        </div>
       </div>
 
       <div className={styles.tableWrap}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              {columns.map(col => (
-                <th key={col.key} className={styles.th}>{col.label}</th>
-              ))}
-              <th className={styles.th} style={{ width: '120px' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+        <div className={styles.table}>
+          {/* Header Row */}
+          <div className={styles.thead} style={{ gridTemplateColumns }}>
+            {columns.map(col => (
+              <div key={col.key} className={styles.th}>{col.label}</div>
+            ))}
+            <div className={styles.th} style={{ textAlign: 'right' }}>Actions</div>
+          </div>
+
+          {/* Body Rows */}
+          <div className={styles.tbody}>
             {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + 1} className={styles.empty}>
-                  No items found
-                </td>
-              </tr>
+              <div className={styles.empty}>
+                <div className={styles.emptyState}>
+                  <p>No items found matching "{query}"</p>
+                </div>
+              </div>
             ) : (
               filtered.map(row => (
-                <tr key={row.id} className={styles.row}>
+                <div key={row.id} className={styles.row} style={{ gridTemplateColumns }}>
                   {columns.map(col => (
-                    <td key={col.key} className={styles.td}>
+                    <div key={col.key} className={styles.td} data-label={col.label}>
                       {col.render ? col.render(row) : (
                         Array.isArray(row[col.key])
-                          ? row[col.key].join(', ')
-                          : String(row[col.key] || '—')
+                          ? <div className={styles.tagWrap}>{row[col.key].map(t => <span key={t} className={styles.tag}>{t}</span>)}</div>
+                          : <span className={styles.cellText}>{String(row[col.key] || '—')}</span>
                       )}
-                    </td>
+                    </div>
                   ))}
-                  <td className={styles.td}>
+                  <div className={styles.td} data-label="Actions">
                     <div className={styles.actions}>
-                      <button className={styles.editBtn} onClick={() => onEdit(row)} title="Edit">✏️</button>
+                      <button className={styles.actionBtn} onClick={() => onEdit(row)} title="Edit">
+                        <span>✏️</span>
+                      </button>
                       <button
-                        className={`${styles.deleteBtn} ${confirmDelete === row.id ? styles.confirmDelete : ''}`}
+                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
                         onClick={() => handleDelete(row)}
-                        title={confirmDelete === row.id ? 'Click again to confirm' : 'Delete'}
+                        title={confirmDelete === row.id ? 'Confirm?' : 'Delete'}
                       >
-                        {confirmDelete === row.id ? '⚠️ Confirm?' : '🗑️'}
+                        {confirmDelete === row.id ? <span>⚠️</span> : <span>🗑️</span>}
                       </button>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))
             )}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
     </div>
   );

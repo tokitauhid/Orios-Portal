@@ -1,23 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import AdminLayout from '@site/src/components/AdminLayout';
-import DataTable from '@site/src/components/DataTable';
-import AdminForm from '@site/src/components/AdminForm';
-import { getAll, addItem, updateItem, deleteItem } from '@site/src/auth/db';
+import React from 'react';
+import AdminCrud from '@site/src/components/AdminCrud';
 import styles from './shared.module.css';
 
 const fields = [
-  { name: 'fileData', label: 'Upload File (Max 50MB)', type: 'file' },
+  { name: 'fileData', label: 'Upload File (Max 25MB)', type: 'file' },
   { name: 'url', label: 'URL / Link (Auto-fills if file attached)', type: 'text', required: true, placeholder: 'https://...' },
   { name: 'title', label: 'Title', type: 'text', required: true },
-  { name: 'subject', label: 'Subject', type: 'select', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
-  { name: 'type', label: 'Content Type', type: 'select', required: true, options: ['doc', 'image', 'link', 'pdf'] },
-  { name: 'format', label: 'Format', type: 'text', placeholder: 'Auto-detected' },
+  { name: 'subject', label: 'Subject', type: 'select-with-custom', required: true, options: ['Data Structures', 'Physics', 'Mathematics', 'Database Systems', 'Electronics', 'English', 'Chemistry'] },
   { name: 'description', label: 'Description', type: 'textarea', fullWidth: true },
-  { name: 'author', label: 'Author', type: 'text' },
   { name: 'date', label: 'Date', type: 'date' },
   { name: 'tags', label: 'Tags', type: 'tags', placeholder: 'tag1, tag2' },
-  { name: 'icon', label: 'Icon', type: 'select', options: ['📄', '🖼️', '🔗', '📹', '📊'] },
 ];
 
 const columns = [
@@ -28,23 +20,15 @@ const columns = [
 ];
 
 export default function AdminNotes() {
-  const [data, setData] = useState([]);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const load = async () => { setData(await getAll('notes')); };
-  useEffect(() => { load(); }, []);
-
-  const handleSubmit = async (formData) => {
-    if (editing) { await updateItem('notes', editing.id, formData); }
-    else { await addItem('notes', formData); }
-    setEditing(null); await load();
-  };
-
   return (
-    <Layout title="Manage Notes — Admin"><AdminLayout title="📝 Manage Notes">
-      <button className={styles.addBtn} onClick={() => { setEditing(null); setFormOpen(true); }}>➕ Add Note</button>
-      <DataTable columns={columns} data={data} onEdit={r => { setEditing(r); setFormOpen(true); }} onDelete={async r => { await deleteItem('notes', r.id); await load(); }} searchKeys={['title', 'subject', 'author', 'type']} />
-      <AdminForm isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} title={editing ? 'Edit Note' : 'Add Note'} fields={fields} initialData={editing} />
-    </AdminLayout></Layout>
+    <AdminCrud
+      title="Manage Notes"
+      icon="📝"
+      collection="notes"
+      fields={fields}
+      columns={columns}
+      searchKeys={['title', 'subject', 'author', 'type']}
+      addLabel="Add Note"
+    />
   );
 }

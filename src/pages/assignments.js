@@ -23,10 +23,10 @@ export default function AssignmentsPage() {
   useEffect(() => {
     async function init() {
       try { 
-        await autoUpdateStatuses(); 
+        try { await autoUpdateStatuses(); } catch (e) {} 
         const items = await getAll('assignments');
         setData(items.map(a => ({ ...a, status: computeStatus(a) })));
-      } catch {}
+      } catch (err) { console.error(err); }
     }
     init();
   }, []);

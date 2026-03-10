@@ -10,6 +10,7 @@ export default function CalendarPage() {
   const [countryCode, setCountryCode] = useState('BD');
   const [holidays, setHolidays] = useState([]);
   const [events, setEvents] = useState([]);
+  const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'routine'
 
   useEffect(() => {
     async function init() {
@@ -18,7 +19,30 @@ export default function CalendarPage() {
         if (saved?.days) setLiveRoutine(saved);
         const settings = await getSettings();
         if (settings.countryCode) setCountryCode(settings.countryCode);
-        setEvents(await getAll('events'));
+        
+        const evs = await getAll('events');
+        const asgns = await getAll('assignments');
+        const labs = await getAll('labReports');
+
+        const mappedAsgns = asgns.map(a => ({
+          id: `asgn-${a.id}`,
+          title: `Assignment: ${a.title}`,
+          date: a.dueDate,
+          type: 'assignment',
+          description: `Due for ${a.subject}`,
+          color: '#3b82f6'
+        }));
+
+        const mappedLabs = labs.map(l => ({
+          id: `lab-${l.id}`,
+          title: `Lab Report: ${l.title}`,
+          date: l.dueDate,
+          type: 'lab',
+          description: `Due for ${l.subject}`,
+          color: '#6366f1'
+        }));
+
+        setEvents([...evs, ...mappedAsgns, ...mappedLabs]);
       } catch {}
     }
     init();
@@ -46,6 +70,46 @@ export default function CalendarPage() {
 
   const allEvents = [...events, ...holidays];
 
+  // Map routine into events for the calendar view
+  const generateRoutineEvents = () => {
+    if (!liveRoutine || !liveRoutine.schedule) return [];
+    const routineEvents = [];
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const today = new Date();
+    
+    // Generate for next 30 days
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(today.getDate() + i);
+      const dayName = dayNames[d.getDay()];
+      const slots = liveRoutine.schedule[dayName] || [];
+      
+      slots.forEach(slot => {
+        if (slot && slot.subject) {
+          let dateStr = d.toISOString().split('T')[0];
+          if (slot.time) {
+            const parts = slot.time.split(':');
+            const hh = parts[0].padStart(2, '0');
+            const mm = parts[1] || '00';
+            dateStr += `T${hh}:${mm}:00`;
+          }
+          
+          routineEvents.push({
+            id: `routine-${i}-${slot.time}`,
+            title: `${slot.subject}`,
+            date: dateStr,
+            type: slot.type === 'lab' ? 'lab' : 'lecture',
+            description: `Room: ${slot.room} | Teacher: ${slot.teacher}`,
+            color: slot.type === 'lab' ? '#10b981' : '#6366f1'
+          });
+        }
+      });
+    }
+    return routineEvents;
+  };
+
+  const currentDisplayEvents = viewMode === 'routine' ? generateRoutineEvents() : allEvents;
+
   return (
     <Layout title="Calendar — Orios Class" description="Interactive calendar with events and class routine">
       <div className={styles.page}>
@@ -59,8 +123,27 @@ export default function CalendarPage() {
 
         <div className={styles.layout}>
           <div className={styles.calendarCol}>
-            <h2 className={styles.sectionTitle}>📆 Event Calendar</h2>
-            <EventCalendar events={allEvents} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+              <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
+                {viewMode === 'routine' ? '🎒 Routine Calendar' : '📆 Event Calendar'}
+              </h2>
+              <div className={styles.toggleGroup} style={{ margin: 0 }}>
+                <button 
+                  className={`${styles.toggleBtn} ${viewMode === 'calendar' ? styles.toggleActive : ''}`} 
+                  onClick={() => setViewMode('calendar')}
+                >
+                  📆 Events
+                </button>
+                <button 
+                  className={`${styles.toggleBtn} ${viewMode === 'routine' ? styles.toggleActive : ''}`} 
+                  onClick={() => setViewMode('routine')}
+                >
+                  🎒 Routine
+                </button>
+              </div>
+            </div>
+            
+            <EventCalendar events={currentDisplayEvents} />
           </div>
           <div className={styles.eventsCol}>
             <h2 className={styles.sectionTitle}>📌 All Events</h2>
