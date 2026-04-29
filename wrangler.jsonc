@@ -10,5 +10,11 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "orios_data",
+      "id": "d4876686437a463cbe06d396f1d4e2c7"
+    }
   ]
 }
