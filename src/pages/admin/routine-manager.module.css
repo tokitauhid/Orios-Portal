@@ -124,16 +124,17 @@
 }
 .editModal {
   background: var(--surface-0); border-radius: var(--radius-lg); padding: 28px;
-  max-width: 440px; width: 100%; box-shadow: var(--shadow-xl); animation: scaleIn 0.25s ease-out;
+  max-width: 500px; width: 100%; box-shadow: var(--shadow-xl); animation: scaleIn 0.25s ease-out;
 }
 .modalTitle { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; margin: 0 0 20px; }
-.formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field { display: flex; flex-direction: column; gap: 4px; }
+.formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.fieldWide { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
 .field input, .field select {
-  padding: 8px 12px; border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 10px 14px; border: 1.5px solid var(--border-light); border-radius: var(--radius-sm);
   font-size: 0.85rem; background: var(--surface-1); color: var(--text-primary);
-  outline: none; font-family: var(--ifm-font-family-base);
+  outline: none; font-family: var(--ifm-font-family-base); width: 100%; box-sizing: border-box;
 }
 .field input:focus, .field select:focus { border-color: var(--ifm-color-primary); }
 .modalActions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; align-items: center; }

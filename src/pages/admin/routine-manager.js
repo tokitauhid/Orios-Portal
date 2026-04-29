@@ -283,14 +283,14 @@ export default function AdminRoutine() {
             <div className={styles.editModal} onClick={e => e.stopPropagation()}>
               <h3 className={styles.modalTitle}>Edit: {editing.day} — {formatTime(routine.timeSlots[editing.slotIdx])}</h3>
               <div className={styles.formGrid}>
-                <div className={styles.field}><label>Subject</label>
+                <div className={`${styles.field} ${styles.fieldWide}`}><label>Subject</label>
                   <select value={form.subject} onChange={e => setForm({ ...form, subject: e.target.value })}>
                     <option value="">(Clear)</option>
                     {subjects.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
-                <div className={styles.field}><label>Room</label><input type="text" value={form.room} onChange={e => setForm({ ...form, room: e.target.value })} /></div>
-                <div className={styles.field}><label>Teacher</label><input type="text" value={form.teacher} onChange={e => setForm({ ...form, teacher: e.target.value })} /></div>
+                <div className={styles.field}><label>Room</label><input type="text" value={form.room} onChange={e => setForm({ ...form, room: e.target.value })} placeholder="e.g. 301" /></div>
+                <div className={styles.field}><label>Teacher</label><input type="text" value={form.teacher} onChange={e => setForm({ ...form, teacher: e.target.value })} placeholder="Teacher name" /></div>
                 <div className={styles.field}><label>Type</label><select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}><option value="lecture">Lecture</option><option value="lab">Lab</option></select></div>
               </div>
               <div className={styles.modalActions}>

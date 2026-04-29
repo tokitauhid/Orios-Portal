@@ -36,7 +36,7 @@ async function isApiAvailable() {
 }
 
 function authHeaders() {
-  const token = sessionStorage.getItem(TOKEN_KEY) || '';
+  const token = localStorage.getItem(TOKEN_KEY) || '';
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;

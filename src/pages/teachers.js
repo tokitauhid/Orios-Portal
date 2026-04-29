@@ -24,7 +24,7 @@ export default function TeachersPage() {
     const matchQuery = !q ||
       (t.name || '').toLowerCase().includes(q) ||
       (t.department || '').toLowerCase().includes(q) ||
-      (t.subjects || []).some(s => s.toLowerCase().includes(q));
+      (Array.isArray(t.subjects) ? t.subjects : []).some(s => s.toLowerCase().includes(q));
     return matchDept && matchQuery;
   });
 

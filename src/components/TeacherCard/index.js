@@ -20,7 +20,7 @@ export default function TeacherCard({ teacher, delay = 0 }) {
         {teacher.phone && (
           <div className={styles.detailRow}>
             <span className={styles.detailIcon}>📞</span>
-            <span className={styles.detailText}>{teacher.phone}</span>
+            <span className={styles.detailText}>{Array.isArray(teacher.phone) ? teacher.phone.join(', ') : teacher.phone}</span>
           </div>
         )}
         {teacher.office && (
@@ -37,7 +37,7 @@ export default function TeacherCard({ teacher, delay = 0 }) {
         )}
       </div>
       <div className={styles.subjects}>
-        {teacher.subjects.map((s, i) => (
+        {(Array.isArray(teacher.subjects) ? teacher.subjects : (teacher.subjects ? teacher.subjects.split(',').map(s => s.trim()).filter(Boolean) : [])).map((s, i) => (
           <span key={i} className={styles.subjectTag}>{s}</span>
         ))}
       </div>
