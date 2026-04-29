@@ -135,6 +135,16 @@ export default function AdminDashboard() {
               <span className={styles.hint}>Displayed below "Welcome to Orios Class" on the homepage.</span>
             </div>
             <div className={styles.field}>
+              <label>📅 Holiday Calendar (ICS URL)</label>
+              <input
+                type="url"
+                value={settings.icsUrl || ''}
+                onChange={e => setSettings({ ...settings, icsUrl: e.target.value })}
+                placeholder="https://calendar.google.com/calendar/ical/..."
+              />
+              <span className={styles.hint}>Paste a public ICS calendar URL (Google Calendar, Outlook, etc.) to show holidays on the Calendar page.</span>
+            </div>
+            <div className={styles.field}>
               <label>KV Connectivity Check</label>
               <div style={{ display: 'flex', gap: 'var(--sp-sm)' }}>
                 <button 

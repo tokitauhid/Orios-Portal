@@ -7,7 +7,6 @@ import styles from './calendar.module.css';
 
 export default function CalendarPage() {
   const [liveRoutine, setLiveRoutine] = useState({ days: [], timeSlots: [], schedule: {} });
-  const [countryCode, setCountryCode] = useState('BD');
   const [holidays, setHolidays] = useState([]);
   const [events, setEvents] = useState([]);
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'routine'
@@ -18,7 +17,6 @@ export default function CalendarPage() {
         const saved = await getRoutine();
         if (saved?.days) setLiveRoutine(saved);
         const settings = await getSettings();
-        if (settings.countryCode) setCountryCode(settings.countryCode);
         
         const evs = await getAll('events');
         const asgns = await getAll('assignments');
@@ -43,29 +41,66 @@ export default function CalendarPage() {
         }));
 
         setEvents([...evs, ...mappedAsgns, ...mappedLabs]);
+
+        // Fetch holidays from ICS calendar feed if configured
+        if (settings.icsUrl) {
+          fetchICSHolidays(settings.icsUrl);
+        }
       } catch {}
     }
     init();
-    
-    fetchHolidays(countryCode);
   }, []);
 
-  const fetchHolidays = async (code) => {
+  const fetchICSHolidays = async (icsUrl) => {
     try {
-      const year = new Date().getFullYear();
-      const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${code}`);
-      if (res.ok) {
-        const data = await res.json();
-        setHolidays(data.map(h => ({
-          id: `holiday-${h.date}`,
-          title: h.localName || h.name,
-          date: h.date,
-          type: 'holiday',
-          description: h.name,
-          color: '#10b981',
-        })));
-      }
+      const res = await fetch(`/api/ics-proxy?url=${encodeURIComponent(icsUrl)}`);
+      if (!res.ok) return;
+      const text = await res.text();
+      const parsed = parseICS(text);
+      setHolidays(parsed);
     } catch {}
+  };
+
+  /** Minimal ICS/iCal parser — extracts VEVENT blocks into calendar events */
+  const parseICS = (icsText) => {
+    const events = [];
+    const blocks = icsText.split('BEGIN:VEVENT');
+    blocks.shift(); // remove preamble
+    for (const block of blocks) {
+      const end = block.indexOf('END:VEVENT');
+      const content = end !== -1 ? block.substring(0, end) : block;
+      const get = (key) => {
+        // Handle multi-format keys like DTSTART;VALUE=DATE:20260101
+        const regex = new RegExp(`^${key}[;:](.*)$`, 'm');
+        const match = content.match(regex);
+        if (!match) return '';
+        let val = match[1];
+        // Strip parameters before the actual value
+        if (val.includes(':')) val = val.split(':').pop();
+        return val.trim();
+      };
+      const summary = get('SUMMARY');
+      const dtstart = get('DTSTART');
+      if (!summary || !dtstart) continue;
+      // Parse ICS date: 20260429 or 20260429T120000Z
+      let dateStr = '';
+      if (dtstart.length >= 8) {
+        dateStr = `${dtstart.slice(0,4)}-${dtstart.slice(4,6)}-${dtstart.slice(6,8)}`;
+        if (dtstart.length >= 15) {
+          dateStr += `T${dtstart.slice(9,11)}:${dtstart.slice(11,13)}:${dtstart.slice(13,15)}`;
+        }
+      }
+      const description = get('DESCRIPTION') || summary;
+      events.push({
+        id: `ics-${dtstart}-${summary.slice(0,20)}`,
+        title: summary,
+        date: dateStr,
+        type: 'holiday',
+        description,
+        color: '#10b981',
+      });
+    }
+    return events;
   };
 
   const allEvents = [...events, ...holidays];
@@ -149,24 +184,37 @@ export default function CalendarPage() {
             <h2 className={styles.sectionTitle}>📌 All Events</h2>
             <div className={styles.eventList}>
               {allEvents
-                .sort((a, b) => new Date(a.date) - new Date(b.date))
-                .map(event => (
-                  <div key={event.id} className={styles.eventCard} style={{ borderLeftColor: event.color }}>
-                    <div className={styles.eventDate}>
-                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      {event.date && event.date.includes('T') && (
-                        <div style={{ fontSize: '0.8em', opacity: 0.8, marginTop: '2px' }}>
-                          {new Date(event.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                        </div>
-                      )}
+                .sort((a, b) => {
+                  const now = new Date();
+                  const aDate = new Date(a.date);
+                  const bDate = new Date(b.date);
+                  const aIsPast = aDate < now;
+                  const bIsPast = bDate < now;
+                  // Upcoming events first, then past events
+                  if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
+                  // Within same group, sort by date ascending
+                  return aDate - bDate;
+                })
+                .map(event => {
+                  const isPast = new Date(event.date) < new Date();
+                  return (
+                    <div key={event.id} className={styles.eventCard} style={{ borderLeftColor: event.color, opacity: isPast ? 0.5 : 1 }}>
+                      <div className={styles.eventDate}>
+                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        {event.date && event.date.includes('T') && (
+                          <div style={{ fontSize: '0.8em', opacity: 0.8, marginTop: '2px' }}>
+                            {new Date(event.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.eventInfo}>
+                        <span className={styles.eventBadge} style={{ background: event.color }}>{event.type}</span>
+                        <h4 className={styles.eventTitle}>{event.title}</h4>
+                        <p className={styles.eventDesc}>{event.description}</p>
+                      </div>
                     </div>
-                    <div className={styles.eventInfo}>
-                      <span className={styles.eventBadge} style={{ background: event.color }}>{event.type}</span>
-                      <h4 className={styles.eventTitle}>{event.title}</h4>
-                      <p className={styles.eventDesc}>{event.description}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
         </div>
