@@ -9,7 +9,6 @@ export default function CalendarPage() {
   const [liveRoutine, setLiveRoutine] = useState({ days: [], timeSlots: [], schedule: {} });
   const [holidays, setHolidays] = useState([]);
   const [events, setEvents] = useState([]);
-  const [viewMode, setViewMode] = useState('calendar'); // 'calendar' | 'routine'
 
   useEffect(() => {
     async function init() {
@@ -24,7 +23,7 @@ export default function CalendarPage() {
 
         const mappedAsgns = asgns.map(a => ({
           id: `asgn-${a.id}`,
-          title: `Assignment: ${a.title}`,
+          title: `📋 ${a.title}`,
           date: a.dueDate,
           type: 'assignment',
           description: `Due for ${a.subject}`,
@@ -33,11 +32,11 @@ export default function CalendarPage() {
 
         const mappedLabs = labs.map(l => ({
           id: `lab-${l.id}`,
-          title: `Lab Report: ${l.title}`,
+          title: `🔬 ${l.title}`,
           date: l.dueDate,
-          type: 'lab',
+          type: 'lab report',
           description: `Due for ${l.subject}`,
-          color: '#6366f1'
+          color: '#a855f7'
         }));
 
         setEvents([...evs, ...mappedAsgns, ...mappedLabs]);
@@ -65,24 +64,21 @@ export default function CalendarPage() {
   const parseICS = (icsText) => {
     const events = [];
     const blocks = icsText.split('BEGIN:VEVENT');
-    blocks.shift(); // remove preamble
+    blocks.shift();
     for (const block of blocks) {
       const end = block.indexOf('END:VEVENT');
       const content = end !== -1 ? block.substring(0, end) : block;
       const get = (key) => {
-        // Handle multi-format keys like DTSTART;VALUE=DATE:20260101
         const regex = new RegExp(`^${key}[;:](.*)$`, 'm');
         const match = content.match(regex);
         if (!match) return '';
         let val = match[1];
-        // Strip parameters before the actual value
         if (val.includes(':')) val = val.split(':').pop();
         return val.trim();
       };
       const summary = get('SUMMARY');
       const dtstart = get('DTSTART');
       if (!summary || !dtstart) continue;
-      // Parse ICS date: 20260429 or 20260429T120000Z
       let dateStr = '';
       if (dtstart.length >= 8) {
         dateStr = `${dtstart.slice(0,4)}-${dtstart.slice(4,6)}-${dtstart.slice(6,8)}`;
@@ -103,17 +99,14 @@ export default function CalendarPage() {
     return events;
   };
 
-  const allEvents = [...events, ...holidays];
-
-  // Map routine into events for the calendar view
+  // Generate routine events for the calendar (next 60 days)
   const generateRoutineEvents = () => {
     if (!liveRoutine || !liveRoutine.schedule) return [];
     const routineEvents = [];
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const today = new Date();
     
-    // Generate for next 30 days
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 60; i++) {
       const d = new Date();
       d.setDate(today.getDate() + i);
       const dayName = dayNames[d.getDay()];
@@ -131,11 +124,11 @@ export default function CalendarPage() {
           
           routineEvents.push({
             id: `routine-${i}-${slot.time}`,
-            title: `${slot.subject}`,
+            title: slot.subject,
             date: dateStr,
-            type: slot.type === 'lab' ? 'lab' : 'lecture',
-            description: `Room: ${slot.room} | Teacher: ${slot.teacher}`,
-            color: slot.type === 'lab' ? '#10b981' : '#6366f1'
+            type: slot.type === 'lab' ? 'lab' : 'class',
+            description: [slot.room && `📍 ${slot.room}`, slot.teacher && `👤 ${slot.teacher}`].filter(Boolean).join(' · '),
+            color: slot.type === 'lab' ? '#10b981' : '#8b5cf6'
           });
         }
       });
@@ -143,82 +136,83 @@ export default function CalendarPage() {
     return routineEvents;
   };
 
-  const currentDisplayEvents = viewMode === 'routine' ? generateRoutineEvents() : allEvents;
+  // Merge everything into one unified list
+  const routineEvents = generateRoutineEvents();
+  const allEvents = [...events, ...holidays, ...routineEvents];
+
+  // Sidebar shows only non-routine events (events, holidays, assignments, labs)
+  const sidebarEvents = [...events, ...holidays];
 
   return (
-    <Layout title="Calendar — Orios Class" description="Interactive calendar with events and class routine">
+    <Layout title="Calendar — Orios Class" description="Interactive calendar with events, routine, and holidays in one view">
       <div className={styles.page}>
         <header className={styles.header}>
           <span className={styles.headerIcon}>📅</span>
           <div>
             <h1 className={styles.title}>Calendar & Schedule</h1>
-            <p className={styles.subtitle}>View events, exams, holidays, and your weekly routine</p>
+            <p className={styles.subtitle}>Events, classes, assignments, and holidays — all in one place</p>
           </div>
         </header>
 
         <div className={styles.layout}>
           <div className={styles.calendarCol}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
-              <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
-                {viewMode === 'routine' ? '🎒 Routine Calendar' : '📆 Event Calendar'}
-              </h2>
-              <div className={styles.toggleGroup} style={{ margin: 0 }}>
-                <button 
-                  className={`${styles.toggleBtn} ${viewMode === 'calendar' ? styles.toggleActive : ''}`} 
-                  onClick={() => setViewMode('calendar')}
-                >
-                  📆 Events
-                </button>
-                <button 
-                  className={`${styles.toggleBtn} ${viewMode === 'routine' ? styles.toggleActive : ''}`} 
-                  onClick={() => setViewMode('routine')}
-                >
-                  🎒 Routine
-                </button>
-              </div>
+            <h2 className={styles.sectionTitle} style={{ marginBottom: '16px' }}>📆 Calendar</h2>
+            <EventCalendar events={allEvents} />
+
+            {/* Color Legend */}
+            <div className={styles.legendRow}>
+              <span className={styles.legendItem}><span className={styles.legendDot} style={{ background: '#8b5cf6' }} /> Class</span>
+              <span className={styles.legendItem}><span className={styles.legendDot} style={{ background: '#10b981' }} /> Lab / Holiday</span>
+              <span className={styles.legendItem}><span className={styles.legendDot} style={{ background: '#3b82f6' }} /> Assignment</span>
+              <span className={styles.legendItem}><span className={styles.legendDot} style={{ background: '#f59e0b' }} /> Event</span>
             </div>
-            
-            <EventCalendar events={currentDisplayEvents} />
           </div>
+
           <div className={styles.eventsCol}>
-            <h2 className={styles.sectionTitle}>📌 All Events</h2>
+            <h2 className={styles.sectionTitle}>📌 Upcoming</h2>
             <div className={styles.eventList}>
-              {allEvents
-                .sort((a, b) => {
-                  const now = new Date();
-                  const aDate = new Date(a.date);
-                  const bDate = new Date(b.date);
-                  const aIsPast = aDate < now;
-                  const bIsPast = bDate < now;
-                  // Upcoming events first, then past events
-                  if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
-                  // Within same group, sort by date ascending
-                  return aDate - bDate;
-                })
-                .map(event => {
-                  const isPast = new Date(event.date) < new Date();
-                  return (
-                    <div key={event.id} className={styles.eventCard} style={{ borderLeftColor: event.color, opacity: isPast ? 0.5 : 1 }}>
-                      <div className={styles.eventDate}>
-                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        {event.date && event.date.includes('T') && (
-                          <div style={{ fontSize: '0.8em', opacity: 0.8, marginTop: '2px' }}>
-                            {new Date(event.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                          </div>
-                        )}
+              {sidebarEvents.length === 0 ? (
+                <div className={styles.emptyEvents}>
+                  <span>📭</span>
+                  <p>No upcoming events</p>
+                </div>
+              ) : (
+                sidebarEvents
+                  .sort((a, b) => {
+                    const now = new Date();
+                    const aDate = new Date(a.date);
+                    const bDate = new Date(b.date);
+                    const aIsPast = aDate < now;
+                    const bIsPast = bDate < now;
+                    if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
+                    return aDate - bDate;
+                  })
+                  .map(event => {
+                    const isPast = new Date(event.date) < new Date();
+                    return (
+                      <div key={event.id} className={styles.eventCard} style={{ borderLeftColor: event.color, opacity: isPast ? 0.5 : 1 }}>
+                        <div className={styles.eventDate}>
+                          {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {event.date && event.date.includes('T') && (
+                            <div style={{ fontSize: '0.8em', opacity: 0.8, marginTop: '2px' }}>
+                              {new Date(event.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                            </div>
+                          )}
+                        </div>
+                        <div className={styles.eventInfo}>
+                          <span className={styles.eventBadge} style={{ background: event.color }}>{event.type}</span>
+                          <h4 className={styles.eventTitle}>{event.title}</h4>
+                          <p className={styles.eventDesc}>{event.description}</p>
+                        </div>
                       </div>
-                      <div className={styles.eventInfo}>
-                        <span className={styles.eventBadge} style={{ background: event.color }}>{event.type}</span>
-                        <h4 className={styles.eventTitle}>{event.title}</h4>
-                        <p className={styles.eventDesc}>{event.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+              )}
             </div>
           </div>
         </div>
 
+        {/* Weekly Routine Table */}
         <section className={styles.routineSection}>
           <div style={{ position: 'relative', display: 'inline-block' }}>
             <img src="/img/orio.png" alt="Orio" style={{ position: 'absolute', right: '-50px', top: '-30px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(15deg)', opacity: 0.9 }} />
