@@ -42,7 +42,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/orio.png',
       colorMode: {
         defaultMode: 'light',
         disableSwitch: false,
@@ -52,7 +52,7 @@ const config = {
         title: 'Orios Class',
         logo: {
           alt: 'Orios Class Logo',
-          src: 'img/logo.svg',
+          src: 'img/orio.png',
         },
         items: [
           { to: '/notes', label: '📝 Notes', position: 'left' },
