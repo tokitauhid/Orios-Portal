@@ -1,1 +1,1 @@
-export const KV_BINDING_NAME = 'orios_data';
+export const KV_BINDING_NAME = 'ORIOS_DATA';
