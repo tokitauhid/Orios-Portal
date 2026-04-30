@@ -1,16 +1,39 @@
-.page { max-width: 1400px; margin: 0 auto; padding: 0 24px 60px; }
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
 
 .header {
-  display: flex; align-items: center; gap: 16px;
-  padding: 32px 0 24px; border-bottom: 1px solid var(--border-light); margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 32px;
 }
-.headerIcon { font-size: 2.5rem; }
-.title { font-family: var(--font-display); font-weight: 900; font-size: 2rem; margin: 0; color: var(--text-primary); }
-.subtitle { font-size: 0.9rem; color: var(--text-muted); margin: 2px 0 0; }
+.headerIcon {
+  font-size: 2.5rem;
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
 
 .sectionTitle {
-  font-family: var(--font-display); font-weight: 800; font-size: 1.2rem;
-  margin: 0 0 16px; color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin: 0 0 16px;
+  color: var(--text-primary);
 }
 
 /* ─── 2-column layout ─── */
@@ -21,78 +44,187 @@
   margin-bottom: 48px;
 }
 
-.calendarCol, .eventsCol {
+.calendarCol,
+.eventsCol {
   animation: fadeInUp 0.5s ease-out both;
 }
-.eventsCol { animation-delay: 100ms; }
+.eventsCol {
+  animation-delay: 100ms;
+}
 
 /* ─── Legend ─── */
 .legendRow {
-  display: flex; flex-wrap: wrap; gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   justify-content: center;
   padding: 14px 0 4px;
 }
 .legendItem {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 0.72rem; font-weight: 600; color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 .legendDot {
-  width: 8px; height: 8px; border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
 /* ─── Event Sidebar ─── */
 .eventList {
-  display: flex; flex-direction: column; gap: 10px;
-  max-height: 560px; overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 560px;
+  overflow-y: auto;
   padding-right: 4px;
   scrollbar-width: thin;
 }
 
 .eventCard {
-  display: flex; gap: 12px; padding: 12px 16px;
-  background: var(--surface-card); border: 1px solid var(--border-light);
-  border-left: 3px solid; border-radius: var(--radius-md);
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid;
+  border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
-.eventCard:hover { box-shadow: var(--shadow-sm); transform: translateX(2px); }
+.eventCard:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateX(2px);
+}
 
 .eventDate {
-  font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
-  color: var(--text-muted); white-space: nowrap; min-width: 48px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 48px;
 }
 
-.eventInfo { flex: 1; min-width: 0; }
-.eventBadge {
-  display: inline-block; font-size: 0.55rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.05em;
-  color: white; padding: 1px 6px; border-radius: var(--radius-full); margin-bottom: 4px;
+.eventInfo {
+  flex: 1;
+  min-width: 0;
 }
-.eventTitle { font-family: var(--font-display); font-weight: 600; font-size: 0.85rem; margin: 0 0 2px; color: var(--text-primary); }
-.eventDesc { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+.eventBadge {
+  display: inline-block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: white;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  margin-bottom: 4px;
+}
+.eventTitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin: 0 0 2px;
+  color: var(--text-primary);
+}
+.eventDesc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0;
+}
 
 .emptyEvents {
-  text-align: center; padding: 40px 20px;
+  text-align: center;
+  padding: 40px 20px;
   color: var(--text-muted);
 }
-.emptyEvents span { font-size: 2rem; display: block; margin-bottom: 8px; }
-.emptyEvents p { margin: 0; font-size: 0.85rem; }
+.emptyEvents span {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+.emptyEvents p {
+  margin: 0;
+  font-size: 0.85rem;
+}
 
 /* ─── Routine Section ─── */
 .routineSection {
-  margin-top: 16px;
-  padding-top: 32px;
-  border-top: 1px solid var(--border-light);
+  margin-top: 24px;
+  padding: 30px 24px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
 }
 
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.routineHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.routineHeaderText {
+  min-width: 0;
+}
+
+.routineSubtitle {
+  margin: -8px 0 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.routineMascot {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  transform: rotate(12deg);
+  opacity: 0.88;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 900px) {
-  .layout { grid-template-columns: minmax(0, 1fr); }
-  .eventList { max-height: 300px; }
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .eventList {
+    max-height: 300px;
+  }
 }
 
 @media (max-width: 768px) {
-  .page { padding: 0 16px 60px; }
-  .title { font-size: 1.5rem; }
+  .page {
+    padding: 0 16px 60px;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+  .routineSection {
+    padding: 22px 14px 14px;
+    border-radius: var(--radius-lg);
+  }
+  .routineMascot {
+    width: 46px;
+    height: 46px;
+  }
+  .routineSubtitle {
+    font-size: 0.8rem;
+  }
 }

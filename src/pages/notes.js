@@ -1,64 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import SearchOverlay from '@site/src/components/SearchOverlay';
-import { getAll, getSubjects } from '@site/src/auth/db';
-import styles from './notes.module.css';
+import React, { useState, useEffect } from "react";
+import Layout from "@theme/Layout";
+import SearchOverlay from "@site/src/components/SearchOverlay";
+import { getAll, getSubjects } from "@site/src/auth";
+import styles from "./notes.module.css";
 
 export default function NotesPage() {
   const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [activeSubject, setActiveSubject] = useState('All');
-  const [activeType, setActiveType] = useState('All');
+  const [query, setQuery] = useState("");
+  const [activeSubject, setActiveSubject] = useState("All");
+  const [activeType, setActiveType] = useState("All");
   const [notesData, setNotesData] = useState([]);
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
     async function init() {
-      try { 
-        setNotesData(await getAll('notes')); 
+      try {
+        setNotesData(await getAll("notes"));
         setSubjects(await getSubjects());
       } catch {}
     }
     init();
   }, []);
 
-  const types = ['All', 'doc', 'image', 'link'];
+  const types = ["All", "doc", "image", "link"];
 
-  const filtered = notesData.filter(note => {
-    const matchSubject = activeSubject === 'All' || note.subject === activeSubject;
-    const matchType = activeType === 'All' || note.type === activeType;
+  const filtered = notesData.filter((note) => {
+    const matchSubject =
+      activeSubject === "All" || note.subject === activeSubject;
+    const matchType = activeType === "All" || note.type === activeType;
     const q = query.toLowerCase();
-    const matchQuery = !q ||
-      (note.title || '').toLowerCase().includes(q) ||
-      (note.subject || '').toLowerCase().includes(q) ||
-      (note.description || '').toLowerCase().includes(q) ||
-      (note.tags || []).some(t => t.toLowerCase().includes(q));
+    const matchQuery =
+      !q ||
+      (note.title || "").toLowerCase().includes(q) ||
+      (note.subject || "").toLowerCase().includes(q) ||
+      (note.description || "").toLowerCase().includes(q) ||
+      (note.tags || []).some((t) => t.toLowerCase().includes(q));
     return matchSubject && matchType && matchQuery;
   });
 
   // Group by subject
   const grouped = {};
-  filtered.forEach(note => {
+  filtered.forEach((note) => {
     if (!grouped[note.subject]) grouped[note.subject] = [];
     grouped[note.subject].push(note);
   });
 
-  const typeIcons = { doc: '📄', image: '🖼️', link: '🔗' };
+  const typeIcons = { doc: "📄", image: "🖼️", link: "🔗" };
 
   return (
-    <Layout title="Notes — Orios Class" description="Subject-wise notes, links, docs, and resources">
+    <Layout
+      title="Notes — Orios Class"
+      description="Subject-wise notes, links, docs, and resources"
+    >
       <div className={styles.page}>
         <header className={styles.header}>
-          <div className={styles.headerContent} style={{ position: 'relative' }}>
-            <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', left: '-50px', top: '-20px', width: '50px', height: '50px', objectFit: 'contain', transform: 'rotate(-15deg)', opacity: 0.9 }} />
-            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', right: '-40px', bottom: '-10px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(10deg)', opacity: 0.9 }} />
+          <div
+            className={styles.headerContent}
+            style={{ position: "relative" }}
+          >
+            <img
+              src="/img/orio1.png"
+              alt="Orio 1"
+              style={{
+                position: "absolute",
+                left: "-50px",
+                top: "-20px",
+                width: "50px",
+                height: "50px",
+                objectFit: "contain",
+                transform: "rotate(-15deg)",
+                opacity: 0.9,
+              }}
+            />
+            <img
+              src="/img/pucu.png"
+              alt="Pucu"
+              style={{
+                position: "absolute",
+                right: "-40px",
+                bottom: "-10px",
+                width: "60px",
+                height: "60px",
+                objectFit: "contain",
+                transform: "rotate(10deg)",
+                opacity: 0.9,
+              }}
+            />
             <span className={styles.headerIcon}>📝</span>
             <div>
               <h1 className={styles.title}>Notes</h1>
-              <p className={styles.subtitle}>Subject-wise notes, links, docs, PDFs, and resources</p>
+              <p className={styles.subtitle}>
+                Subject-wise notes, links, docs, PDFs, and resources
+              </p>
             </div>
           </div>
-          <button className={styles.searchTrigger} onClick={() => setSearchOpen(true)}>
+          <button
+            className={styles.searchTrigger}
+            onClick={() => setSearchOpen(true)}
+          >
             🔍 Search everything...
           </button>
         </header>
@@ -70,31 +109,39 @@ export default function NotesPage() {
               type="text"
               placeholder="🔍 Filter notes..."
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={(e) => setQuery(e.target.value)}
               className={styles.searchInput}
             />
           </div>
           <div className={styles.filterRow}>
             <div className={styles.pills}>
               <button
-                className={`${styles.pill} ${activeSubject === 'All' ? styles.pillActive : ''}`}
-                onClick={() => setActiveSubject('All')}
-              >All Subjects</button>
-              {subjects.map(s => (
+                className={`${styles.pill} ${activeSubject === "All" ? styles.pillActive : ""}`}
+                onClick={() => setActiveSubject("All")}
+              >
+                All Subjects
+              </button>
+              {subjects.map((s) => (
                 <button
                   key={s}
-                  className={`${styles.pill} ${activeSubject === s ? styles.pillActive : ''}`}
+                  className={`${styles.pill} ${activeSubject === s ? styles.pillActive : ""}`}
                   onClick={() => setActiveSubject(s)}
-                >{s}</button>
+                >
+                  {s}
+                </button>
               ))}
             </div>
             <div className={styles.pills}>
-              {types.map(t => (
+              {types.map((t) => (
                 <button
                   key={t}
-                  className={`${styles.pill} ${styles.typePill} ${activeType === t ? styles.pillActive : ''}`}
+                  className={`${styles.pill} ${styles.typePill} ${activeType === t ? styles.pillActive : ""}`}
                   onClick={() => setActiveType(t)}
-                >{t === 'All' ? '📌 All Types' : `${typeIcons[t]} ${t.charAt(0).toUpperCase() + t.slice(1)}`}</button>
+                >
+                  {t === "All"
+                    ? "📌 All Types"
+                    : `${typeIcons[t]} ${t.charAt(0).toUpperCase() + t.slice(1)}`}
+                </button>
               ))}
             </div>
           </div>
@@ -115,10 +162,24 @@ export default function NotesPage() {
                   {notes.map((note, i) => (
                     <a
                       key={note.id}
-                      href={note.fileData || note.url || '#'}
-                      download={note.fileData ? (note.title + '.' + (note.format || 'bin').toLowerCase()) : undefined}
-                      target={(note.type === 'link' || !note.fileData) ? '_blank' : undefined}
-                      rel={(note.type === 'link' || !note.fileData) ? 'noopener noreferrer' : undefined}
+                      href={note.fileData || note.url || "#"}
+                      download={
+                        note.fileData
+                          ? note.title +
+                            "." +
+                            (note.format || "bin").toLowerCase()
+                          : undefined
+                      }
+                      target={
+                        note.type === "link" || !note.fileData
+                          ? "_blank"
+                          : undefined
+                      }
+                      rel={
+                        note.type === "link" || !note.fileData
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
                       className={styles.noteCard}
                       style={{ animationDelay: `${i * 60}ms` }}
                     >
@@ -130,11 +191,18 @@ export default function NotesPage() {
                       <p className={styles.noteDesc}>{note.description}</p>
                       <div className={styles.noteMeta}>
                         <span className={styles.noteAuthor}>{note.author}</span>
-                        <span className={styles.noteDate}>{new Date(note.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        <span className={styles.noteDate}>
+                          {new Date(note.date).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
                       </div>
                       <div className={styles.noteTags}>
-                        {(note.tags || []).map(tag => (
-                          <span key={tag} className={styles.tag}>#{tag}</span>
+                        {(note.tags || []).map((tag) => (
+                          <span key={tag} className={styles.tag}>
+                            #{tag}
+                          </span>
                         ))}
                       </div>
                     </a>

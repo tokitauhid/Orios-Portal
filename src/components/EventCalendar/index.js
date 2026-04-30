@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
-import styles from './styles.module.css';
+import React, { useState } from "react";
+import styles from "./styles.module.css";
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
@@ -13,9 +26,11 @@ function getFirstDayOfMonth(year, month) {
 }
 
 function isSameDay(d1, d2) {
-  return d1.getFullYear() === d2.getFullYear() &&
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
+    d1.getDate() === d2.getDate()
+  );
 }
 
 function isInRange(date, startStr, endStr) {
@@ -56,7 +71,7 @@ export default function EventCalendar({ events = [] }) {
 
   const getEventsForDate = (day) => {
     const date = new Date(currentYear, currentMonth, day);
-    return events.filter(e => {
+    return events.filter((e) => {
       const eventStart = new Date(e.date);
       if (e.endDate) {
         return isInRange(date, e.date, e.endDate);
@@ -80,35 +95,47 @@ export default function EventCalendar({ events = [] }) {
     const isToday = isSameDay(new Date(currentYear, currentMonth, day), today);
     const isExpanded = expandedDay === day;
     // Filter out routine events for inside-cell display (only show non-routine)
-    const nonRoutineEvents = dayEvents.filter(e => !e.id?.startsWith('routine-'));
+    const nonRoutineEvents = dayEvents.filter(
+      (e) => !e.id?.startsWith("routine-"),
+    );
 
     cells.push(
       <button
         key={day}
-        className={`${styles.dayCell} ${isToday ? styles.today : ''} ${isExpanded ? styles.expanded : ''} ${dayEvents.length > 0 ? styles.hasEvents : ''}`}
+        className={`${styles.dayCell} ${isToday ? styles.today : ""} ${isExpanded ? styles.expanded : ""} ${dayEvents.length > 0 ? styles.hasEvents : ""}`}
         onClick={() => handleDayClick(day)}
       >
         <span className={styles.dayNumber}>{day}</span>
         {nonRoutineEvents.length > 0 && (
           <div className={styles.dayEventList}>
             {nonRoutineEvents.slice(0, 2).map((ev, i) => (
-              <span key={i} className={styles.dayEventLabel} style={{ '--event-color': ev.color }}>
-                {ev.title.length > 14 ? ev.title.slice(0, 12) + '…' : ev.title}
+              <span
+                key={i}
+                className={styles.dayEventLabel}
+                style={{ "--event-color": ev.color }}
+              >
+                {ev.title.length > 14 ? ev.title.slice(0, 12) + "…" : ev.title}
               </span>
             ))}
             {nonRoutineEvents.length > 2 && (
-              <span className={styles.dayEventMore}>+{nonRoutineEvents.length - 2}</span>
+              <span className={styles.dayEventMore}>
+                +{nonRoutineEvents.length - 2}
+              </span>
             )}
           </div>
         )}
         {nonRoutineEvents.length === 0 && dayEvents.length > 0 && (
           <div className={styles.eventDots}>
             {dayEvents.slice(0, 3).map((ev, i) => (
-              <span key={i} className={styles.eventDot} style={{ background: ev.color }} />
+              <span
+                key={i}
+                className={styles.eventDot}
+                style={{ background: ev.color }}
+              />
             ))}
           </div>
         )}
-      </button>
+      </button>,
     );
   }
 
@@ -117,27 +144,45 @@ export default function EventCalendar({ events = [] }) {
       <div className={styles.calendarHeader}>
         <button onClick={prevMonth} className={styles.navBtn}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M12 5L7 10L12 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M12 5L7 10L12 15"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
-        <h3 className={styles.monthTitle}>{MONTHS[currentMonth]} {currentYear}</h3>
+        <h3 className={styles.monthTitle}>
+          {MONTHS[currentMonth]} {currentYear}
+        </h3>
         <button onClick={nextMonth} className={styles.navBtn}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path d="M8 5L13 10L8 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M8 5L13 10L8 15"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
       </div>
 
       <div className={styles.weekDays}>
-        {DAYS.map(d => <div key={d} className={styles.weekDay}>{d}</div>)}
+        {DAYS.map((d) => (
+          <div key={d} className={styles.weekDay}>
+            {d}
+          </div>
+        ))}
       </div>
 
-      <div className={styles.grid}>
-        {cells}
-      </div>
+      <div className={styles.grid}>{cells}</div>
 
       {/* Expanded day detail panel — smooth slide-down */}
-      <div className={`${styles.eventPanel} ${expandedDay ? styles.eventPanelOpen : ''}`}>
+      <div
+        className={`${styles.eventPanel} ${expandedDay ? styles.eventPanelOpen : ""}`}
+      >
         {expandedDay && (
           <div className={styles.eventPanelInner}>
             <h4 className={styles.panelTitle}>
@@ -147,9 +192,18 @@ export default function EventCalendar({ events = [] }) {
               <p className={styles.noEvents}>No events on this day</p>
             ) : (
               <div className={styles.eventList}>
-                {expandedEvents.map(ev => (
-                  <div key={ev.id} className={styles.eventItem} style={{ borderLeftColor: ev.color }}>
-                    <span className={styles.eventType} style={{ background: ev.color }}>{ev.type}</span>
+                {expandedEvents.map((ev) => (
+                  <div
+                    key={ev.id}
+                    className={styles.eventItem}
+                    style={{ borderLeftColor: ev.color }}
+                  >
+                    <span
+                      className={styles.eventType}
+                      style={{ background: ev.color }}
+                    >
+                      {ev.type}
+                    </span>
                     <h5 className={styles.eventTitle}>{ev.title}</h5>
                     <p className={styles.eventDesc}>{ev.description}</p>
                   </div>

@@ -6,8 +6,106 @@
 }
 
 /* ─── Desktop Table ─── */
-.desktopView { display: block; }
-.mobileView { display: none; }
+.desktopView {
+  display: block;
+}
+.mobileView {
+  display: none;
+}
+
+.desktopToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.filterPills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  background: var(--surface-0);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pill:hover {
+  background: var(--surface-2);
+}
+
+.pillActive {
+  background: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+  color: white;
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.utilityButton {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  background: var(--surface-0);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.utilityButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.utilityButtonActive {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.pill:focus-visible,
+.utilityButton:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+.desktopEmptyState {
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-card);
+  padding: 28px;
+  text-align: center;
+}
+
+.desktopEmptyState h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.desktopEmptyState p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
 
 .tableScroll {
   overflow-x: auto;
@@ -21,63 +119,101 @@
   box-shadow: var(--shadow-md);
 }
 
-.tableScroll::-webkit-scrollbar { height: 6px; }
-.tableScroll::-webkit-scrollbar-track { background: transparent; }
-.tableScroll::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+.tableScroll::-webkit-scrollbar {
+  height: 6px;
+}
+.tableScroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tableScroll::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
 
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 700px;
+  min-width: 860px;
 }
 
-.table th, .table td {
+.tableCompact .timeHeader,
+.tableCompact .dayHeaderCell,
+.tableCompact .dayCell {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.tableCompact .cell {
+  padding: 6px;
+}
+
+.tableCompact .slotContent {
+  padding: 8px 10px;
+  gap: 2px;
+}
+
+.table th,
+.table td {
   text-align: center;
 }
-.table th:last-child, .table td:last-child { border-right: none; }
-.table tr:last-child td { border-bottom: none; }
+.table th:last-child,
+.table td:last-child {
+  border-right: none;
+}
+.table tr:last-child td {
+  border-bottom: none;
+}
 
 /* ─── Header Row ─── */
 .dayHeaderCell {
   font-family: var(--font-display);
-  font-weight: 800; font-size: 0.7rem;
+  font-weight: 800;
+  font-size: 0.74rem;
   color: var(--text-muted);
   background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
-  padding: 14px 10px;
+  padding: 15px 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  min-width: 60px;
-  position: sticky; left: 0; z-index: 2;
+  min-width: 72px;
+  position: sticky;
+  left: 0;
+  z-index: 4;
   border-bottom: 2px solid var(--border-default);
   border-right: 1px solid var(--border-light);
 }
 
 .timeHeader {
   font-family: var(--font-display);
-  font-weight: 800; font-size: 0.7rem;
+  font-weight: 800;
+  font-size: 0.74rem;
   color: var(--text-primary);
   background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
-  padding: 14px 10px;
+  padding: 15px 12px;
   white-space: nowrap;
-  min-width: 100px;
+  min-width: 116px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border-bottom: 2px solid var(--border-default);
   border-right: 1px solid var(--border-light);
 }
-.timeHeader:last-child { border-right: none; }
+.timeHeader:last-child {
+  border-right: none;
+}
 
 /* ─── Day Column (sticky) ─── */
 .dayCell {
   font-family: var(--font-display);
-  font-weight: 800; font-size: 0.78rem;
+  font-weight: 800;
+  font-size: 0.84rem;
   color: var(--text-muted);
   background: var(--surface-1);
-  position: sticky; left: 0; z-index: 1;
+  position: sticky;
+  left: 0;
+  z-index: 3;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 14px 10px;
+  padding: 16px 12px;
   border-bottom: 1px solid var(--border-light);
   border-right: 1px solid var(--border-light);
   position: relative;
@@ -89,11 +225,15 @@
 }
 
 .todayDot {
-  position: absolute; top: 50%; left: 5px;
+  position: absolute;
+  top: 50%;
+  left: 6px;
   transform: translateY(-50%);
-  width: 6px; height: 6px; border-radius: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
   background: var(--ifm-color-primary);
-  box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
 }
 
 /* ─── Body Rows ─── */
@@ -103,15 +243,21 @@
 
 .cell {
   background: var(--surface-0);
-  transition: background var(--transition-fast);
-  min-width: 100px;
-  padding: 8px;
+  transition:
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+  min-width: 116px;
+  padding: 10px;
   border-bottom: 1px solid var(--border-light);
   border-right: 1px solid var(--border-light);
   vertical-align: middle;
 }
-.cell:last-child { border-right: none; }
-.cell:hover { background: rgba(99, 102, 241, 0.03); }
+.cell:last-child {
+  border-right: none;
+}
+.cell:hover {
+  background: rgba(99, 102, 241, 0.04);
+}
 
 .todayCol {
   background: rgba(99, 102, 241, 0.03);
@@ -128,39 +274,117 @@
 }
 
 .slotContent {
-  display: flex; flex-direction: column; gap: 3px;
-  padding: 10px 12px; border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
   text-align: left;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  border: 1px solid transparent;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 .slotContent:hover {
-  transform: scale(1.02);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
 }
 
-.subject { font-size: 0.75rem; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
-.room { font-size: 0.62rem; color: var(--text-muted); font-weight: 500; }
-.teacher { font-size: 0.6rem; color: var(--text-muted); font-weight: 400; }
+.slotHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.subject {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.typeBadge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  padding: 2px 7px;
+}
+
+.badgeLecture {
+  background: rgba(99, 102, 241, 0.14);
+  color: var(--ifm-color-primary);
+}
+
+.badgeLab {
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--color-success);
+}
+
+.room {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.teacher {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
 
 /* ─── Empty Cells ─── */
 .free {
-  display: block;
-  width: 100%; height: 100%;
-  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-light);
+  background: var(--surface-1);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* ─── Legend ─── */
 .legend {
-  display: flex; gap: 24px; padding: 16px 0;
+  display: flex;
+  gap: 20px;
+  padding: 14px 0 4px;
   justify-content: center;
 }
 .legendItem {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  font-weight: 700;
 }
-.legendDot { width: 12px; height: 12px; border-radius: 3px; }
-.lectureDot { background: rgba(99, 102, 241, 0.25); border-left: 3px solid var(--ifm-color-primary); }
-.labDot { background: rgba(16, 185, 129, 0.25); border-left: 3px solid var(--color-success); }
+.legendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+.lectureDot {
+  background: rgba(99, 102, 241, 0.25);
+  border-left: 3px solid var(--ifm-color-primary);
+}
+.labDot {
+  background: rgba(16, 185, 129, 0.25);
+  border-left: 3px solid var(--color-success);
+}
+
+@media (min-width: 769px) {
+  .legend {
+    justify-content: flex-start;
+  }
+}
 
 /* ═══════════════════════════════════════════
    MOBILE CARD VIEW
@@ -176,54 +400,79 @@
 }
 .dayCardToday {
   border-color: var(--ifm-color-primary-lighter);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1), var(--shadow-sm);
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.1),
+    var(--shadow-sm);
 }
 
 .dayCardHeader {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: 14px 16px;
-  background: transparent; border: none;
-  cursor: pointer; font-family: var(--ifm-font-family-base);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ifm-font-family-base);
   color: var(--text-primary);
 }
 .dayCardLeft {
-  display: flex; align-items: center; gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .dayCardName {
   font-family: var(--font-display);
-  font-weight: 700; font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 .dayCardCount {
-  font-size: 0.75rem; color: var(--text-muted); font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 .todayBadge {
-  font-size: 0.6rem; font-weight: 700;
-  padding: 2px 8px; border-radius: var(--radius-full);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
   background: var(--ifm-color-primary);
-  color: white; letter-spacing: 0.05em;
+  color: white;
+  letter-spacing: 0.05em;
 }
 
 .dayCardChevron {
-  font-size: 1.2rem; color: var(--text-muted);
+  font-size: 1.2rem;
+  color: var(--text-muted);
   transition: transform var(--transition-fast);
 }
-.chevronOpen { transform: rotate(180deg); }
+.chevronOpen {
+  transform: rotate(180deg);
+}
 
 .dayCardBody {
   padding: 0 16px 16px;
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   animation: slideDown 0.2s ease-out;
 }
 .dayCardEmpty {
-  text-align: center; padding: 16px;
-  font-size: 0.9rem; color: var(--text-muted);
+  text-align: center;
+  padding: 16px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
   background: var(--surface-1);
   border-radius: var(--radius-sm);
 }
 
 .mobileSlot {
-  display: flex; gap: 12px; align-items: stretch;
-  padding: 12px; border-radius: var(--radius-sm);
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  padding: 12px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-light);
   background: var(--surface-1);
 }
@@ -238,24 +487,37 @@
 
 .mobileSlotTime {
   font-family: var(--font-display);
-  font-weight: 700; font-size: 0.78rem;
+  font-weight: 700;
+  font-size: 0.78rem;
   color: var(--ifm-color-primary);
-  min-width: 65px; white-space: nowrap;
-  display: flex; align-items: center;
+  min-width: 65px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
 }
 .mobileSlotInfo {
-  display: flex; flex-direction: column; gap: 4px; flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 .mobileSlotSubject {
-  font-weight: 700; font-size: 0.88rem; color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text-primary);
 }
 .mobileSlotMeta {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  font-size: 0.72rem; color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 .mobileTypeBadge {
-  font-size: 0.65rem; font-weight: 600;
-  padding: 1px 8px; border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
 }
 .badge_lecture {
   background: rgba(99, 102, 241, 0.1);
@@ -268,16 +530,32 @@
 
 /* ─── Animations ─── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ─── Mobile Breakpoint ─── */
 @media (max-width: 768px) {
-  .desktopView { display: none; }
-  .mobileView { display: block; }
+  .desktopView {
+    display: none;
+  }
+  .mobileView {
+    display: block;
+  }
 }

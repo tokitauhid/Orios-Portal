@@ -98,9 +98,15 @@
   text-align: center;
 }
 
-.clockDanger .timeValue { color: #ef4444 !important; }
-.clockWarning .timeValue { color: #f59e0b !important; }
-.clockSafe .timeValue { color: #10b981 !important; }
+.clockDanger .timeValue {
+  color: #ef4444 !important;
+}
+.clockWarning .timeValue {
+  color: #f59e0b !important;
+}
+.clockSafe .timeValue {
+  color: #10b981 !important;
+}
 
 .timeGrid {
   display: flex;
@@ -139,11 +145,21 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
-  .title { font-size: 2.2rem; }
-  .activeList { grid-template-columns: 1fr; }
+  .title {
+    font-size: 2.2rem;
+  }
+  .activeList {
+    grid-template-columns: 1fr;
+  }
 }

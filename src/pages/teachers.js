@@ -1,44 +1,67 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '@theme/Layout';
-import TeacherCard from '@site/src/components/TeacherCard';
-import { getAll } from '@site/src/auth/db';
-import styles from './teachers.module.css';
+import React, { useState, useEffect } from "react";
+import Layout from "@theme/Layout";
+import { TeacherCard } from "@site/src/components/Cards";
+import { getAll } from "@site/src/auth";
+import styles from "./teachers.module.css";
 
 export default function TeachersPage() {
-  const [query, setQuery] = useState('');
-  const [dept, setDept] = useState('All');
+  const [query, setQuery] = useState("");
+  const [dept, setDept] = useState("All");
   const [teachersData, setTeachersData] = useState([]);
 
   useEffect(() => {
     async function init() {
-      try { setTeachersData(await getAll('teachers')); } catch {}
+      try {
+        setTeachersData(await getAll("teachers"));
+      } catch {}
     }
     init();
   }, []);
 
-  const departments = [...new Set(teachersData.map(t => t.department))];
+  const departments = [...new Set(teachersData.map((t) => t.department))];
 
-  const filtered = teachersData.filter(t => {
-    const matchDept = dept === 'All' || t.department === dept;
+  const filtered = teachersData.filter((t) => {
+    const matchDept = dept === "All" || t.department === dept;
     const q = query.toLowerCase();
-    const matchQuery = !q ||
-      (t.name || '').toLowerCase().includes(q) ||
-      (t.department || '').toLowerCase().includes(q) ||
-      (Array.isArray(t.subjects) ? t.subjects : []).some(s => s.toLowerCase().includes(q));
+    const matchQuery =
+      !q ||
+      (t.name || "").toLowerCase().includes(q) ||
+      (t.department || "").toLowerCase().includes(q) ||
+      (Array.isArray(t.subjects) ? t.subjects : []).some((s) =>
+        s.toLowerCase().includes(q),
+      );
     return matchDept && matchQuery;
   });
 
   return (
-    <Layout title="Teachers — Orios Class" description="Find all teachers' contact info and office hours">
+    <Layout
+      title="Teachers — Orios Class"
+      description="Find all teachers' contact info and office hours"
+    >
       <div className={styles.page}>
         <header className={styles.header}>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <img src="/img/orio1.png" alt="Orio1" style={{ position: 'absolute', right: '-40px', top: '-10px', width: '55px', height: '55px', objectFit: 'contain', transform: 'rotate(5deg)', opacity: 0.9 }} />
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <img
+              src="/img/orio1.png"
+              alt="Orio1"
+              style={{
+                position: "absolute",
+                right: "-40px",
+                top: "-10px",
+                width: "55px",
+                height: "55px",
+                objectFit: "contain",
+                transform: "rotate(5deg)",
+                opacity: 0.9,
+              }}
+            />
             <span className={styles.headerIcon}>👨‍🏫</span>
           </div>
           <div>
             <h1 className={styles.title}>Teacher Directory</h1>
-            <p className={styles.subtitle}>Find contact info, office hours, and details for all teachers</p>
+            <p className={styles.subtitle}>
+              Find contact info, office hours, and details for all teachers
+            </p>
           </div>
         </header>
 
@@ -47,13 +70,24 @@ export default function TeachersPage() {
             type="text"
             placeholder="🔍 Search teachers..."
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
             className={styles.searchInput}
           />
           <div className={styles.pills}>
-            <button className={`${styles.pill} ${dept === 'All' ? styles.active : ''}`} onClick={() => setDept('All')}>All Departments</button>
-            {departments.map(d => (
-              <button key={d} className={`${styles.pill} ${dept === d ? styles.active : ''}`} onClick={() => setDept(d)}>{d}</button>
+            <button
+              className={`${styles.pill} ${dept === "All" ? styles.active : ""}`}
+              onClick={() => setDept("All")}
+            >
+              All Departments
+            </button>
+            {departments.map((d) => (
+              <button
+                key={d}
+                className={`${styles.pill} ${dept === d ? styles.active : ""}`}
+                onClick={() => setDept(d)}
+              >
+                {d}
+              </button>
             ))}
           </div>
         </div>
