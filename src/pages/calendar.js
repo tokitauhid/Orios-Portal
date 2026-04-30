@@ -147,7 +147,7 @@ export default function CalendarPage() {
             ]
               .filter(Boolean)
               .join(" · "),
-            color: slot.type === "lab" ? "#10b981" : "#8b5cf6",
+            color: slot.type === "lab" ? "#06b6d4" : "#8b5cf6",
           });
         }
       });
@@ -202,7 +202,14 @@ export default function CalendarPage() {
                   className={styles.legendDot}
                   style={{ background: "#10b981" }}
                 />{" "}
-                Lab / Holiday
+                Holiday
+              </span>
+              <span className={styles.legendItem}>
+                <span
+                  className={styles.legendDot}
+                  style={{ background: "#06b6d4" }}
+                />{" "}
+                Lab
               </span>
               <span className={styles.legendItem}>
                 <span
