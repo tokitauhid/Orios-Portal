@@ -1,22 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./styles.module.css";
 
 export default function RoutineViewer({ routine }) {
   const today = new Date();
-  const dayNames = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const todayName = dayNames[today.getDay()];
-  const [expandedDay, setExpandedDay] = useState(todayName);
+  
   const [selectedDay, setSelectedDay] = useState("All");
-  const [density, setDensity] = useState("comfortable");
-  const todayRowRef = useRef(null);
+  const [expandedDay, setExpandedDay] = useState(todayName);
 
   const formatTime = (timeStr) => {
     try {
@@ -35,12 +26,9 @@ export default function RoutineViewer({ routine }) {
     }
   };
 
-  // Get classes for a day (non-null slots only)
   const getClassesForDay = (day) => {
     return (routine.schedule[day] || [])
-      .map((slot, idx) =>
-        slot ? { ...slot, time: routine.timeSlots[idx] } : null,
-      )
+      .map((slot, idx) => (slot ? { ...slot, time: routine.timeSlots[idx] } : null))
       .filter(Boolean);
   };
 
@@ -49,166 +37,107 @@ export default function RoutineViewer({ routine }) {
     routine?.timeSlots?.length > 0 &&
     Object.keys(routine?.schedule || {}).length > 0;
 
-  const visibleDays =
-    selectedDay === "All"
-      ? routine.days
-      : routine.days.filter((day) => day === selectedDay);
+  const visibleDays = selectedDay === "All" ? routine.days : routine.days.filter((d) => d === selectedDay);
 
-  const jumpToToday = () => {
-    setSelectedDay(todayName);
-    if (todayRowRef.current) {
-      todayRowRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "nearest",
-      });
-    }
-  };
+  if (!hasRoutineData) {
+    return (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyIcon}>🗓️</div>
+        <h3>No Routine Available</h3>
+        <p>The weekly routine has not been configured yet.</p>
+      </div>
+    );
+  }
+
+  // Calculate grid columns for desktop: 1fr for day, then repeat for timeslots
+  const gridTemplateColumns = `120px repeat(${routine.timeSlots.length}, minmax(180px, 1fr))`;
 
   return (
-    <div className={styles.wrapper}>
-      {/* ─── Desktop: Table View ─── */}
-      <div className={styles.desktopView}>
-        <div className={styles.desktopToolbar}>
-          <div className={styles.filterPills} role="tablist" aria-label="Filter days">
-            <button
-              type="button"
-              className={`${styles.pill} ${selectedDay === "All" ? styles.pillActive : ""}`}
-              onClick={() => setSelectedDay("All")}
-              aria-pressed={selectedDay === "All"}
+    <div className={styles.container}>
+      
+      {/* ─── TOOLBAR ─── */}
+      <div className={styles.toolbar}>
+        <div className={styles.dayFilters}>
+          <button 
+            className={`${styles.filterBtn} ${selectedDay === "All" ? styles.activeFilter : ""}`} 
+            onClick={() => setSelectedDay("All")}
+          >
+            All Days
+          </button>
+          {routine.days.map(day => (
+            <button 
+              key={day}
+              className={`${styles.filterBtn} ${selectedDay === day ? styles.activeFilter : ""}`} 
+              onClick={() => setSelectedDay(day)}
             >
-              All days
+              {day.slice(0, 3)}
+              {day === todayName && <span className={styles.todayDot}></span>}
             </button>
-            {routine.days.map((day) => (
-              <button
-                key={day}
-                type="button"
-                className={`${styles.pill} ${selectedDay === day ? styles.pillActive : ""}`}
-                onClick={() => setSelectedDay(day)}
-                aria-pressed={selectedDay === day}
-              >
-                {day.slice(0, 3)}
-              </button>
+          ))}
+        </div>
+        <div className={styles.legend}>
+          <span className={styles.legendItem}><span className={styles.dotLecture}></span> Lecture</span>
+          <span className={styles.legendItem}><span className={styles.dotLab}></span> Lab</span>
+        </div>
+      </div>
+
+      {/* ─── DESKTOP GRID ─── */}
+      <div className={styles.desktopGridWrap}>
+        <div className={styles.gridContainer}>
+          {/* Header Row */}
+          <div className={styles.gridHeader} style={{ gridTemplateColumns }}>
+            <div className={styles.headerCell}>DAY</div>
+            {routine.timeSlots.map(time => (
+              <div key={time} className={styles.headerCellTime}>
+                <span className={styles.timeIcon}>⏱️</span> {formatTime(time)}
+              </div>
             ))}
           </div>
 
-          <div className={styles.toolbarActions}>
-            <button
-              type="button"
-              className={styles.utilityButton}
-              onClick={jumpToToday}
-            >
-              Today
-            </button>
-            <button
-              type="button"
-              className={`${styles.utilityButton} ${density === "compact" ? styles.utilityButtonActive : ""}`}
-              onClick={() =>
-                setDensity((curr) =>
-                  curr === "comfortable" ? "compact" : "comfortable",
-                )
-              }
-            >
-              {density === "comfortable" ? "Compact" : "Comfortable"}
-            </button>
-          </div>
-        </div>
+          {/* Body Rows */}
+          <div className={styles.gridBody}>
+            {visibleDays.map(day => {
+              const isToday = day === todayName;
+              return (
+                <div key={day} className={`${styles.gridRow} ${isToday ? styles.todayRow : ""}`} style={{ gridTemplateColumns }}>
+                  {/* Day Label Cell */}
+                  <div className={styles.rowLabel}>
+                    <span className={styles.dayText}>{day.slice(0, 3)}</span>
+                    {isToday && <span className={styles.todayBadge}>TODAY</span>}
+                  </div>
 
-        {!hasRoutineData ? (
-          <div className={styles.desktopEmptyState}>
-            <h3>No routine available yet</h3>
-            <p>
-              Add days and time slots from Routine Manager to see the weekly
-              schedule here.
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className={styles.tableScroll}>
-              <table
-                className={`${styles.table} ${density === "compact" ? styles.tableCompact : ""}`}
-              >
-                <thead>
-                  <tr>
-                    <th className={styles.dayHeaderCell}>Day</th>
-                    {routine.timeSlots.map((time) => (
-                      <th key={time} className={styles.timeHeader}>
-                        {formatTime(time)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleDays.map((day) => {
-                    const isToday = day === todayName;
+                  {/* Class Cells */}
+                  {routine.timeSlots.map((time, colIdx) => {
+                    const slot = routine.schedule[day]?.[colIdx];
+                    if (!slot) {
+                      return (
+                        <div key={time} className={styles.gridCell}>
+                          <div className={styles.emptySlot}>-</div>
+                        </div>
+                      );
+                    }
+                    
+                    const isLab = slot.type === "lab";
                     return (
-                      <tr
-                        key={day}
-                        className={isToday ? styles.todayRow : ""}
-                        ref={isToday ? todayRowRef : null}
-                      >
-                        <td
-                          className={`${styles.dayCell} ${isToday ? styles.todayDayCell : ""}`}
-                        >
-                          {isToday && <span className={styles.todayDot} />}
-                          {day.slice(0, 3)}
-                        </td>
-                        {routine.timeSlots.map((time, colIdx) => {
-                          const slot = routine.schedule[day]?.[colIdx];
-                          if (!slot) {
-                            return (
-                              <td
-                                key={time}
-                                className={`${styles.cell} ${isToday ? styles.todayCol : ""}`}
-                              >
-                                <span className={styles.free}>Free</span>
-                              </td>
-                            );
-                          }
-                          const slotType = slot.type === "lab" ? "lab" : "lecture";
-                          return (
-                            <td
-                              key={time}
-                              className={`${styles.cell} ${isToday ? styles.todayCol : ""} ${styles[slotType]}`}
-                            >
-                              <div className={styles.slotContent}>
-                                <div className={styles.slotHead}>
-                                  <span className={styles.subject}>{slot.subject}</span>
-                                  <span
-                                    className={`${styles.typeBadge} ${
-                                      slotType === "lab" ? styles.badgeLab : styles.badgeLecture
-                                    }`}
-                                  >
-                                    {slotType}
-                                  </span>
-                                </div>
-                                {slot.room && <span className={styles.room}>Room: {slot.room}</span>}
-                                {slot.teacher && (
-                                  <span className={styles.teacher}>Teacher: {slot.teacher}</span>
-                                )}
-                              </div>
-                            </td>
-                          );
-                        })}
-                      </tr>
+                      <div key={time} className={styles.gridCell}>
+                        <div className={`${styles.classCard} ${isLab ? styles.labCard : styles.lectureCard}`}>
+                          <div className={styles.cardHeader}>
+                            <span className={styles.subject}>{slot.subject}</span>
+                            <span className={styles.typeIcon}>{isLab ? "🔬" : "📖"}</span>
+                          </div>
+                          <div className={styles.cardDetails}>
+                            {slot.room && <span><span className={styles.detailIcon}>📍</span> {slot.room}</span>}
+                            {slot.teacher && <span><span className={styles.detailIcon}>👤</span> {slot.teacher}</span>}
+                          </div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
-
-            <div className={styles.legend}>
-              <span className={styles.legendItem}>
-                <span className={`${styles.legendDot} ${styles.lectureDot}`} />
-                Lecture
-              </span>
-              <span className={styles.legendItem}>
-                <span className={`${styles.legendDot} ${styles.labDot}`} />
-                Lab
-              </span>
-            </div>
-          </>
-        )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* ─── Mobile: Card View ─── */}
@@ -279,7 +208,7 @@ export default function RoutineViewer({ routine }) {
           );
         })}
 
-        <div className={styles.legend}>
+        <div className={styles.mobileLegend}>
           <span className={styles.legendItem}>
             <span className={`${styles.legendDot} ${styles.lectureDot}`} />{" "}
             Lecture
@@ -289,6 +218,7 @@ export default function RoutineViewer({ routine }) {
           </span>
         </div>
       </div>
+      
     </div>
   );
 }
