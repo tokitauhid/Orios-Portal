@@ -178,6 +178,25 @@ export default function CalendarPage() {
           </div>
         </header>
 
+        {/* Weekly Routine Table — FIRST */}
+        <section className={styles.routineSection}>
+          <div className={styles.routineHeader}>
+            <div className={styles.routineHeaderText}>
+              <h2 className={styles.sectionTitle}>Weekly Routine</h2>
+              <p className={styles.routineSubtitle}>
+                Desktop schedule view with day filters and clearer slot details.
+              </p>
+            </div>
+            <img
+              src="/img/orio.png"
+              alt="Orio"
+              className={styles.routineMascot}
+            />
+          </div>
+          <RoutineViewer routine={liveRoutine} />
+        </section>
+
+        {/* Calendar + Upcoming — BELOW */}
         <div className={styles.layout}>
           <div className={styles.calendarCol}>
             <h2
@@ -297,25 +316,6 @@ export default function CalendarPage() {
             </div>
           </div>
         </div>
-
-        {/* Weekly Routine Table */}
-        <section className={styles.routineSection}>
-          <div className={styles.routineHeader}>
-            <div className={styles.routineHeaderText}>
-              <h2 className={styles.sectionTitle}>Weekly Routine</h2>
-              <p className={styles.routineSubtitle}>
-                Updated desktop schedule view with day filters and clearer slot
-                details.
-              </p>
-            </div>
-            <img
-              src="/img/orio.png"
-              alt="Orio"
-              className={styles.routineMascot}
-            />
-          </div>
-          <RoutineViewer routine={liveRoutine} />
-        </section>
       </div>
     </Layout>
   );
