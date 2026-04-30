@@ -128,8 +128,8 @@ export default function RoutineViewer({ routine }) {
                             <span className={styles.typeIcon}>{isLab ? "🔬" : "📖"}</span>
                           </div>
                           <div className={styles.cardDetails}>
-                            {slot.room && <span><span className={styles.detailIcon}>📍</span> {slot.room}</span>}
-                            {slot.teacher && <span><span className={styles.detailIcon}>👤</span> {slot.teacher}</span>}
+                            {slot.room && <span style={{display: 'inline-flex', alignItems: 'center'}}><span className={styles.detailIcon} style={{display: 'inline-flex'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> {slot.room}</span>}
+                            {slot.teacher && <span style={{display: 'inline-flex', alignItems: 'center'}}><span className={styles.detailIcon} style={{display: 'inline-flex'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span> {slot.teacher}</span>}
                           </div>
                         </div>
                       </div>
@@ -196,8 +196,8 @@ export default function RoutineViewer({ routine }) {
                           {slot.subject}
                         </span>
                         <div className={styles.mobileSlotMeta}>
-                          {slot.room && <span>📍 {slot.room}</span>}
-                          {slot.teacher && <span>👤 {slot.teacher}</span>}
+                          {slot.room && <span style={{display: 'inline-flex', alignItems: 'center'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '3px'}}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> {slot.room}</span>}
+                          {slot.teacher && <span style={{display: 'inline-flex', alignItems: 'center'}}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '3px'}}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> {slot.teacher}</span>}
                           <span
                             className={`${styles.mobileTypeBadge} ${styles[`badge_${slot.type}`]}`}
                           >

@@ -111,6 +111,14 @@ export default function EventCalendar({ events = [] }) {
     );
   }
 
+  // Ensure calendar grid is always exactly 6 rows (42 cells) to prevent squishing
+  const currentTotal = cells.length;
+  if (currentTotal < 42) {
+    for (let i = 0; i < 42 - currentTotal; i++) {
+      cells.push(<div key={`empty-end-${i}`} className={styles.emptyCell} />);
+    }
+  }
+
   return (
     <div className={styles.calendar}>
       {/* Header */}

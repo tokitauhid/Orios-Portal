@@ -108,7 +108,8 @@
 }
 
 /* last row: remove bottom border */
-.dayCell:nth-last-child(-n+7) {
+.dayCell:nth-child(n+36),
+.emptyCell:nth-child(n+36) {
   border-bottom: none;
 }
 
