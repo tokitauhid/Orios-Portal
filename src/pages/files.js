@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Layout from "@theme/Layout";
+import SearchOverlay from "@site/src/components/SearchOverlay";
 import { FileShareCard } from "@site/src/components/Cards";
 import { getAll } from "@site/src/auth";
 import styles from "./files.module.css";
 
 export default function FilesPage() {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [filesData, setFilesData] = useState([]);
 
@@ -19,10 +22,28 @@ export default function FilesPage() {
 
   const subjects = [...new Set(filesData.map((f) => f.subject))];
 
-  const filtered =
-    filter === "all"
-      ? filesData
-      : filesData.filter((f) => f.subject === filter || f.type === filter);
+  const filtered = (() => {
+    let base = filesData;
+    if (query) {
+      const q = query.toLowerCase();
+      base = base.filter(
+        (f) =>
+          (f.name || "").toLowerCase().includes(q) ||
+          (f.subject || "").toLowerCase().includes(q) ||
+          (f.uploadedBy || "").toLowerCase().includes(q)
+      );
+    }
+    if (filter !== "all") {
+      base = base.filter((f) => f.subject === filter || f.type === filter);
+    }
+    return base;
+  })();
+
+  const grouped = filtered.reduce((acc, f) => {
+    if (!acc[f.subject]) acc[f.subject] = [];
+    acc[f.subject].push(f);
+    return acc;
+  }, {});
 
   return (
     <Layout
@@ -33,16 +54,30 @@ export default function FilesPage() {
         <header className={styles.header}>
           <div className={styles.headerContent} style={{ position: "relative" }}>
             <img
+              src="/img/orio1.png"
+              alt="Orio"
+              style={{
+                position: "absolute",
+                left: "-50px",
+                top: "-20px",
+                width: "50px",
+                height: "50px",
+                objectFit: "contain",
+                transform: "rotate(-15deg)",
+                opacity: 0.9,
+              }}
+            />
+            <img
               src="/img/pucu.png"
               alt="Pucu"
               style={{
                 position: "absolute",
-                left: "-50px",
+                right: "-40px",
                 bottom: "-10px",
                 width: "60px",
                 height: "60px",
                 objectFit: "contain",
-                transform: "rotate(-10deg)",
+                transform: "rotate(10deg)",
                 opacity: 0.9,
               }}
             />
@@ -54,6 +89,12 @@ export default function FilesPage() {
               </p>
             </div>
           </div>
+          <button
+            className={styles.searchTrigger}
+            onClick={() => setSearchOpen(true)}
+          >
+            🔍 Search everything...
+          </button>
         </header>
 
         <div className={styles.info}>
@@ -64,61 +105,84 @@ export default function FilesPage() {
           </p>
         </div>
 
+        {/* Filters */}
         <div className={styles.filters}>
-          <button
-            className={`${styles.pill} ${filter === "all" ? styles.pillActive : ""}`}
-            onClick={() => setFilter("all")}
-          >
-            All
-          </button>
-          <button
-            className={`${styles.pill} ${filter === "pdf" ? styles.pillActive : ""}`}
-            onClick={() => setFilter("pdf")}
-          >
-            📄 PDF
-          </button>
-          <button
-            className={`${styles.pill} ${filter === "zip" ? styles.pillActive : ""}`}
-            onClick={() => setFilter("zip")}
-          >
-            📦 ZIP
-          </button>
-          <button
-            className={`${styles.pill} ${filter === "image" ? styles.pillActive : ""}`}
-            onClick={() => setFilter("image")}
-          >
-            🖼️ Image
-          </button>
-          {subjects.map((s) => (
-            <button
-              key={s}
-              className={`${styles.pill} ${filter === s ? styles.pillActive : ""}`}
-              onClick={() => setFilter(s)}
-            >
-              {s}
-            </button>
-          ))}
+          <div className={styles.filterGroup}>
+            <input
+              type="text"
+              placeholder="🔍 Filter files..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+          <div className={styles.filterRow}>
+            <div className={styles.pills}>
+              <button
+                className={`${styles.pill} ${filter === "all" ? styles.pillActive : ""}`}
+                onClick={() => setFilter("all")}
+              >
+                All
+              </button>
+              <button
+                className={`${styles.pill} ${filter === "pdf" ? styles.pillActive : ""}`}
+                onClick={() => setFilter("pdf")}
+              >
+                📄 PDF
+              </button>
+              <button
+                className={`${styles.pill} ${filter === "zip" ? styles.pillActive : ""}`}
+                onClick={() => setFilter("zip")}
+              >
+                📦 ZIP
+              </button>
+              <button
+                className={`${styles.pill} ${filter === "image" ? styles.pillActive : ""}`}
+                onClick={() => setFilter("image")}
+              >
+                🖼️ Image
+              </button>
+            </div>
+            <div className={styles.pills}>
+              {subjects.map((s) => (
+                <button
+                  key={s}
+                  className={`${styles.pill} ${styles.subjectPill} ${filter === s ? styles.pillActive : ""}`}
+                  onClick={() => setFilter(s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className={styles.content}>
-          {Object.entries(
-            filtered.reduce((acc, f) => {
-              if (!acc[f.subject]) acc[f.subject] = [];
-              acc[f.subject].push(f);
-              return acc;
-            }, {})
-          ).map(([subject, files]) => (
-            <section key={subject} className={styles.subjectSection}>
-              <h2 className={styles.subjectTitle}>{subject}</h2>
-              <div className={styles.grid}>
-                {files.map((file, i) => (
-                  <FileShareCard key={file.id} file={file} delay={i * 80} />
-                ))}
-              </div>
-            </section>
-          ))}
+          {Object.keys(grouped).length === 0 ? (
+            <div className={styles.empty}>
+              <span className={styles.emptyIcon}>📭</span>
+              <p>No files found matching your filters.</p>
+            </div>
+          ) : (
+            Object.entries(grouped).map(([subject, files]) => (
+              <section key={subject} className={styles.subjectSection}>
+                <h2 className={styles.subjectTitle}>{subject}</h2>
+                <div className={styles.grid}>
+                  {files.map((file, i) => (
+                    <FileShareCard key={file.id} file={file} delay={i * 80} />
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
         </div>
       </div>
+
+      <SearchOverlay
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        data={filesData}
+      />
     </Layout>
   );
 }

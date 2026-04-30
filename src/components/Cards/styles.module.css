@@ -25,7 +25,7 @@
    FILE SHARE CARD
    ========================================== */
 .fileCard { background: var(--surface-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 20px; transition: all var(--transition-base); animation: fadeInUp 0.6s ease-out both; display: flex; flex-direction: column; gap: 12px; }
-.fileCard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.fileCard:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--ifm-color-primary-lighter); }
 .fileCardHeader { display: flex; align-items: center; justify-content: space-between; }
 .fileIcon { font-size: 2rem; }
 .fileMeta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
