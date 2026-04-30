@@ -172,120 +172,155 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
-        {/* Quick Stats Row */}
-        <section className={styles.statsRow}>
-          <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className={styles.statIcon}>📚</span>
-            <div>
-              {loaded ? (
-                <span className={styles.statNumber}>{todayClasses.length}</span>
-              ) : (
-                <span className={`${styles.statNumber} ${styles.skeleton}`} />
-              )}
-              <span className={styles.statLabel}>Classes Today</span>
-            </div>
-          </a>
-          <a href="/assignments" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className={styles.statIcon}>📋</span>
-            <div>
-              {loaded ? (
-                <span className={styles.statNumber}>{pendingAssignments}</span>
-              ) : (
-                <span className={`${styles.statNumber} ${styles.skeleton}`} />
-              )}
-              <span className={styles.statLabel}>Pending Tasks</span>
-            </div>
-          </a>
-          <a href="/doom-clock" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className={styles.statIcon}>⏳</span>
-            <div>
-              {loaded ? (
-                <span className={styles.statNumber}>{upcomingEvents.length}</span>
-              ) : (
-                <span className={`${styles.statNumber} ${styles.skeleton}`} />
-              )}
-              <span className={styles.statLabel}>Upcoming Events</span>
-            </div>
-          </a>
-          <a href="/notes" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <span className={styles.statIcon}>📝</span>
-            <div>
-              {loaded ? (
-                <span className={styles.statNumber}>{notes.length}</span>
-              ) : (
-                <span className={`${styles.statNumber} ${styles.skeleton}`} />
-              )}
-              <span className={styles.statLabel}>Total Notes</span>
-            </div>
-          </a>
-        </section>
-
-        {/* Countdown Section */}
-        <section className={styles.section}>
-          <div className={styles.sectionHeader} style={{ position: 'relative' }}>
-            <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', right: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>⏳ Upcoming Events</h2>
-            <p className={styles.sectionDesc}>Active countdowns for your next few events</p>
-          </div>
-          <div className={styles.countdownGrid}>
-            {nextExam && (
-              <a href="/calendar" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
-              </a>
-            )}
-            {upcomingEvents.map(event => (
-              <a key={event.id} href={event.link} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                <CountdownTimer
-                  title={event.title}
-                  targetDate={event.date}
-                  type={event.type}
-                  icon={event.icon}
-                />
-              </a>
-            ))}
-          </div>
-        </section>
-
-        {/* Today's Schedule */}
-        <section className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>📚 Today's Schedule</h2>
-            <p className={styles.sectionDesc}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-          </div>
-          {todayClasses.length > 0 ? (
-            <div className={styles.todayGrid}>
-              {todayClasses.map((cls, i) => (
-                <div key={i} className={`${styles.todayCard} ${styles[cls.type + 'Card']}`}>
-                  <span className={styles.todayTime}>{formatTime(cls.time)}</span>
-                  <h4 className={styles.todaySubject}>{cls.subject}</h4>
-                  <span className={styles.todayRoom}>{cls.room} · {cls.teacher}</span>
-                  <span className={`${styles.todayBadge} ${cls.type === 'lab' ? styles.labBadge : ''}`}>
-                    {cls.type === 'lab' ? '🔬 Lab' : '📖 Lecture'}
-                  </span>
+        {!loaded ? (
+          /* ── Full-page skeleton ── */
+          <div className={styles.pageSkeleton}>
+            {/* Stats row skeleton */}
+            <div className={styles.skelStatsRow}>
+              {[0,1,2,3].map(i => (
+                <div key={i} className={styles.skelStatCard} style={{ animationDelay: `${i * 80}ms` }}>
+                  <div className={styles.skelIcon} />
+                  <div>
+                    <div className={styles.skelNumber} />
+                    <div className={styles.skelLabel} />
+                  </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <div className={styles.noClasses}>
-              <span>🎉</span>
-              <p>No classes today! Enjoy your day off.</p>
+            {/* Countdown section skeleton */}
+            <div className={styles.skelSection}>
+              <div className={styles.skelTitle} />
+              <div className={styles.skelDesc} />
+              <div className={styles.skelCountdownGrid}>
+                {[0,1,2].map(i => (
+                  <div key={i} className={styles.skelCard} style={{ height: '100px', animationDelay: `${200 + i * 80}ms` }} />
+                ))}
+              </div>
             </div>
-          )}
-        </section>
+            {/* Today's schedule skeleton */}
+            <div className={styles.skelSection}>
+              <div className={styles.skelTitle} />
+              <div className={styles.skelDesc} />
+              <div className={styles.skelTodayGrid}>
+                {[0,1,2,3].map(i => (
+                  <div key={i} className={styles.skelCard} style={{ height: '110px', animationDelay: `${400 + i * 80}ms` }} />
+                ))}
+              </div>
+            </div>
+            {/* Feature grid skeleton */}
+            <div className={styles.skelSection}>
+              <div className={styles.skelTitle} />
+              <div className={styles.skelDesc} />
+              <div className={styles.skelFeatureGrid}>
+                {[0,1,2,3,4,5].map(i => (
+                  <div key={i} className={styles.skelCard} style={{ height: '130px', animationDelay: `${600 + i * 60}ms` }} />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ── Real content ── */
+          <div className={styles.pageContent}>
+            {/* Quick Stats Row */}
+            <section className={styles.statsRow}>
+              <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <span className={styles.statIcon}>📚</span>
+                <div>
+                  <span className={styles.statNumber}>{todayClasses.length}</span>
+                  <span className={styles.statLabel}>Classes Today</span>
+                </div>
+              </a>
+              <a href="/assignments" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <span className={styles.statIcon}>📋</span>
+                <div>
+                  <span className={styles.statNumber}>{pendingAssignments}</span>
+                  <span className={styles.statLabel}>Pending Tasks</span>
+                </div>
+              </a>
+              <a href="/doom-clock" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <span className={styles.statIcon}>⏳</span>
+                <div>
+                  <span className={styles.statNumber}>{upcomingEvents.length}</span>
+                  <span className={styles.statLabel}>Upcoming Events</span>
+                </div>
+              </a>
+              <a href="/notes" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <span className={styles.statIcon}>📝</span>
+                <div>
+                  <span className={styles.statNumber}>{notes.length}</span>
+                  <span className={styles.statLabel}>Total Notes</span>
+                </div>
+              </a>
+            </section>
 
-        {/* Quick Access Features */}
-        <section className={styles.section}>
-          <div className={styles.sectionHeader} style={{ position: 'relative' }}>
-            <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', left: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(5deg)', opacity: 0.9 }} />
-            <h2 className={styles.sectionTitle}>🚀 Quick Access</h2>
-            <p className={styles.sectionDesc}>Jump to what you need</p>
+            {/* Countdown Section */}
+            <section className={styles.section}>
+              <div className={styles.sectionHeader} style={{ position: 'relative' }}>
+                <img src="/img/orio1.png" alt="Orio 1" style={{ position: 'absolute', right: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(-10deg)', opacity: 0.9 }} />
+                <h2 className={styles.sectionTitle}>⏳ Upcoming Events</h2>
+                <p className={styles.sectionDesc}>Active countdowns for your next few events</p>
+              </div>
+              <div className={styles.countdownGrid}>
+                {nextExam && (
+                  <a href="/calendar" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                    <CountdownTimer title={nextExam.title} targetDate={nextExam.date} type="exam" icon="🎯" />
+                  </a>
+                )}
+                {upcomingEvents.map(event => (
+                  <a key={event.id} href={event.link} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                    <CountdownTimer
+                      title={event.title}
+                      targetDate={event.date}
+                      type={event.type}
+                      icon={event.icon}
+                    />
+                  </a>
+                ))}
+              </div>
+            </section>
+
+            {/* Today's Schedule */}
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>📚 Today's Schedule</h2>
+                <p className={styles.sectionDesc}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+              </div>
+              {todayClasses.length > 0 ? (
+                <div className={styles.todayGrid}>
+                  {todayClasses.map((cls, i) => (
+                    <div key={i} className={`${styles.todayCard} ${styles[cls.type + 'Card']}`}>
+                      <span className={styles.todayTime}>{formatTime(cls.time)}</span>
+                      <h4 className={styles.todaySubject}>{cls.subject}</h4>
+                      <span className={styles.todayRoom}>{cls.room} · {cls.teacher}</span>
+                      <span className={`${styles.todayBadge} ${cls.type === 'lab' ? styles.labBadge : ''}`}>
+                        {cls.type === 'lab' ? '🔬 Lab' : '📖 Lecture'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.noClasses}>
+                  <span>🎉</span>
+                  <p>No classes today! Enjoy your day off.</p>
+                </div>
+              )}
+            </section>
+
+            {/* Quick Access Features */}
+            <section className={styles.section}>
+              <div className={styles.sectionHeader} style={{ position: 'relative' }}>
+                <img src="/img/pucu.png" alt="Pucu" style={{ position: 'absolute', left: '0', top: '-40px', width: '60px', height: '60px', objectFit: 'contain', transform: 'rotate(5deg)', opacity: 0.9 }} />
+                <h2 className={styles.sectionTitle}>🚀 Quick Access</h2>
+                <p className={styles.sectionDesc}>Jump to what you need</p>
+              </div>
+              <div className={styles.featureGrid}>
+                {features.map((feature, i) => (
+                  <FeatureCard key={feature.type} {...feature} delay={i * 80} />
+                ))}
+              </div>
+            </section>
           </div>
-          <div className={styles.featureGrid}>
-            {features.map((feature, i) => (
-              <FeatureCard key={feature.type} {...feature} delay={i * 80} />
-            ))}
-          </div>
-        </section>
+        )}
       </main>
 
       <SearchOverlay

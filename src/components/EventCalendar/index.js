@@ -29,7 +29,7 @@ export default function EventCalendar({ events = [] }) {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [expandedDay, setExpandedDay] = useState(null);
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
@@ -41,7 +41,7 @@ export default function EventCalendar({ events = [] }) {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
-    setSelectedDate(null);
+    setExpandedDay(null);
   };
 
   const nextMonth = () => {
@@ -51,7 +51,7 @@ export default function EventCalendar({ events = [] }) {
     } else {
       setCurrentMonth(currentMonth + 1);
     }
-    setSelectedDate(null);
+    setExpandedDay(null);
   };
 
   const getEventsForDate = (day) => {
@@ -65,7 +65,11 @@ export default function EventCalendar({ events = [] }) {
     });
   };
 
-  const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : [];
+  const handleDayClick = (day) => {
+    setExpandedDay(expandedDay === day ? null : day);
+  };
+
+  const expandedEvents = expandedDay ? getEventsForDate(expandedDay) : [];
 
   const cells = [];
   for (let i = 0; i < firstDay; i++) {
@@ -74,16 +78,30 @@ export default function EventCalendar({ events = [] }) {
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEvents = getEventsForDate(day);
     const isToday = isSameDay(new Date(currentYear, currentMonth, day), today);
-    const isSelected = selectedDate === day;
+    const isExpanded = expandedDay === day;
+    // Filter out routine events for inside-cell display (only show non-routine)
+    const nonRoutineEvents = dayEvents.filter(e => !e.id?.startsWith('routine-'));
 
     cells.push(
       <button
         key={day}
-        className={`${styles.dayCell} ${isToday ? styles.today : ''} ${isSelected ? styles.selected : ''} ${dayEvents.length > 0 ? styles.hasEvents : ''}`}
-        onClick={() => setSelectedDate(day)}
+        className={`${styles.dayCell} ${isToday ? styles.today : ''} ${isExpanded ? styles.expanded : ''} ${dayEvents.length > 0 ? styles.hasEvents : ''}`}
+        onClick={() => handleDayClick(day)}
       >
         <span className={styles.dayNumber}>{day}</span>
-        {dayEvents.length > 0 && (
+        {nonRoutineEvents.length > 0 && (
+          <div className={styles.dayEventList}>
+            {nonRoutineEvents.slice(0, 2).map((ev, i) => (
+              <span key={i} className={styles.dayEventLabel} style={{ '--event-color': ev.color }}>
+                {ev.title.length > 14 ? ev.title.slice(0, 12) + '…' : ev.title}
+              </span>
+            ))}
+            {nonRoutineEvents.length > 2 && (
+              <span className={styles.dayEventMore}>+{nonRoutineEvents.length - 2}</span>
+            )}
+          </div>
+        )}
+        {nonRoutineEvents.length === 0 && dayEvents.length > 0 && (
           <div className={styles.eventDots}>
             {dayEvents.slice(0, 3).map((ev, i) => (
               <span key={i} className={styles.eventDot} style={{ background: ev.color }} />
@@ -118,26 +136,29 @@ export default function EventCalendar({ events = [] }) {
         {cells}
       </div>
 
-      {selectedDate && (
-        <div className={styles.eventPanel}>
-          <h4 className={styles.panelTitle}>
-            {MONTHS[currentMonth]} {selectedDate}, {currentYear}
-          </h4>
-          {selectedEvents.length === 0 ? (
-            <p className={styles.noEvents}>No events on this day</p>
-          ) : (
-            <div className={styles.eventList}>
-              {selectedEvents.map(ev => (
-                <div key={ev.id} className={styles.eventItem} style={{ borderLeftColor: ev.color }}>
-                  <span className={styles.eventType} style={{ background: ev.color }}>{ev.type}</span>
-                  <h5 className={styles.eventTitle}>{ev.title}</h5>
-                  <p className={styles.eventDesc}>{ev.description}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Expanded day detail panel — smooth slide-down */}
+      <div className={`${styles.eventPanel} ${expandedDay ? styles.eventPanelOpen : ''}`}>
+        {expandedDay && (
+          <div className={styles.eventPanelInner}>
+            <h4 className={styles.panelTitle}>
+              {MONTHS[currentMonth]} {expandedDay}, {currentYear}
+            </h4>
+            {expandedEvents.length === 0 ? (
+              <p className={styles.noEvents}>No events on this day</p>
+            ) : (
+              <div className={styles.eventList}>
+                {expandedEvents.map(ev => (
+                  <div key={ev.id} className={styles.eventItem} style={{ borderLeftColor: ev.color }}>
+                    <span className={styles.eventType} style={{ background: ev.color }}>{ev.type}</span>
+                    <h5 className={styles.eventTitle}>{ev.title}</h5>
+                    <p className={styles.eventDesc}>{ev.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

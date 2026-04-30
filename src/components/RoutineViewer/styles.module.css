@@ -14,7 +14,8 @@
   border-radius: var(--radius-lg);
   -webkit-overflow-scrolling: touch;
   width: 100%;
-  background: var(--surface-1);
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
   scrollbar-width: thin;
   scrollbar-color: var(--text-muted) transparent;
   box-shadow: var(--shadow-md);
@@ -28,7 +29,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  table-layout: fixed;
+  min-width: 700px;
 }
 
 .table th, .table td {
@@ -46,7 +47,7 @@
   padding: 14px 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  width: 70px;
+  min-width: 60px;
   position: sticky; left: 0; z-index: 2;
   border-bottom: 2px solid var(--border-default);
   border-right: 1px solid var(--border-light);
@@ -59,6 +60,7 @@
   background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
   padding: 14px 10px;
   white-space: nowrap;
+  min-width: 100px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border-bottom: 2px solid var(--border-default);
@@ -102,7 +104,8 @@
 .cell {
   background: var(--surface-0);
   transition: background var(--transition-fast);
-  padding: 6px;
+  min-width: 100px;
+  padding: 8px;
   border-bottom: 1px solid var(--border-light);
   border-right: 1px solid var(--border-light);
   vertical-align: middle;
@@ -114,19 +117,19 @@
   background: rgba(99, 102, 241, 0.03);
 }
 
-/* ─── Filled Slots ─── */
+/* ─── Filled Slots (card style) ─── */
 .lecture .slotContent {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.08);
   border-left: 3px solid var(--ifm-color-primary);
 }
 .lab .slotContent {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.08);
   border-left: 3px solid var(--color-success);
 }
 
 .slotContent {
   display: flex; flex-direction: column; gap: 3px;
-  padding: 8px 10px; border-radius: var(--radius-sm);
+  padding: 10px 12px; border-radius: var(--radius-sm);
   text-align: left;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -143,7 +146,7 @@
 .free {
   display: block;
   width: 100%; height: 100%;
-  min-height: 36px;
+  min-height: 48px;
 }
 
 /* ─── Legend ─── */

@@ -1,4 +1,4 @@
-.page { max-width: 100%; margin: 0 auto; padding: 0 24px 60px; }
+.page { max-width: 1400px; margin: 0 auto; padding: 0 24px 60px; }
 
 .header {
   display: flex; align-items: center; gap: 16px;
@@ -83,8 +83,6 @@
   margin-top: 16px;
   padding-top: 32px;
   border-top: 1px solid var(--border-light);
-  max-width: 100%;
-  overflow: visible;
 }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
