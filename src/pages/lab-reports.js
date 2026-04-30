@@ -57,7 +57,7 @@ export default function LabReportsPage() {
     >
       <div className={styles.page}>
         <header className={styles.header}>
-          <div style={{ position: "relative", display: "inline-block" }}>
+          <div className={styles.headerContent} style={{ position: "relative" }}>
             <img
               src="/img/orio.png"
               alt="Orio"
@@ -73,42 +73,42 @@ export default function LabReportsPage() {
               }}
             />
             <span className={styles.headerIcon}>🔬</span>
-          </div>
-          <div>
-            <h1 className={styles.title}>Lab Reports</h1>
-            <p className={styles.subtitle}>
-              Manage lab experiment reports organized by subject
-            </p>
+            <div>
+              <h1 className={styles.title}>Lab Reports</h1>
+              <p className={styles.subtitle}>
+                Manage lab experiment reports organized by subject
+              </p>
+            </div>
           </div>
         </header>
 
         <div className={styles.filters}>
           <button
-            className={`${styles.pill} ${filter === "all" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "all" ? styles.pillActive : ""}`}
             onClick={() => setFilter("all")}
           >
             All
           </button>
           <button
-            className={`${styles.pill} ${filter === "pending" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "pending" ? styles.pillActive : ""}`}
             onClick={() => setFilter("pending")}
           >
             ⏳ Pending
           </button>
           <button
-            className={`${styles.pill} ${filter === "submitted" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "submitted" ? styles.pillActive : ""}`}
             onClick={() => setFilter("submitted")}
           >
             ✅ Submitted
           </button>
           <button
-            className={`${styles.pill} ${filter === "overdue" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "overdue" ? styles.pillActive : ""}`}
             onClick={() => setFilter("overdue")}
           >
             🔴 Overdue
           </button>
           <button
-            className={`${styles.pill} ${filter === "graded" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "graded" ? styles.pillActive : ""}`}
             onClick={() => setFilter("graded")}
           >
             ⭐ Graded
@@ -116,7 +116,7 @@ export default function LabReportsPage() {
           {subjects.map((s) => (
             <button
               key={s}
-              className={`${styles.pill} ${filter === s ? styles.active : ""}`}
+              className={`${styles.pill} ${filter === s ? styles.pillActive : ""}`}
               onClick={() => setFilter(s)}
             >
               {s}
@@ -124,88 +124,101 @@ export default function LabReportsPage() {
           ))}
         </div>
 
-        <div className={styles.grid}>
-          {filtered.map((report, i) => {
-            const status = statusConfig[report.status] || statusConfig.pending;
-            return (
-              <div
-                key={report.id}
-                className={styles.card}
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <div className={styles.cardTop}>
-                  <div className={styles.labBadge}>Lab {report.labNumber}</div>
-                  <span
-                    className={styles.status}
-                    style={{ background: status.bg, color: status.color }}
-                  >
-                    {status.label}
-                    {report.grade && ` — ${report.grade}`}
-                  </span>
-                </div>
-                <h3 className={styles.cardTitle}>{report.title}</h3>
-                <span className={styles.subject}>{report.subject}</span>
-                <p className={styles.cardDesc}>{report.description}</p>
-                <div className={styles.cardFooter}>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                      width: "100%",
-                    }}
-                  >
+        <div className={styles.content}>
+          {Object.entries(
+            filtered.reduce((acc, r) => {
+              if (!acc[r.subject]) acc[r.subject] = [];
+              acc[r.subject].push(r);
+              return acc;
+            }, {})
+          ).map(([subject, reports]) => (
+            <section key={subject} className={styles.subjectSection}>
+              <h2 className={styles.subjectTitle}>{subject}</h2>
+              <div className={styles.grid}>
+                {reports.map((report, i) => {
+                  const status = statusConfig[report.status] || statusConfig.pending;
+                  return (
                     <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
+                      key={report.id}
+                      className={styles.card}
+                      style={{ animationDelay: `${i * 80}ms` }}
                     >
-                      <span className={styles.date}>
-                        🧪{" "}
-                        {new Date(report.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                      <span className={styles.due}>
-                        📅 Due:{" "}
-                        {new Date(report.dueDate).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
+                      <div className={styles.cardTop}>
+                        <div className={styles.labBadge}>Lab {report.labNumber}</div>
+                        <span
+                          className={styles.status}
+                          style={{ background: status.bg, color: status.color }}
+                        >
+                          {status.label}
+                          {report.grade && ` — ${report.grade}`}
+                        </span>
+                      </div>
+                      <h3 className={styles.cardTitle}>{report.title}</h3>
+                      <span className={styles.subject}>{report.subject}</span>
+                      <p className={styles.cardDesc}>{report.description}</p>
+                      <div className={styles.cardFooter}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "8px",
+                            width: "100%",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <span className={styles.date}>
+                              🧪{" "}
+                              {new Date(report.date).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
+                            <span className={styles.due}>
+                              📅 Due:{" "}
+                              {new Date(report.dueDate).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
+                          </div>
+                          {report.fileData && (
+                            <a
+                              href={report.fileData}
+                              download={
+                                report.title +
+                                "." +
+                                (report.format || "bin").toLowerCase()
+                              }
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: "6px 12px",
+                                background: "var(--ifm-color-primary)",
+                                color: "white",
+                                borderRadius: "4px",
+                                textDecoration: "none",
+                                fontSize: "0.85rem",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              ⬇ Download Attachment
+                            </a>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    {report.fileData && (
-                      <a
-                        href={report.fileData}
-                        download={
-                          report.title +
-                          "." +
-                          (report.format || "bin").toLowerCase()
-                        }
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "6px 12px",
-                          background: "var(--ifm-color-primary)",
-                          color: "white",
-                          borderRadius: "4px",
-                          textDecoration: "none",
-                          fontSize: "0.85rem",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        ⬇ Download Attachment
-                      </a>
-                    )}
-                  </div>
-                </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </section>
+          ))}
         </div>
       </div>
     </Layout>

@@ -31,7 +31,7 @@ export default function FilesPage() {
     >
       <div className={styles.page}>
         <header className={styles.header}>
-          <div style={{ position: "relative", display: "inline-block" }}>
+          <div className={styles.headerContent} style={{ position: "relative" }}>
             <img
               src="/img/pucu.png"
               alt="Pucu"
@@ -47,12 +47,12 @@ export default function FilesPage() {
               }}
             />
             <span className={styles.headerIcon}>📁</span>
-          </div>
-          <div>
-            <h1 className={styles.title}>File Sharing</h1>
-            <p className={styles.subtitle}>
-              Securely share and download class materials and resources
-            </p>
+            <div>
+              <h1 className={styles.title}>File Sharing</h1>
+              <p className={styles.subtitle}>
+                Securely share and download class materials and resources
+              </p>
+            </div>
           </div>
         </header>
 
@@ -66,25 +66,25 @@ export default function FilesPage() {
 
         <div className={styles.filters}>
           <button
-            className={`${styles.pill} ${filter === "all" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "all" ? styles.pillActive : ""}`}
             onClick={() => setFilter("all")}
           >
             All
           </button>
           <button
-            className={`${styles.pill} ${filter === "pdf" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "pdf" ? styles.pillActive : ""}`}
             onClick={() => setFilter("pdf")}
           >
             📄 PDF
           </button>
           <button
-            className={`${styles.pill} ${filter === "zip" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "zip" ? styles.pillActive : ""}`}
             onClick={() => setFilter("zip")}
           >
             📦 ZIP
           </button>
           <button
-            className={`${styles.pill} ${filter === "image" ? styles.active : ""}`}
+            className={`${styles.pill} ${filter === "image" ? styles.pillActive : ""}`}
             onClick={() => setFilter("image")}
           >
             🖼️ Image
@@ -92,7 +92,7 @@ export default function FilesPage() {
           {subjects.map((s) => (
             <button
               key={s}
-              className={`${styles.pill} ${filter === s ? styles.active : ""}`}
+              className={`${styles.pill} ${filter === s ? styles.pillActive : ""}`}
               onClick={() => setFilter(s)}
             >
               {s}
@@ -100,9 +100,22 @@ export default function FilesPage() {
           ))}
         </div>
 
-        <div className={styles.grid}>
-          {filtered.map((file, i) => (
-            <FileShareCard key={file.id} file={file} delay={i * 80} />
+        <div className={styles.content}>
+          {Object.entries(
+            filtered.reduce((acc, f) => {
+              if (!acc[f.subject]) acc[f.subject] = [];
+              acc[f.subject].push(f);
+              return acc;
+            }, {})
+          ).map(([subject, files]) => (
+            <section key={subject} className={styles.subjectSection}>
+              <h2 className={styles.subjectTitle}>{subject}</h2>
+              <div className={styles.grid}>
+                {files.map((file, i) => (
+                  <FileShareCard key={file.id} file={file} delay={i * 80} />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       </div>
