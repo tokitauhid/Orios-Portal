@@ -1,18 +1,19 @@
 /* ============================================================================
    ROUTINE VIEWER STYLES
-   - Complete redesign using modern Glassmorphism & CSS Grid
+   - Clean, compact desktop grid that fits the viewport
+   - Mobile accordion view preserved
    ============================================================================ */
 
 .container {
   width: 100%;
-  animation: fadeInUp 0.6s ease-out both;
+  animation: fadeInUp 0.5s ease-out both;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -22,46 +23,46 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
-  padding: 8px 0 16px;
+  gap: 12px;
+  padding: 4px 0 12px;
 }
 
 .dayFilters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .filterBtn {
   background: var(--surface-1);
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .filterBtn:hover {
   background: var(--surface-2);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .activeFilter {
   background: var(--gradient-primary);
   color: white;
   border-color: transparent;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
 }
 
 .todayDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #fbbf24;
   box-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
@@ -77,8 +78,8 @@
 /* Legend */
 .legend {
   display: flex;
-  gap: 16px;
-  font-size: 0.8rem;
+  gap: 14px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
@@ -86,86 +87,74 @@
 .legendItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .dotLecture {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  background: rgba(99, 102, 241, 0.2);
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(99, 102, 241, 0.25);
   border: 2px solid var(--ifm-color-primary);
 }
 
 .dotLab {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  background: rgba(6, 182, 212, 0.2);
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(6, 182, 212, 0.25);
   border: 2px solid #06b6d4;
 }
 
 /* ─── DESKTOP GRID ─── */
 .desktopGridWrap {
-  overflow-x: auto;
-  border-top: 1px solid var(--border-light);
-}
-
-.desktopGridWrap::-webkit-scrollbar {
-  height: 8px;
-}
-.desktopGridWrap::-webkit-scrollbar-track {
-  background: var(--surface-0);
-  border-radius: 4px;
-}
-.desktopGridWrap::-webkit-scrollbar-thumb {
-  background: var(--surface-2);
-  border-radius: 4px;
-}
-.desktopGridWrap::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
 }
 
 .gridContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
+  table-layout: fixed;
 }
 
 .gridHeader {
   display: grid;
   border-bottom: 2px solid var(--border-light);
-  background: var(--surface-0);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background: var(--surface-1);
 }
 
 .headerCell {
-  padding: 12px 8px;
+  padding: 10px 4px;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   border-right: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .headerCellTime {
-  padding: 12px 8px;
+  padding: 10px 2px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   color: var(--text-primary);
   border-right: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  background: linear-gradient(180deg, var(--surface-1), var(--surface-0));
+  gap: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .headerCellTime:last-child {
@@ -173,8 +162,7 @@
 }
 
 .timeIcon {
-  font-size: 1rem;
-  opacity: 0.8;
+  display: none;
 }
 
 /* Rows */
@@ -193,24 +181,28 @@
   border-bottom: none;
 }
 
-.gridRow:hover {
-  background: rgba(0, 0, 0, 0.02);
+.gridRow:nth-child(even) {
+  background: rgba(0, 0, 0, 0.01);
 }
-:global([data-theme="dark"]) .gridRow:hover {
-  background: rgba(255, 255, 255, 0.02);
+:global([data-theme="dark"]) .gridRow:nth-child(even) {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.gridRow:hover {
+  background: rgba(99, 102, 241, 0.03);
 }
 
 .todayRow {
-  background: rgba(99, 102, 241, 0.03) !important;
+  background: rgba(99, 102, 241, 0.04) !important;
 }
 
 .rowLabel {
-  padding: 12px 8px;
+  padding: 10px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   border-right: 1px solid var(--border-light);
   background: var(--surface-1);
 }
@@ -218,10 +210,10 @@
 .dayText {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .todayRow .dayText {
@@ -229,23 +221,24 @@
 }
 
 .todayBadge {
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 1px 6px;
   border-radius: var(--radius-full);
   background: var(--gradient-primary);
   color: white;
-  letter-spacing: 0.05em;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
 }
 
 .gridCell {
-  padding: 8px;
-  border-right: 1px dashed var(--border-light);
+  padding: 4px;
+  border-right: 1px solid var(--border-light);
   display: flex;
   align-items: stretch;
   justify-content: stretch;
-  min-height: min-content;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .gridCell:last-child {
@@ -255,78 +248,96 @@
 /* Class Cards */
 .classCard {
   width: 100%;
-  border-radius: var(--radius-md);
-  padding: 10px;
+  border-radius: 6px;
+  padding: 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   transition: all var(--transition-fast);
-  backdrop-filter: blur(8px);
-  min-height: min-content;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .classCard:hover {
-  transform: translateY(-2px);
+  transform: scale(1.02);
   box-shadow: var(--shadow-md);
+  z-index: 5;
 }
 
 .lectureCard {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.15));
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.18));
   border: 1px solid rgba(99, 102, 241, 0.2);
-  border-left: 4px solid var(--ifm-color-primary);
+  border-left: 3px solid var(--ifm-color-primary);
 }
 .lectureCard:hover {
-  border-color: rgba(99, 102, 241, 0.4);
+  border-color: rgba(99, 102, 241, 0.45);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(99, 102, 241, 0.22));
 }
 
 .labCard {
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(6, 182, 212, 0.15));
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(6, 182, 212, 0.18));
   border: 1px solid rgba(6, 182, 212, 0.2);
-  border-left: 4px solid #06b6d4;
+  border-left: 3px solid #06b6d4;
 }
 .labCard:hover {
-  border-color: rgba(6, 182, 212, 0.4);
+  border-color: rgba(6, 182, 212, 0.45);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(6, 182, 212, 0.22));
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .subject {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   color: var(--text-primary);
-  line-height: 1.2;
-  word-wrap: break-word;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-width: 0;
+  word-break: break-word;
 }
 
 .typeIcon {
-  font-size: 1rem;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .cardDetails {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 0.7rem;
-  color: var(--text-secondary);
+  gap: 1px;
+  font-size: 0.62rem;
+  color: var(--text-muted);
   font-weight: 500;
   margin-top: auto;
-  word-wrap: break-word;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .cardDetails span {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .detailIcon {
   opacity: 0.6;
+  flex-shrink: 0;
+  font-size: 0.6rem;
 }
 
 /* Empty Cell */
@@ -336,8 +347,9 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  opacity: 0.3;
+  opacity: 0.15;
   font-weight: 800;
+  font-size: 0.7rem;
 }
 
 /* ─── EMPTY STATE ─── */
@@ -405,15 +417,6 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 500;
-}
-.todayBadge {
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: var(--ifm-color-primary);
-  color: white;
-  letter-spacing: 0.05em;
 }
 
 .dayCardChevron {
