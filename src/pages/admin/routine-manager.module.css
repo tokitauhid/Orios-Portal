@@ -34,20 +34,35 @@
 
 .subjectList { display: flex; flex-wrap: wrap; gap: 8px; }
 .subjectCard {
-  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
   background: var(--surface-1); border: 1px solid var(--border-light);
   border-radius: var(--radius-full); transition: all var(--transition-fast);
   animation: fadeIn 0.3s ease-out both;
 }
 .subjectCard:hover { box-shadow: var(--shadow-sm); border-color: var(--ifm-color-primary-lighter); }
+.subjectCardEditing { border-color: var(--ifm-color-primary); box-shadow: 0 0 0 2px rgba(99,102,241,0.15); }
 .subjectName { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+.subjectEditInput {
+  border: none; outline: none; background: transparent; font-size: 0.85rem;
+  font-weight: 600; color: var(--text-primary); font-family: var(--ifm-font-family-base);
+  min-width: 100px; max-width: 180px;
+}
+.editSubBtn {
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-light); border-radius: 50%;
+  background: transparent; color: var(--text-muted); font-size: 0.65rem;
+  cursor: pointer; transition: all var(--transition-fast); padding: 0;
+  line-height: 1;
+}
+.editSubBtn:hover { background: rgba(99,102,241,0.1); border-color: var(--ifm-color-primary); color: var(--ifm-color-primary); }
 .removeSubBtn {
   width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
   border: 1px solid var(--border-light); border-radius: 50%;
   background: transparent; color: var(--text-muted); font-size: 0.7rem;
-  cursor: pointer; transition: all var(--transition-fast);
+  cursor: pointer; transition: all var(--transition-fast); padding: 0;
 }
 .removeSubBtn:hover { background: rgba(239,68,68,0.1); color: var(--color-danger); border-color: rgba(239,68,68,0.3); }
+.saveSubBtn:hover { background: rgba(16,185,129,0.1) !important; color: var(--color-success) !important; border-color: rgba(16,185,129,0.4) !important; }
 
 /* Routine Section Toolbar */
 .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
@@ -70,11 +85,31 @@
   display: flex; align-items: center; gap: 6px; padding: 6px 12px;
   background: var(--surface-0); border: 1px solid var(--border-light);
   border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; color: var(--text-primary);
+  transition: border-color var(--transition-fast);
 }
+.chipEditing { border-color: var(--ifm-color-primary); box-shadow: 0 0 0 2px rgba(99,102,241,0.12); }
+.chipInput {
+  border: none; outline: none; background: transparent; font-size: 0.8rem;
+  font-weight: 600; color: var(--text-primary); font-family: var(--ifm-font-family-base);
+  min-width: 60px; max-width: 120px;
+}
+.chipEdit {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%; background: transparent; color: var(--text-muted);
+  font-size: 0.6rem; cursor: pointer; transition: all var(--transition-fast); padding: 0;
+  line-height: 1;
+}
+.chipEdit:hover { background: rgba(99,102,241,0.1); color: var(--ifm-color-primary); }
+.chipSave {
+  width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%; background: transparent; color: var(--color-success);
+  font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: all var(--transition-fast); padding: 0;
+}
+.chipSave:hover { background: rgba(16,185,129,0.12); }
 .chipRemove {
   width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
   border: none; border-radius: 50%; background: transparent; color: var(--text-muted);
-  font-size: 0.6rem; cursor: pointer; transition: all var(--transition-fast);
+  font-size: 0.6rem; cursor: pointer; transition: all var(--transition-fast); padding: 0;
 }
 .chipRemove:hover { background: rgba(239,68,68,0.1); color: var(--color-danger); }
 .chipMove {
