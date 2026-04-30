@@ -28,7 +28,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 700px;
+  table-layout: fixed;
 }
 
 .table th, .table td {
@@ -46,7 +46,7 @@
   padding: 14px 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  min-width: 60px;
+  width: 70px;
   position: sticky; left: 0; z-index: 2;
   border-bottom: 2px solid var(--border-default);
   border-right: 1px solid var(--border-light);
@@ -59,7 +59,6 @@
   background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
   padding: 14px 10px;
   white-space: nowrap;
-  min-width: 90px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   border-bottom: 2px solid var(--border-default);
@@ -103,7 +102,6 @@
 .cell {
   background: var(--surface-0);
   transition: background var(--transition-fast);
-  min-width: 90px;
   padding: 6px;
   border-bottom: 1px solid var(--border-light);
   border-right: 1px solid var(--border-light);
