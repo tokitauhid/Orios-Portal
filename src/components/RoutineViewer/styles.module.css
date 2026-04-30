@@ -6,6 +6,9 @@
 
 .container {
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
   animation: fadeInUp 0.5s ease-out both;
   display: flex;
   flex-direction: column;
@@ -376,15 +379,22 @@
   display: none;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Day pill strip — horizontally scrollable */
+/* Day pill strip — horizontally scrollable, contained within screen */
 .mobileDayStrip {
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 4px;
   scrollbar-width: none;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .mobileDayStrip::-webkit-scrollbar {
   display: none;
@@ -459,12 +469,16 @@
 
 .mobileSlot {
   display: flex;
-  gap: 12px;
-  align-items: stretch;
+  gap: 10px;
+  align-items: flex-start;
   padding: 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-light);
   background: var(--surface-1);
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  min-width: 0;
 }
 .mobile_lecture {
   border-left: 3px solid var(--ifm-color-primary);
@@ -478,23 +492,30 @@
 .mobileSlotTime {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--ifm-color-primary);
-  min-width: 65px;
+  min-width: 58px;
+  max-width: 58px;
   white-space: nowrap;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 .mobileSlotInfo {
   display: flex;
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 .mobileSlotSubject {
   font-weight: 700;
   font-size: 0.88rem;
   color: var(--text-primary);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
 }
 .mobileSlotMeta {
   display: flex;
