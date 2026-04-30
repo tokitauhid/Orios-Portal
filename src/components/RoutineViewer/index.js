@@ -49,8 +49,8 @@ export default function RoutineViewer({ routine }) {
     );
   }
 
-  // Calculate grid columns for desktop: 1fr for day, then repeat for timeslots
-  const gridTemplateColumns = `120px repeat(${routine.timeSlots.length}, minmax(180px, 1fr))`;
+  // Calculate grid columns for desktop: equally distribute the available width
+  const gridTemplateColumns = `80px repeat(${routine.timeSlots.length}, minmax(0, 1fr))`;
 
   return (
     <div className={styles.container}>
