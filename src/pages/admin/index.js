@@ -203,18 +203,44 @@ export default function AdminDashboard() {
               </span>
             </div>
             <div className={styles.field}>
-              <label>📅 Holiday Calendar (ICS URL)</label>
-              <input
-                type="url"
-                value={settings.icsUrl || ""}
-                onChange={(e) =>
-                  setSettings({ ...settings, icsUrl: e.target.value })
-                }
-                placeholder="https://calendar.google.com/calendar/ical/..."
-              />
-              <span className={styles.hint}>
-                Paste a public ICS calendar URL (Google Calendar, Outlook, etc.)
-                to show holidays on the Calendar page.
+              <label>📅 Custom Calendars (ICS URLs)</label>
+              {(settings.icsUrls || (settings.icsUrl ? [settings.icsUrl] : [])).map((url, index) => (
+                <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                  <input
+                    type="url"
+                    value={url}
+                    onChange={(e) => {
+                      const newUrls = [...(settings.icsUrls || (settings.icsUrl ? [settings.icsUrl] : []))];
+                      newUrls[index] = e.target.value;
+                      setSettings({ ...settings, icsUrls: newUrls, icsUrl: undefined });
+                    }}
+                    placeholder="https://calendar.google.com/..."
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    className={styles.saveBtn}
+                    style={{ background: '#ef4444', padding: '0 12px' }}
+                    onClick={() => {
+                      const newUrls = [...(settings.icsUrls || (settings.icsUrl ? [settings.icsUrl] : []))];
+                      newUrls.splice(index, 1);
+                      setSettings({ ...settings, icsUrls: newUrls, icsUrl: undefined });
+                    }}
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+              <button
+                className={styles.saveBtn}
+                style={{ background: 'var(--surface-2)', color: 'var(--text-primary)', alignSelf: 'flex-start', marginTop: '4px' }}
+                onClick={() => {
+                  setSettings({ ...settings, icsUrls: [...(settings.icsUrls || (settings.icsUrl ? [settings.icsUrl] : [])), ""] });
+                }}
+              >
+                + Add Calendar
+              </button>
+              <span className={styles.hint} style={{ marginTop: '8px' }}>
+                Add multiple public ICS calendar URLs (Google Calendar, Outlook, etc.) to show events on the Calendar page.
               </span>
             </div>
             <div className={styles.field}>
