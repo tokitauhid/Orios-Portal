@@ -49,8 +49,8 @@ export default function RoutineViewer({ routine }) {
     );
   }
 
-  // Calculate grid columns for desktop: equally distribute the available width
-  const gridTemplateColumns = `80px repeat(${routine.timeSlots.length}, minmax(0, 1fr))`;
+  // Calculate grid columns for desktop: narrow day label + equal-width time columns
+  const gridTemplateColumns = `60px repeat(${routine.timeSlots.length}, minmax(0, 1fr))`;
 
   return (
     <div className={styles.container}>
@@ -89,7 +89,7 @@ export default function RoutineViewer({ routine }) {
             <div className={styles.headerCell}>DAY</div>
             {routine.timeSlots.map(time => (
               <div key={time} className={styles.headerCellTime}>
-                <span className={styles.timeIcon}>⏱️</span> {formatTime(time)}
+                {formatTime(time)}
               </div>
             ))}
           </div>
