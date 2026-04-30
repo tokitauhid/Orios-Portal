@@ -230,6 +230,13 @@ h6 {
   background-clip: text;
 }
 
+.navbar__logo {
+  height: 40px;
+  transform: scale(1.15);
+  transform-origin: center;
+  margin-right: 6px;
+}
+
 .navbar__link {
   font-weight: 500;
   font-size: 0.9rem;

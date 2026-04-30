@@ -5,7 +5,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'Orios Class',
   tagline: 'Your smart class companion — Notes, Assignments, Events & more',
-  favicon: 'img/orio.png',
+  favicon: 'img/favicon.png',
 
   future: {
     v4: true,
