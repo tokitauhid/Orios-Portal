@@ -46,23 +46,29 @@ export default function CalendarPage() {
         setEvents([...evs, ...mappedAsgns, ...mappedLabs]);
 
         // Fetch holidays from ICS calendar feed if configured
-        if (settings.icsUrl) {
-          fetchICSHolidays(settings.icsUrl);
+        const urls = settings.icsUrls || (settings.icsUrl ? [settings.icsUrl] : []);
+        if (urls.length > 0) {
+          fetchICSHolidays(urls);
         }
       } catch {}
     }
     init();
   }, []);
 
-  const fetchICSHolidays = async (icsUrl) => {
+  const fetchICSHolidays = async (icsUrls) => {
     try {
-      const res = await fetch(
-        `/api/ics-proxy?url=${encodeURIComponent(icsUrl)}`,
-      );
-      if (!res.ok) return;
-      const text = await res.text();
-      const parsed = parseICS(text);
-      setHolidays(parsed);
+      const allEvents = [];
+      for (const url of icsUrls) {
+        if (!url) continue;
+        const res = await fetch(
+          `/api/ics-proxy?url=${encodeURIComponent(url)}`,
+        );
+        if (!res.ok) continue;
+        const text = await res.text();
+        const parsed = parseICS(text);
+        allEvents.push(...parsed);
+      }
+      setHolidays(allEvents);
     } catch {}
   };
 

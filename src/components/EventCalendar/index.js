@@ -81,13 +81,8 @@ export default function EventCalendar({ events = [] }) {
     const isToday = isSameDay(new Date(currentYear, currentMonth, day), today);
     const isSelected = selectedDate === day;
 
-    // Separate routine (class/lab) from other events for display
-    const nonRoutine = dayEvents.filter(e => e.type !== 'class' && e.type !== 'lab');
-    const routineCount = dayEvents.filter(e => e.type === 'class' || e.type === 'lab').length;
-
-    // Show up to 2 non-routine chips + a "+N more" if needed
-    const visibleChips = nonRoutine.slice(0, 2);
-    const hiddenCount = dayEvents.length - visibleChips.length - (routineCount > 0 ? 0 : 0);
+    // Show up to 2 chips + a "+N more" if needed
+    const visibleChips = dayEvents.slice(0, 2);
 
     cells.push(
       <button
@@ -97,7 +92,7 @@ export default function EventCalendar({ events = [] }) {
       >
         <span className={styles.dayNumber}>{day}</span>
 
-        {/* Inline event chips — non-routine events */}
+        {/* Inline event chips */}
         {visibleChips.map((ev, i) => (
           <span
             key={i}
@@ -108,21 +103,9 @@ export default function EventCalendar({ events = [] }) {
           </span>
         ))}
 
-        {/* Routine indicator dot row */}
-        {routineCount > 0 && (
-          <span className={styles.routineDots}>
-            {dayEvents.filter(e => e.type === 'class').length > 0 && (
-              <span className={styles.dot} style={{ background: '#8b5cf6' }} />
-            )}
-            {dayEvents.filter(e => e.type === 'lab').length > 0 && (
-              <span className={styles.dot} style={{ background: '#06b6d4' }} />
-            )}
-          </span>
-        )}
-
         {/* Overflow indicator */}
-        {nonRoutine.length > 2 && (
-          <span className={styles.overflowChip}>+{nonRoutine.length - 2}</span>
+        {dayEvents.length > 2 && (
+          <span className={styles.overflowChip}>+{dayEvents.length - 2} more</span>
         )}
       </button>
     );
