@@ -75,7 +75,7 @@ const features = [
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
-  const [welcomeText, setWelcomeText] = useState('Semester 3/1');
+  const [welcomeText, setWelcomeText] = useState('');
   const [liveRoutine, setLiveRoutine] = useState({ days: [], timeSlots: [], schedule: {} });
   const [notices, setNotices] = useState([]);
   const [events, setEvents] = useState([]);
@@ -84,12 +84,12 @@ export default function Home() {
   const [teachers, setTeachers] = useState([]);
   const [files, setFiles] = useState([]);
   const [labReports, setLabReports] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     async function init() {
       try {
-        try { await autoUpdateStatuses(); } catch (e) { console.warn("Auto-status skipped:", e); }
-        
+        // Fetch all data first, then auto-update statuses in parallel
         const [settings, savedRoutine, noticesData, eventsData, notesData, asgnsData, teachersData, filesData, labsData] = await Promise.all([
           getSettings(),
           getRoutine(),
@@ -112,7 +112,11 @@ export default function Home() {
         setTeachers(teachersData);
         setFiles(filesData);
         setLabReports(labsData);
-      } catch (err) { console.error("Home initialization failed:", err); }
+        setLoaded(true);
+
+        // Fire-and-forget status update after data is displayed
+        try { await autoUpdateStatuses(); } catch (e) { console.warn("Auto-status skipped:", e); }
+      } catch (err) { console.error("Home initialization failed:", err); setLoaded(true); }
     }
     init();
   }, []);
@@ -145,7 +149,7 @@ export default function Home() {
             Welcome to <span className={styles.gradient}>Orios Class</span>
             <img src="/img/orio.png" alt="Orio" style={{ width: '40px', height: '40px', objectFit: 'contain', verticalAlign: 'middle', marginLeft: '10px', transform: 'rotate(15deg)' }} />
           </h1>
-          <p className={styles.welcomeBox}>{welcomeText}</p>
+          {welcomeText && <p className={styles.welcomeBox}>{welcomeText}</p>}
           <p className={styles.heroSubtitle}>
             Your all-in-one class companion. Access notes, track assignments, check schedules, and stay updated.
           </p>
@@ -173,28 +177,44 @@ export default function Home() {
           <a href="/calendar" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📚</span>
             <div>
-              <span className={styles.statNumber}>{todayClasses.length}</span>
+              {loaded ? (
+                <span className={styles.statNumber}>{todayClasses.length}</span>
+              ) : (
+                <span className={`${styles.statNumber} ${styles.skeleton}`} />
+              )}
               <span className={styles.statLabel}>Classes Today</span>
             </div>
           </a>
           <a href="/assignments" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📋</span>
             <div>
-              <span className={styles.statNumber}>{pendingAssignments}</span>
+              {loaded ? (
+                <span className={styles.statNumber}>{pendingAssignments}</span>
+              ) : (
+                <span className={`${styles.statNumber} ${styles.skeleton}`} />
+              )}
               <span className={styles.statLabel}>Pending Tasks</span>
             </div>
           </a>
           <a href="/doom-clock" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>⏳</span>
             <div>
-              <span className={styles.statNumber}>{upcomingEvents.length}</span>
+              {loaded ? (
+                <span className={styles.statNumber}>{upcomingEvents.length}</span>
+              ) : (
+                <span className={`${styles.statNumber} ${styles.skeleton}`} />
+              )}
               <span className={styles.statLabel}>Upcoming Events</span>
             </div>
           </a>
           <a href="/notes" className={styles.statCard} style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className={styles.statIcon}>📝</span>
             <div>
-              <span className={styles.statNumber}>{notes.length}</span>
+              {loaded ? (
+                <span className={styles.statNumber}>{notes.length}</span>
+              ) : (
+                <span className={`${styles.statNumber} ${styles.skeleton}`} />
+              )}
               <span className={styles.statLabel}>Total Notes</span>
             </div>
           </a>
