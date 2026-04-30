@@ -8,6 +8,8 @@ export default function RoutineViewer({ routine }) {
   
   const [selectedDay, setSelectedDay] = useState("All");
   const [expandedDay, setExpandedDay] = useState(todayName);
+  // Mobile: which day is selected in the compact selector
+  const [mobileDaySelected, setMobileDaySelected] = useState(todayName);
 
   const formatTime = (timeStr) => {
     try {
@@ -140,73 +142,76 @@ export default function RoutineViewer({ routine }) {
         </div>
       </div>
 
-      {/* ─── Mobile: Card View ─── */}
+      {/* ─── Mobile: Compact Day Selector + Classes ─── */}
       <div className={styles.mobileView}>
-        {routine.days.map((day) => {
+        {/* Day pill strip */}
+        <div className={styles.mobileDayStrip}>
+          {routine.days.map((day) => {
+            const isToday = day === todayName;
+            const isActive = mobileDaySelected === day;
+            return (
+              <button
+                key={day}
+                className={`${styles.mobileDayPill} ${isActive ? styles.mobileDayPillActive : ""}`}
+                onClick={() => setMobileDaySelected(day)}
+              >
+                {day.slice(0, 3)}
+                {isToday && <span className={styles.todayDot} />}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected day header */}
+        {(() => {
+          const day = mobileDaySelected || routine.days[0];
           const isToday = day === todayName;
           const classes = getClassesForDay(day);
-          const isExpanded = expandedDay === day;
-
           return (
-            <div
-              key={day}
-              className={`${styles.dayCard} ${isToday ? styles.dayCardToday : ""}`}
-            >
-              <button
-                className={styles.dayCardHeader}
-                onClick={() => setExpandedDay(isExpanded ? null : day)}
-              >
-                <div className={styles.dayCardLeft}>
-                  {isToday && <span className={styles.todayBadge}>TODAY</span>}
-                  <span className={styles.dayCardName}>{day}</span>
-                  <span className={styles.dayCardCount}>
-                    {classes.length > 0
-                      ? `${classes.length} class${classes.length > 1 ? "es" : ""}`
-                      : "No classes"}
-                  </span>
-                </div>
-                <span
-                  className={`${styles.dayCardChevron} ${isExpanded ? styles.chevronOpen : ""}`}
-                >
-                  ▾
+            <div className={styles.mobileDayContent}>
+              <div className={styles.mobileDayHeading}>
+                {isToday && <span className={styles.todayBadge}>TODAY</span>}
+                <span className={styles.mobileDayName}>{day}</span>
+                <span className={styles.mobileDayCount}>
+                  {classes.length > 0
+                    ? `${classes.length} class${classes.length > 1 ? "es" : ""}`
+                    : "No classes"}
                 </span>
-              </button>
+              </div>
 
-              {isExpanded && (
-                <div className={styles.dayCardBody}>
-                  {classes.length === 0 ? (
-                    <div className={styles.dayCardEmpty}>🎉 Free day!</div>
-                  ) : (
-                    classes.map((slot, i) => (
-                      <div
-                        key={i}
-                        className={`${styles.mobileSlot} ${styles[`mobile_${slot.type}`]}`}
-                      >
-                        <div className={styles.mobileSlotTime}>
-                          {formatTime(slot.time)}
-                        </div>
-                        <div className={styles.mobileSlotInfo}>
-                          <span className={styles.mobileSlotSubject}>
-                            {slot.subject}
+              {classes.length === 0 ? (
+                <div className={styles.dayCardEmpty}>🎉 Free day!</div>
+              ) : (
+                <div className={styles.mobileDaySlots}>
+                  {classes.map((slot, i) => (
+                    <div
+                      key={i}
+                      className={`${styles.mobileSlot} ${styles[`mobile_${slot.type}`]}`}
+                    >
+                      <div className={styles.mobileSlotTime}>
+                        {formatTime(slot.time)}
+                      </div>
+                      <div className={styles.mobileSlotInfo}>
+                        <span className={styles.mobileSlotSubject}>
+                          {slot.subject}
+                        </span>
+                        <div className={styles.mobileSlotMeta}>
+                          {slot.room && <span>📍 {slot.room}</span>}
+                          {slot.teacher && <span>👤 {slot.teacher}</span>}
+                          <span
+                            className={`${styles.mobileTypeBadge} ${styles[`badge_${slot.type}`]}`}
+                          >
+                            {slot.type === "lab" ? "🔬 Lab" : "📖 Lecture"}
                           </span>
-                          <div className={styles.mobileSlotMeta}>
-                            {slot.room && <span>📍 {slot.room}</span>}
-                            {slot.teacher && <span>👤 {slot.teacher}</span>}
-                            <span
-                              className={`${styles.mobileTypeBadge} ${styles[`badge_${slot.type}`]}`}
-                            >
-                              {slot.type === "lab" ? "🔬 Lab" : "📖 Lecture"}
-                            </span>
-                          </div>
                         </div>
                       </div>
-                    ))
-                  )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           );
-        })}
+        })()}
 
         <div className={styles.mobileLegend}>
           <span className={styles.legendItem}>
