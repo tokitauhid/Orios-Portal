@@ -25,6 +25,15 @@ export const DEFAULT_SETTINGS = { welcomeText: '', countryCode: 'BD' };
 export const DEFAULT_SUBJECTS = [];
 
 export const DEFAULT_ADMINS = [];
+export const DEFAULT_API_CLIENTS = [];
+export const DEFAULT_EVENTS_OUTBOX = {
+  cursor: 0,
+  items: [],
+};
+export const DEFAULT_WEBHOOK_SUBSCRIPTIONS = [];
+export const DEFAULT_AUDIT_LOG = [];
+export const DEFAULT_IDEMPOTENCY_KEYS = [];
+export const DEFAULT_RATE_LIMITS = {};
 
 export const DEFAULTS = {
   notices: DEFAULT_NOTICES,
@@ -38,6 +47,12 @@ export const DEFAULTS = {
   settings: DEFAULT_SETTINGS,
   subjects: DEFAULT_SUBJECTS,
   admins: DEFAULT_ADMINS,
+  api_clients: DEFAULT_API_CLIENTS,
+  events_outbox: DEFAULT_EVENTS_OUTBOX,
+  webhook_subscriptions: DEFAULT_WEBHOOK_SUBSCRIPTIONS,
+  audit_log: DEFAULT_AUDIT_LOG,
+  idempotency_keys: DEFAULT_IDEMPOTENCY_KEYS,
+  rate_limits: DEFAULT_RATE_LIMITS,
 };
 
 export const VALID_COLLECTIONS = Object.keys(DEFAULTS);

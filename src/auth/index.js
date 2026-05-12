@@ -28,6 +28,11 @@ function authHeaders() {
   return headers;
 }
 
+function unwrapApiData(payload, fallback = null) {
+  if (payload && typeof payload === "object" && "data" in payload) return payload.data;
+  return payload ?? fallback;
+}
+
 // Check once whether the deployed API endpoint is reachable.
 function getAPIUrl(basePath) {
   return basePath;
@@ -184,8 +189,11 @@ export async function isSuperAdmin(email) {
 export async function getAdmins() {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), { cache: "no-store" });
-      if (res.ok) return await res.json();
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), {
+        cache: "no-store",
+        headers: authHeaders(),
+      });
+      if (res.ok) return unwrapApiData(await res.json(), []);
     } catch { /* Fall back to local data if remote fetch fails. */ }
   }
   const admins = await getAdminStore();
@@ -250,8 +258,11 @@ export async function changePassword(email, oldPassword, newPassword) {
 export async function getAll(collectionName) {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=${collectionName}`), { cache: "no-store" });
-      if (res.ok) return await res.json();
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=${collectionName}`), {
+        cache: "no-store",
+        headers: authHeaders(),
+      });
+      if (res.ok) return unwrapApiData(await res.json(), []);
     } catch { /* Fall through to local fallback/default. */ }
   }
   return [];
@@ -268,7 +279,7 @@ export async function addItem(collectionName, item) {
       method: "POST", headers: authHeaders(),
       body: JSON.stringify({ action: "add", collection: collectionName, item }),
     });
-    if (res.ok) return await res.json();
+    if (res.ok) return unwrapApiData(await res.json());
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to add item");
   }
@@ -281,7 +292,7 @@ export async function updateItem(collectionName, id, updates) {
       method: "POST", headers: authHeaders(),
       body: JSON.stringify({ action: "update", collection: collectionName, id, updates }),
     });
-    if (res.ok) return await res.json();
+    if (res.ok) return unwrapApiData(await res.json());
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || "Failed to update");
   }
@@ -305,8 +316,11 @@ export async function deleteItem(collectionName, id) {
 export async function getRoutine() {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=routine`), { cache: "no-store" });
-      if (res.ok) return await res.json();
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=routine`), {
+        cache: "no-store",
+        headers: authHeaders(),
+      });
+      if (res.ok) return unwrapApiData(await res.json(), { timeSlots: [], days: [], schedule: {} });
     } catch { /* Fall through to local fallback/default. */ }
   }
   return lsGet("orios_routine", { timeSlots: [], days: [], schedule: {} });
@@ -329,9 +343,12 @@ export async function getSettings() {
   const defaults = { welcomeText: "", countryCode: "BD" };
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), { cache: "no-store" });
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=settings`), {
+        cache: "no-store",
+        headers: authHeaders(),
+      });
       if (res.ok) {
-        const remoteSettings = await res.json();
+        const remoteSettings = unwrapApiData(await res.json(), {});
         return { ...defaults, ...remoteSettings };
       }
     } catch { /* Fall through to local fallback/default. */ }
@@ -355,11 +372,37 @@ export async function saveSettings(data) {
 export async function getSubjects() {
   if (await isApiAvailable()) {
     try {
-      const res = await fetch(getAPIUrl(`${API_BASE}?collection=subjects`));
-      if (res.ok) return await res.json();
+      const res = await fetch(getAPIUrl(`${API_BASE}?collection=subjects`), {
+        headers: authHeaders(),
+      });
+      if (res.ok) return unwrapApiData(await res.json(), []);
     } catch { /* Fall through to local fallback/default. */ }
   }
   return lsGet("orios_subjects", []);
+}
+
+export async function createApiClient(payload) {
+  if (!(await isApiAvailable())) throw new Error("Database API is unavailable.");
+  const res = await fetch(getAPIUrl(API_BASE), {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ action: "create_api_client", collection: "api_clients", ...payload }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Failed to create API client.");
+  return unwrapApiData(data, data);
+}
+
+export async function upsertWebhook(payload) {
+  if (!(await isApiAvailable())) throw new Error("Database API is unavailable.");
+  const res = await fetch(getAPIUrl(API_BASE), {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ action: "upsert_webhook", collection: "webhook_subscriptions", ...payload }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Failed to save webhook subscription.");
+  return unwrapApiData(data, data);
 }
 
 export async function saveSubjects(subjects) {

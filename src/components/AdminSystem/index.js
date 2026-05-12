@@ -20,6 +20,8 @@ const navItems = [
   { label: "📁 Files", to: "/admin/files-manager" },
   { label: "🗓️ Routine", to: "/admin/routine-manager" },
   { label: "👥 Admins", to: "/admin/admins" },
+  { label: "🔑 API Clients", to: "/admin/api-clients" },
+  { label: "🛰️ Webhooks", to: "/admin/webhooks" },
 ];
 
 export function AdminLayout({ children, title }) {

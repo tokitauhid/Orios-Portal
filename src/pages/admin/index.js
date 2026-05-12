@@ -66,6 +66,8 @@ const quickActions = [
   { label: "Manage Files", to: "/admin/files-manager", icon: "📁" },
   { label: "Edit Routine", to: "/admin/routine-manager", icon: "🗓️" },
   { label: "Admin Users", to: "/admin/admins", icon: "👥" },
+  { label: "API Clients", to: "/admin/api-clients", icon: "🔑" },
+  { label: "Webhooks", to: "/admin/webhooks", icon: "🛰️" },
 ];
 
 export default function AdminDashboard() {
