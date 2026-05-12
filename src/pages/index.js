@@ -10,7 +10,7 @@ import {
 } from "@site/src/auth";
 import styles from "./index.module.css";
 
-// Get upcoming deadlines across all collections (Doom Clock format)
+// Build a unified upcoming list across events, assignments, and labs.
 function getGlobalCountdowns(events, assignments, labReports, count = 3) {
   const now = new Date().getTime();
   const mapped = [
@@ -57,7 +57,7 @@ function getGlobalCountdowns(events, assignments, labReports, count = 3) {
     .slice(0, count);
 }
 
-// Get next exam
+// Pick the closest upcoming exam.
 function getNextExam(eventList) {
   const now = new Date();
   return eventList
@@ -80,7 +80,7 @@ function getTodayClasses(routineData) {
   return slots.filter(Boolean);
 }
 
-// Helper to format time to AM/PM
+// Convert stored 24h-ish time values into a friendly label.
 function formatTime(timeStr) {
   try {
     if (!timeStr.includes(":")) return timeStr;
@@ -98,7 +98,7 @@ function formatTime(timeStr) {
   }
 }
 
-// Get pending assignment count
+// Count only assignments that are still pending and not past due.
 function getPendingCount(list) {
   const now = new Date();
   return list.filter((a) => {
@@ -171,7 +171,7 @@ export default function Home() {
   useEffect(() => {
     async function init() {
       try {
-        // Fetch all data first, then auto-update statuses in parallel
+        // Load everything first so the dashboard can render immediately.
         const [
           settings,
           savedRoutine,
@@ -206,7 +206,7 @@ export default function Home() {
         setLabReports(labsData);
         setLoaded(true);
 
-        // Fire-and-forget status update after data is displayed
+        // Then refresh status flags in the background.
         try {
           await autoUpdateStatuses();
         } catch (e) {
@@ -244,7 +244,7 @@ export default function Home() {
     >
       <NoticeBanner notices={notices} />
 
-      {/* Hero Section */}
+      {/* Hero intro */}
       <header className={styles.hero}>
         <div className={styles.heroGlow} />
         <div className={styles.heroContent}>
@@ -301,9 +301,9 @@ export default function Home() {
 
       <main className={styles.main}>
         {!loaded ? (
-          /* ── Full-page skeleton ── */
+          /* Loading placeholders */
           <div className={styles.pageSkeleton}>
-            {/* Stats row skeleton */}
+            {/* Stats placeholders */}
             <div className={styles.skelStatsRow}>
               {[0, 1, 2, 3].map((i) => (
                 <div
@@ -319,7 +319,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            {/* Countdown section skeleton */}
+            {/* Countdown placeholders */}
             <div className={styles.skelSection}>
               <div className={styles.skelTitle} />
               <div className={styles.skelDesc} />
@@ -336,7 +336,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            {/* Today's schedule skeleton */}
+            {/* Schedule placeholders */}
             <div className={styles.skelSection}>
               <div className={styles.skelTitle} />
               <div className={styles.skelDesc} />
@@ -353,7 +353,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            {/* Feature grid skeleton */}
+            {/* Feature-card placeholders */}
             <div className={styles.skelSection}>
               <div className={styles.skelTitle} />
               <div className={styles.skelDesc} />
@@ -372,9 +372,9 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          /* ── Real content ── */
+          /* Loaded content */
           <div className={styles.pageContent}>
-            {/* Quick Stats Row */}
+            {/* Quick stats */}
             <section className={styles.statsRow}>
               <a
                 href="/calendar"
@@ -428,7 +428,7 @@ export default function Home() {
               </a>
             </section>
 
-            {/* Countdown Section */}
+            {/* Upcoming countdowns */}
             <section className={styles.section}>
               <div
                 className={styles.sectionHeader}
@@ -492,7 +492,7 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Today's Schedule */}
+            {/* Today schedule */}
             <section className={styles.section}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>📚 Today's Schedule</h2>
@@ -534,7 +534,7 @@ export default function Home() {
               )}
             </section>
 
-            {/* Quick Access Features */}
+            {/* Quick links */}
             <section className={styles.section}>
               <div
                 className={styles.sectionHeader}

@@ -13,7 +13,7 @@ import {
 } from "@site/src/auth";
 import styles from "./routine-manager.module.css";
 
-// Helper to format time (e.g. "1:00" -> "1:00 PM")
+// Convert stored slot times into a friendlier display format.
 const formatTime = (timeStr) => {
   try {
     if (!timeStr.includes(":")) return timeStr;
@@ -31,7 +31,7 @@ const formatTime = (timeStr) => {
   }
 };
 
-// ── Inline editable chip ──────────────────────────────────────────────────────
+// Reusable editable chip used for days and time slots.
 function EditableChip({ value, onSave, onRemove, children, className }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -96,7 +96,7 @@ export default function AdminRoutine() {
   const [routine, setRoutine] = useState(null);
   const [subjects, setSubjects] = useState([]);
 
-  // Routine editing state
+  // Selected cell + editor form state.
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({
     subject: "",
@@ -110,11 +110,11 @@ export default function AdminRoutine() {
   const [timeSlots, setTimeSlots] = useState([]);
   const [newTime, setNewTime] = useState("");
 
-  // Days editing
+  // Day list editing state.
   const [days, setDays] = useState([]);
   const [newDay, setNewDay] = useState("");
 
-  // Subject management state
+  // Subject management state.
   const [newSubject, setNewSubject] = useState("");
   const [subError, setSubError] = useState("");
   const [subSuccess, setSubSuccess] = useState("");
@@ -139,7 +139,7 @@ export default function AdminRoutine() {
       </Layout>
     );
 
-  // ── Cell editing ────────────────────────────────────────────────────────────
+  // Cell editing.
   const handleCellClick = (day, idx) => {
     const slot = routine.schedule[day]?.[idx];
     setEditing({ day, slotIdx: idx });
@@ -183,7 +183,7 @@ export default function AdminRoutine() {
     setEditing(null);
   };
 
-  // ── Time Slots ──────────────────────────────────────────────────────────────
+  // Time-slot structure edits.
   const addTimeSlot = () => {
     if (!newTime.trim() || timeSlots.includes(newTime.trim())) return;
     const updated = [...timeSlots, newTime.trim()];
@@ -196,7 +196,7 @@ export default function AdminRoutine() {
     const idx = timeSlots.indexOf(time);
     const updated = timeSlots.filter((t) => t !== time);
     setTimeSlots(updated);
-    // Also strip the column from all schedule days
+    // Removing a time slot also removes that column from every day.
     const updatedSchedule = {};
     Object.entries(routine.schedule).forEach(([day, slots]) => {
       updatedSchedule[day] = (slots || []).filter((_, i) => i !== idx);
@@ -212,7 +212,7 @@ export default function AdminRoutine() {
     if (!newTimeValue || timeSlots.includes(newTimeValue)) return;
     const updated = timeSlots.map((t) => (t === oldTime ? newTimeValue : t));
     setTimeSlots(updated);
-    // Update the stored time inside every schedule slot that used this time value
+    // Keep slot metadata aligned when a column time is renamed.
     const updatedSchedule = {};
     Object.entries(routine.schedule).forEach(([day, slots]) => {
       updatedSchedule[day] = (slots || []).map((slot) => {
@@ -228,7 +228,7 @@ export default function AdminRoutine() {
     }));
   };
 
-  // ── Days ────────────────────────────────────────────────────────────────────
+  // Day structure edits.
   const addDay = () => {
     const day = newDay.trim();
     if (!day || days.includes(day)) return;
@@ -279,7 +279,7 @@ export default function AdminRoutine() {
     setRoutine((prev) => ({ ...prev, days: updated }));
   };
 
-  // ── Subjects ────────────────────────────────────────────────────────────────
+  // Subject edits.
   const handleAddSubject = async (e) => {
     e.preventDefault();
     const name = newSubject.trim();
@@ -305,7 +305,7 @@ export default function AdminRoutine() {
     setTimeout(() => setSubSuccess(""), 2500);
   };
 
-  // Rename subject: updates the subjects list AND cascades to all collections + routine cells
+  // Renaming a subject should update routine cells and related collections.
   const handleRenameSubject = async (oldName, newName) => {
     if (!newName || subjects.includes(newName)) {
       setSubError(
@@ -316,12 +316,12 @@ export default function AdminRoutine() {
       setTimeout(() => setSubError(""), 3000);
       return;
     }
-    // 1. Update subjects list
+    // Update the subject list.
     const updatedSubjects = subjects.map((s) => (s === oldName ? newName : s));
     await saveSubjects(updatedSubjects);
     setSubjects(updatedSubjects);
 
-    // 2. Cascade rename in routine schedule cells (local state — will be saved via Publish)
+    // Update subject names in local routine state.
     const updatedSchedule = {};
     Object.entries(routine.schedule).forEach(([day, slots]) => {
       updatedSchedule[day] = (slots || []).map((slot) => {
@@ -332,7 +332,7 @@ export default function AdminRoutine() {
     });
     setRoutine((prev) => ({ ...prev, schedule: updatedSchedule }));
 
-    // 3. Cascade rename in notes, assignments, lab-reports via the API
+    // Update subject names in notes, assignments, and lab reports.
     try {
       for (const col of ["notes", "assignments", "labReports"]) {
         const items = await getAll(col);
@@ -353,7 +353,7 @@ export default function AdminRoutine() {
     setTimeout(() => setSubSuccess(""), 4000);
   };
 
-  // ── Publish ─────────────────────────────────────────────────────────────────
+  // Persist routine + subjects together.
   const handlePublish = async () => {
     await saveRoutine(routine);
     await saveSubjects(subjects);
@@ -368,7 +368,7 @@ export default function AdminRoutine() {
   return (
     <Layout title="Manage Routine &amp; Subjects — Admin">
       <AdminLayout title="🗓️ Manage Routine &amp; Subjects">
-        {/* ---- SUBJECTS SECTION ---- */}
+        {/* Subjects */}
         <section className={styles.sectionCard}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>📚 Manage Subjects</h2>
@@ -409,7 +409,7 @@ export default function AdminRoutine() {
           </div>
         </section>
 
-        {/* ---- ROUTINE SECTION ---- */}
+        {/* Routine */}
         <section className={styles.sectionCard}>
           <div className={styles.toolbar}>
             <h2 className={styles.sectionTitle}>🗓️ Weekly Routine</h2>
@@ -430,10 +430,10 @@ export default function AdminRoutine() {
             persist all changes.
           </p>
 
-          {/* Table Structure Editor (Days & Times) */}
+          {/* Structure editor (days and time slots) */}
           {editingTime && (
             <div className={styles.structureEditor}>
-              {/* Columns Editor — Time Slots */}
+              {/* Time-slot editor */}
               <div className={styles.timeEditor}>
                 <h4 className={styles.timeEditorTitle}>
                   🕐 Time Slots (Columns) — click ✏️ to rename
@@ -470,7 +470,7 @@ export default function AdminRoutine() {
                 </div>
               </div>
 
-              {/* Rows Editor — Days */}
+              {/* Day editor */}
               <div className={styles.timeEditor} style={{ marginTop: "16px" }}>
                 <h4 className={styles.timeEditorTitle}>
                   📅 Days (Rows) — click ✏️ to rename
@@ -523,7 +523,7 @@ export default function AdminRoutine() {
             </div>
           )}
 
-          {/* Schedule Table */}
+          {/* Weekly schedule table */}
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
@@ -570,7 +570,7 @@ export default function AdminRoutine() {
           </div>
         </section>
 
-        {/* Edit Cell Modal */}
+        {/* Cell editor modal */}
         {editing && (
           <div className={styles.editOverlay} onClick={() => setEditing(null)}>
             <div
@@ -652,7 +652,7 @@ export default function AdminRoutine() {
   );
 }
 
-// ── Subject chip with inline rename ──────────────────────────────────────────
+// Subject chip with inline rename support.
 function SubjectChip({ name, delay, onRename, onRemove, styles }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);

@@ -12,7 +12,7 @@ const CURRENT_VERSION = "6";
 const DEFAULT_ADMINS = [];
 const API_BASE = "/api/data";
 
-// ── Auth token helper ──
+// Build auth headers from the locally stored admin token.
 function getAuthToken() {
   try {
     return localStorage.getItem(TOKEN_KEY) || "";
@@ -28,7 +28,7 @@ function authHeaders() {
   return headers;
 }
 
-// ── API detection ──
+// Check once whether the deployed API endpoint is reachable.
 function getAPIUrl(basePath) {
   return basePath;
 }
@@ -50,7 +50,7 @@ async function isApiAvailable() {
   }
 }
 
-// ── Fallback: localStorage ──
+// localStorage fallback for local/dev usage.
 function lsGet(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
@@ -65,9 +65,7 @@ function lsSet(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-// ============================================================================
-// ADMIN STORE & AUTHENTICATION
-// ============================================================================
+// Admin store and authentication.
 async function getAdminStore() {
   try {
     const ver = localStorage.getItem(ADMINS_VERSION_KEY);
@@ -94,7 +92,7 @@ async function saveAdminStore(admins) {
         headers: authHeaders(),
         body: JSON.stringify({ action: "set", collection: "admins", data: admins }),
       });
-    } catch { /* ignore */ }
+    } catch { /* Best-effort remote sync only. */ }
   }
 }
 
@@ -188,7 +186,7 @@ export async function getAdmins() {
     try {
       const res = await fetch(getAPIUrl(`${API_BASE}?collection=admins`), { cache: "no-store" });
       if (res.ok) return await res.json();
-    } catch { /* fall back */ }
+    } catch { /* Fall back to local data if remote fetch fails. */ }
   }
   const admins = await getAdminStore();
   return admins.map(({ password, ...rest }) => rest);
@@ -248,15 +246,13 @@ export async function changePassword(email, oldPassword, newPassword) {
   }
 }
 
-// ============================================================================
-// CRUD (DATA TABLES)
-// ============================================================================
+// CRUD helpers for list-style collections.
 export async function getAll(collectionName) {
   if (await isApiAvailable()) {
     try {
       const res = await fetch(getAPIUrl(`${API_BASE}?collection=${collectionName}`), { cache: "no-store" });
       if (res.ok) return await res.json();
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   return [];
 }
@@ -305,15 +301,13 @@ export async function deleteItem(collectionName, id) {
   throw new Error("Database API is unavailable. Cannot delete item.");
 }
 
-// ============================================================================
-// MISC SETTINGS & ROUTINE
-// ============================================================================
+// Routine/settings helpers.
 export async function getRoutine() {
   if (await isApiAvailable()) {
     try {
       const res = await fetch(getAPIUrl(`${API_BASE}?collection=routine`), { cache: "no-store" });
       if (res.ok) return await res.json();
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   return lsGet("orios_routine", { timeSlots: [], days: [], schedule: {} });
 }
@@ -326,7 +320,7 @@ export async function saveRoutine(data) {
         body: JSON.stringify({ action: "set", collection: "routine", data }),
       });
       if (res.ok) return;
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   lsSet("orios_routine", data);
 }
@@ -340,7 +334,7 @@ export async function getSettings() {
         const remoteSettings = await res.json();
         return { ...defaults, ...remoteSettings };
       }
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   return { ...defaults, ...lsGet("orios_settings", {}) };
 }
@@ -353,7 +347,7 @@ export async function saveSettings(data) {
         body: JSON.stringify({ action: "set", collection: "settings", data }),
       });
       if (res.ok) return;
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   lsSet("orios_settings", data);
 }
@@ -363,7 +357,7 @@ export async function getSubjects() {
     try {
       const res = await fetch(getAPIUrl(`${API_BASE}?collection=subjects`));
       if (res.ok) return await res.json();
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   return lsGet("orios_subjects", []);
 }
@@ -376,7 +370,7 @@ export async function saveSubjects(subjects) {
         body: JSON.stringify({ action: "set", collection: "subjects", data: subjects }),
       });
       if (res.ok) return;
-    } catch { /* fall through */ }
+    } catch { /* Fall through to local fallback/default. */ }
   }
   lsSet("orios_subjects", subjects);
 }

@@ -1,10 +1,6 @@
 /**
- * /api/ics-proxy — Fetches an ICS calendar feed and returns the raw text.
- *
- * This proxies the request through Cloudflare to avoid CORS issues
- * when fetching Google Calendar, Outlook, or other ICS feeds from the browser.
- *
- * GET /api/ics-proxy?url=https://calendar.google.com/calendar/ical/...
+ * Proxy an ICS feed so the browser can read it without CORS issues.
+ * Usage: GET /api/ics-proxy?url=<calendar-url>
  */
 
 export async function onRequestGet(context) {
@@ -19,7 +15,7 @@ export async function onRequestGet(context) {
     });
   }
 
-  // Basic validation — only allow http/https URLs
+  // Only allow absolute HTTP(S) URLs.
   if (!icsUrl.startsWith('http://') && !icsUrl.startsWith('https://')) {
     return new Response(JSON.stringify({ error: 'Invalid URL. Must start with http:// or https://' }), {
       status: 400,
@@ -45,7 +41,7 @@ export async function onRequestGet(context) {
       status: 200,
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour to reduce repeated upstream fetches.
         'Access-Control-Allow-Origin': '*',
       },
     });

@@ -45,7 +45,7 @@ export default function CalendarPage() {
 
         setEvents([...evs, ...mappedAsgns, ...mappedLabs]);
 
-        // Fetch holidays from ICS calendar feed if configured
+        // Pull holiday events from configured ICS feeds, if any.
         const urls = settings.icsUrls || (settings.icsUrl ? [settings.icsUrl] : []);
         if (urls.length > 0) {
           fetchICSHolidays(urls);
@@ -72,7 +72,7 @@ export default function CalendarPage() {
     } catch {}
   };
 
-  /** Minimal ICS/iCal parser — extracts VEVENT blocks into calendar events */
+  /** Tiny ICS parser that pulls VEVENT blocks into calendar event objects. */
   const parseICS = (icsText) => {
     const events = [];
     const blocks = icsText.split("BEGIN:VEVENT");
@@ -111,7 +111,7 @@ export default function CalendarPage() {
     return events;
   };
 
-  // Generate routine events for the calendar (next 60 days)
+  // Expand routine slots into dated calendar events for the next 60 days.
   const generateRoutineEvents = () => {
     if (!liveRoutine || !liveRoutine.schedule) return [];
     const routineEvents = [];
@@ -161,11 +161,11 @@ export default function CalendarPage() {
     return routineEvents;
   };
 
-  // Merge everything into one unified list
+  // Full calendar view includes classes + holidays + regular events.
   const routineEvents = generateRoutineEvents();
   const allEvents = [...events, ...holidays, ...routineEvents];
 
-  // Sidebar shows only non-routine events (events, holidays, assignments, labs)
+  // Sidebar stays focused on non-routine items.
   const sidebarEvents = [...events, ...holidays];
 
   return (
@@ -184,7 +184,7 @@ export default function CalendarPage() {
           </div>
         </header>
 
-        {/* Weekly Routine Table — FIRST */}
+        {/* Weekly routine table */}
         <section className={styles.routineSection}>
           <div className={styles.routineHeader}>
             <div className={styles.routineHeaderText}>
@@ -202,7 +202,7 @@ export default function CalendarPage() {
           <RoutineViewer routine={liveRoutine} />
         </section>
 
-        {/* Calendar + Upcoming — BELOW */}
+        {/* Calendar and upcoming list */}
         <div className={styles.layout}>
           <div className={styles.calendarCol}>
             <h2
@@ -213,7 +213,7 @@ export default function CalendarPage() {
             </h2>
             <EventCalendar events={allEvents} />
 
-            {/* Color Legend */}
+            {/* Event color legend */}
             <div className={styles.legendRow}>
               <span className={styles.legendItem}>
                 <span

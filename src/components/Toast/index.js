@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import styles from "./styles.module.css";
 
-// ── Context ──
+// Context shared by the toast hook/provider pair.
 const ToastContext = createContext(null);
 
 /**
@@ -17,10 +17,10 @@ const ToastContext = createContext(null);
 export function useToast() {
   const ctx = useContext(ToastContext);
   if (!ctx) {
-    // Fallback: if no provider, use a simple alert
+    // If the provider is missing, fail quietly with a console warning.
     return {
       showToast: (message) => {
-        // This should never happen in practice
+        // This is mainly a guard for incorrect usage in development.
         console.warn("[Toast]", message);
       },
     };
@@ -47,7 +47,7 @@ export function ToastProvider({ children }) {
     );
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 300); // matches slideOut animation
+    }, 300); // Keep removal in sync with the slide-out animation.
   }, []);
 
   const showToast = useCallback(

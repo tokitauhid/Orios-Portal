@@ -1,17 +1,14 @@
 /**
- * /api/data — Centralized CRUD for all Orios Class collections.
+ * Single API endpoint for reading and writing portal data.
  *
- * Cloudflare KV binding: env[KV_BINDING_NAME] from kv_config.js
- * Environment variable: env.ADMIN_SECRET (shared secret for write auth)
- *
- * GET  /api/data?collection=notices          → read collection
- * POST /api/data { action, collection, ... } → write (requires Authorization header)
+ * Uses the KV binding configured in kv_config.js.
+ * Reads are collection-based, writes are action-based.
  */
 
 import { DEFAULTS, VALID_COLLECTIONS } from './_defaults.js';
 import { KV_BINDING_NAME } from '../../kv_config.js';
 
-// ── Helpers ──
+// Small response helpers.
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -29,7 +26,7 @@ function err(message, status = 400) {
   return json({ error: message }, status);
 }
 
-/** Resolve the configured KV namespace from kv_config.js. */
+/** Resolve whichever KV namespace is available in this environment. */
 function getKVBinding(env) {
   if (env[KV_BINDING_NAME]) return env[KV_BINDING_NAME];
   if (env.ORIOS_DATA) return env.ORIOS_DATA;
@@ -42,29 +39,29 @@ function getKVBinding(env) {
   return null;
 }
 
-/** Read a collection from KV, seeding with defaults if it doesn't exist yet. */
+/** Read a collection and initialize it with defaults on first access. */
 async function kvGet(env, collection) {
   const kv = getKVBinding(env);
   if (!kv) return null;
 
   const raw = await kv.get(collection);
   if (raw !== null) return JSON.parse(raw);
-  // Seed defaults
+  // If the key is missing, create it from defaults so later reads are stable.
   const defaults = DEFAULTS[collection];
   if (defaults !== undefined) {
     await kv.put(collection, JSON.stringify(defaults));
-    return JSON.parse(JSON.stringify(defaults)); // deep clone
+    return JSON.parse(JSON.stringify(defaults)); // Return a clone, not the shared defaults object.
   }
   return null;
 }
 
-/** Write a collection to KV. */
+/** Persist a collection payload to KV. */
 async function kvPut(env, collection, data) {
   const kv = getKVBinding(env);
   if (kv) await kv.put(collection, JSON.stringify(data));
 }
 
-/** Verify admin auth. Token = base64(email:password) checked against stored admins. */
+/** Validate Bearer token by matching decoded email/password against admins. */
 async function isAuthorized(env, request) {
   const authHeader = request.headers.get('Authorization') || '';
   if (!authHeader.startsWith('Bearer ')) return false;
@@ -80,7 +77,7 @@ async function isAuthorized(env, request) {
   }
 }
 
-// ── Handlers ──
+// Request handlers.
 
 export async function onRequestGet(context) {
   const { env, request } = context;
@@ -94,7 +91,7 @@ export async function onRequestGet(context) {
     return err('Invalid or missing collection. Valid: ' + VALID_COLLECTIONS.join(', '));
   }
 
-  // Admins: strip passwords for public reads
+  // Never expose password fields on public admin reads.
   if (collection === 'admins') {
     const admins = await kvGet(env, 'admins');
     return json(admins.map(({ password, ...rest }) => rest));
@@ -123,7 +120,7 @@ export async function onRequestPost(context) {
     return err('Invalid or missing collection.');
   }
 
-  // Allow one-time bootstrap only when no admins exist.
+  // Allow first-admin bootstrap only when the admin list is empty.
   if (action === 'bootstrap_admin' && collection === 'admins') {
     const admins = await kvGet(env, 'admins');
     if (admins.length > 0) return err('Bootstrap already completed.', 409);
@@ -140,12 +137,12 @@ export async function onRequestPost(context) {
     return json({ ok: true });
   }
 
-  // Auth check for all regular writes
+  // All non-bootstrap writes require a valid admin token.
   if (!(await isAuthorized(env, request))) {
     return err('Unauthorized. Provide a valid admin token.', 401);
   }
 
-  // ── Singular value stores (routine, settings, subjects) ──
+  // Collections stored as a single object/array value.
   if (['routine', 'settings', 'subjects'].includes(collection)) {
     if (action === 'set') {
       await kvPut(env, collection, body.data);
@@ -157,7 +154,7 @@ export async function onRequestPost(context) {
     return err('For ' + collection + ', use action "set" with a "data" field.');
   }
 
-  // ── List collections (notices, events, etc.) ──
+  // Collections stored as item lists.
   const items = await kvGet(env, collection);
 
   switch (action) {
@@ -188,11 +185,11 @@ export async function onRequestPost(context) {
     }
 
     case 'verify': {
-      // Just for auth verification
+      // Explicit auth probe used by the frontend during login/session checks.
       return json({ ok: true });
     }
 
-    // ── Admin specific actions ──
+    // Admin account management actions.
     case 'add_admin': {
       if (collection !== 'admins') return err('Invalid collection for this action.');
       const admins = await kvGet(env, 'admins');
@@ -227,7 +224,7 @@ export async function onRequestPost(context) {
   }
 }
 
-// Handle OPTIONS for CORS preflight
+// Return quickly for CORS preflight requests.
 export async function onRequestOptions() {
   return new Response(null, { status: 204 });
 }

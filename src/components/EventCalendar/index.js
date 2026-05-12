@@ -26,7 +26,7 @@ function isInRange(date, startStr, endStr) {
   return d >= start && d <= end;
 }
 
-// Dedup routine events — only keep first occurrence per (subject+type) per day
+// Routine generation can produce duplicates; keep one per day/title/type combo.
 function dedupeEvents(events) {
   const seen = new Set();
   return events.filter(e => {
@@ -81,7 +81,7 @@ export default function EventCalendar({ events = [] }) {
     const isToday = isSameDay(new Date(currentYear, currentMonth, day), today);
     const isSelected = selectedDate === day;
 
-    // Show up to 2 chips + a "+N more" if needed
+    // Keep cells compact: show two chips, then collapse the rest.
     const visibleChips = dayEvents.slice(0, 2);
 
     cells.push(
@@ -92,7 +92,7 @@ export default function EventCalendar({ events = [] }) {
       >
         <span className={styles.dayNumber}>{day}</span>
 
-        {/* Inline event chips */}
+        {/* Event chips */}
         {visibleChips.map((ev, i) => (
           <span
             key={i}
@@ -103,7 +103,7 @@ export default function EventCalendar({ events = [] }) {
           </span>
         ))}
 
-        {/* Overflow indicator */}
+        {/* Hidden-count indicator */}
         {dayEvents.length > 2 && (
           <span className={styles.overflowChip}>+{dayEvents.length - 2} more</span>
         )}
@@ -111,7 +111,7 @@ export default function EventCalendar({ events = [] }) {
     );
   }
 
-  // Ensure calendar grid is always exactly 6 rows (42 cells) to prevent squishing
+  // Keep a fixed 6x7 grid so month height does not jump.
   const currentTotal = cells.length;
   if (currentTotal < 42) {
     for (let i = 0; i < 42 - currentTotal; i++) {
@@ -121,7 +121,7 @@ export default function EventCalendar({ events = [] }) {
 
   return (
     <div className={styles.calendar}>
-      {/* Header */}
+      {/* Month header */}
       <div className={styles.calendarHeader}>
         <button onClick={prevMonth} className={styles.navBtn}>
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
@@ -136,17 +136,17 @@ export default function EventCalendar({ events = [] }) {
         </button>
       </div>
 
-      {/* Week day headers */}
+      {/* Weekday labels */}
       <div className={styles.weekDays}>
         {DAYS.map(d => <div key={d} className={styles.weekDay}>{d}</div>)}
       </div>
 
-      {/* Calendar grid */}
+      {/* Day grid */}
       <div className={styles.grid}>
         {cells}
       </div>
 
-      {/* Selected day event panel */}
+      {/* Selected-day details */}
       {selectedDate && (
         <div className={styles.eventPanel}>
           <h4 className={styles.panelTitle}>

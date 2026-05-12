@@ -4,7 +4,7 @@ import Link from "@docusaurus/Link";
 import { getAll } from "@site/src/auth";
 import styles from "./doom-clock.module.css";
 
-// Hook to calculate remaining time
+// Keep an always-updating countdown for a target date.
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -66,7 +66,7 @@ const CountdownDisplay = ({ date }) => {
     );
   }
 
-  // Determine danger level based on days left
+  // Color-code urgency by remaining days.
   let clockClass = styles.clockSafe;
   if (days < 1) clockClass = styles.clockDanger;
   else if (days < 3) clockClass = styles.clockWarning;

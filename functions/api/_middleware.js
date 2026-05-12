@@ -8,7 +8,7 @@ export async function onRequest(context) {
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // Handle preflight
+  // Short-circuit CORS preflight checks.
   if (context.request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: response.headers });
   }
