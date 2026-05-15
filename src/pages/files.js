@@ -8,7 +8,8 @@ import styles from "./files.module.css";
 export default function FilesPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [subjectFilter, setSubjectFilter] = useState("all");
   const [filesData, setFilesData] = useState([]);
 
   useEffect(() => {
@@ -33,8 +34,11 @@ export default function FilesPage() {
           (f.uploadedBy || "").toLowerCase().includes(q)
       );
     }
-    if (filter !== "all") {
-      base = base.filter((f) => f.subject === filter || f.type === filter);
+    if (typeFilter !== "all") {
+      base = base.filter((f) => f.type === typeFilter);
+    }
+    if (subjectFilter !== "all") {
+      base = base.filter((f) => f.subject === subjectFilter);
     }
     return base;
   })();
@@ -119,41 +123,42 @@ export default function FilesPage() {
           <div className={styles.filterRow}>
             <div className={styles.pills}>
               <button
-                className={`${styles.pill} ${filter === "all" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("all")}
+                className={`${styles.pill} ${typeFilter === "all" ? styles.pillActive : ""}`}
+                onClick={() => setTypeFilter("all")}
               >
                 All
               </button>
               <button
-                className={`${styles.pill} ${filter === "pdf" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("pdf")}
+                className={`${styles.pill} ${typeFilter === "pdf" ? styles.pillActive : ""}`}
+                onClick={() => setTypeFilter("pdf")}
               >
                 📄 PDF
               </button>
               <button
-                className={`${styles.pill} ${filter === "zip" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("zip")}
+                className={`${styles.pill} ${typeFilter === "zip" ? styles.pillActive : ""}`}
+                onClick={() => setTypeFilter("zip")}
               >
                 📦 ZIP
               </button>
               <button
-                className={`${styles.pill} ${filter === "image" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("image")}
+                className={`${styles.pill} ${typeFilter === "image" ? styles.pillActive : ""}`}
+                onClick={() => setTypeFilter("image")}
               >
                 🖼️ Image
               </button>
             </div>
-            <div className={styles.pills}>
+            <select
+              value={subjectFilter}
+              onChange={(e) => setSubjectFilter(e.target.value)}
+              className={styles.subjectSelect}
+            >
+              <option value="all">All Subjects</option>
               {subjects.map((s) => (
-                <button
-                  key={s}
-                  className={`${styles.pill} ${styles.subjectPill} ${filter === s ? styles.pillActive : ""}`}
-                  onClick={() => setFilter(s)}
-                >
+                <option key={s} value={s}>
                   {s}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
           </div>
         </div>
 

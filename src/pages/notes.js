@@ -117,23 +117,18 @@ export default function NotesPage() {
             />
           </div>
           <div className={styles.filterRow}>
-            <div className={styles.pills}>
-              <button
-                className={`${styles.pill} ${activeSubject === "All" ? styles.pillActive : ""}`}
-                onClick={() => setActiveSubject("All")}
-              >
-                All Subjects
-              </button>
+            <select
+              value={activeSubject}
+              onChange={(e) => setActiveSubject(e.target.value)}
+              className={styles.subjectSelect}
+            >
+              <option value="All">All Subjects</option>
               {subjects.map((s) => (
-                <button
-                  key={s}
-                  className={`${styles.pill} ${activeSubject === s ? styles.pillActive : ""}`}
-                  onClick={() => setActiveSubject(s)}
-                >
+                <option key={s} value={s}>
                   {s}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
             <div className={styles.pills}>
               {types.map((t) => (
                 <button

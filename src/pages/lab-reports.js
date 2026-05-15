@@ -28,7 +28,8 @@ function computeStatus(r) {
 export default function LabReportsPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [subjectFilter, setSubjectFilter] = useState("all");
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -59,8 +60,11 @@ export default function LabReportsPage() {
           (r.description || "").toLowerCase().includes(q)
       );
     }
-    if (filter !== "all") {
-      base = base.filter((r) => r.status === filter || r.subject === filter);
+    if (statusFilter !== "all") {
+      base = base.filter((r) => r.status === statusFilter);
+    }
+    if (subjectFilter !== "all") {
+      base = base.filter((r) => r.subject === subjectFilter);
     }
     return base;
   })();
@@ -137,47 +141,48 @@ export default function LabReportsPage() {
           <div className={styles.filterRow}>
             <div className={styles.pills}>
               <button
-                className={`${styles.pill} ${filter === "all" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("all")}
+                className={`${styles.pill} ${statusFilter === "all" ? styles.pillActive : ""}`}
+                onClick={() => setStatusFilter("all")}
               >
                 All
               </button>
               <button
-                className={`${styles.pill} ${filter === "pending" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("pending")}
+                className={`${styles.pill} ${statusFilter === "pending" ? styles.pillActive : ""}`}
+                onClick={() => setStatusFilter("pending")}
               >
                 ⏳ Pending
               </button>
               <button
-                className={`${styles.pill} ${filter === "submitted" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("submitted")}
+                className={`${styles.pill} ${statusFilter === "submitted" ? styles.pillActive : ""}`}
+                onClick={() => setStatusFilter("submitted")}
               >
                 ✅ Submitted
               </button>
               <button
-                className={`${styles.pill} ${filter === "overdue" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("overdue")}
+                className={`${styles.pill} ${statusFilter === "overdue" ? styles.pillActive : ""}`}
+                onClick={() => setStatusFilter("overdue")}
               >
                 🔴 Overdue
               </button>
               <button
-                className={`${styles.pill} ${filter === "graded" ? styles.pillActive : ""}`}
-                onClick={() => setFilter("graded")}
+                className={`${styles.pill} ${statusFilter === "graded" ? styles.pillActive : ""}`}
+                onClick={() => setStatusFilter("graded")}
               >
                 ⭐ Graded
               </button>
             </div>
-            <div className={styles.pills}>
+            <select
+              value={subjectFilter}
+              onChange={(e) => setSubjectFilter(e.target.value)}
+              className={styles.subjectSelect}
+            >
+              <option value="all">All Subjects</option>
               {subjects.map((s) => (
-                <button
-                  key={s}
-                  className={`${styles.pill} ${styles.subjectPill} ${filter === s ? styles.pillActive : ""}`}
-                  onClick={() => setFilter(s)}
-                >
+                <option key={s} value={s}>
                   {s}
-                </button>
+                </option>
               ))}
-            </div>
+            </select>
           </div>
         </div>
 
