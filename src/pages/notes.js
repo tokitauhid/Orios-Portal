@@ -15,8 +15,11 @@ export default function NotesPage() {
   useEffect(() => {
     async function init() {
       try {
-        setNotesData(await getAll("notes"));
-        setSubjects(await getSubjects());
+        const notes = await getAll("notes");
+        const routineSubjects = await getSubjects();
+        const noteSubjects = notes.map((note) => note.subject).filter(Boolean);
+        setNotesData(notes);
+        setSubjects(Array.from(new Set([...(routineSubjects || []), ...noteSubjects])));
       } catch {}
     }
     init();
