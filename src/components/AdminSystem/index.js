@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Layout from "@theme/Layout";
 import { useHistory } from "@docusaurus/router";
 import { getCurrentUser, isAdmin, signOut } from "@site/src/auth";
@@ -219,6 +219,7 @@ export function DataTable({ columns, data, onEdit, onDelete, searchKeys = [] }) 
 export function AdminForm({ isOpen, onClose, onSubmit, title, fields = [], initialData = null }) {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const fileInputRefs = useRef({});
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -254,6 +255,63 @@ export function AdminForm({ isOpen, onClose, onSubmit, title, fields = [], initi
   const handleArrayChange = (name, value) => {
     const arr = value.split(",").map((v) => v.trim()).filter(Boolean);
     setFormData((prev) => ({ ...prev, [name]: arr }));
+  };
+
+  const processSelectedFile = (field, file) => {
+    if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      showToast("File is too large! Max allowed size is 25MB.", "warning", 5000);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target.result;
+      const kb = file.size / 1024;
+      const sizeStr = kb > 1024 ? (kb / 1024).toFixed(1) + " MB" : kb.toFixed(1) + " KB";
+      const ext = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "";
+      let fileType = "other";
+      let icon = "📁";
+      if (["pdf"].includes(ext)) { fileType = "pdf"; icon = "📄"; }
+      else if (["zip", "rar"].includes(ext)) { fileType = "zip"; icon = "📦"; }
+      else if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext)) { fileType = "image"; icon = "🖼️"; }
+      else if (["doc", "docx"].includes(ext)) { fileType = "doc"; icon = "📄"; }
+      const titleWithoutExt = ext ? file.name.substring(0, file.name.lastIndexOf(".")) : file.name;
+      const autoTags = titleWithoutExt.split(/[\s-_]+/).filter((t) => t.length > 2).map((t) => t.toLowerCase());
+
+      setFormData((prev) => {
+        const updates = {
+          ...prev,
+          [field.name]: base64,
+          name: prev.name || file.name,
+          title: prev.title || titleWithoutExt,
+          size: prev.size || sizeStr,
+          type: prev.type || fileType,
+          format: prev.format || ext.toUpperCase(),
+          icon: prev.icon || icon,
+          url: prev.url ? prev.url : base64,
+        };
+        if (fields.some((f) => f.name === "tags") && (!updates.tags || updates.tags.length === 0)) updates.tags = autoTags;
+        return updates;
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const openFilePicker = async (field) => {
+    const picker = window.showOpenFilePicker;
+    if (typeof picker === "function") {
+      try {
+        const [handle] = await picker({ multiple: false, excludeAcceptAllOption: false, types: [] });
+        if (!handle) return;
+        processSelectedFile(field, await handle.getFile());
+        return;
+      } catch (err) {
+        if (err?.name === "AbortError") return;
+      }
+    }
+
+    fileInputRefs.current[field.name]?.click();
   };
 
   const handleSubmit = async (e) => {
@@ -293,36 +351,22 @@ export function AdminForm({ isOpen, onClose, onSubmit, title, fields = [], initi
                     <input type="text" className={styles.input} value={Array.isArray(formData[field.name]) ? formData[field.name].join(", ") : formData[field.name] || ""} onChange={(e) => handleArrayChange(field.name, e.target.value)} placeholder={field.placeholder || "tag1, tag2, tag3"} />
                   ) : field.type === "file" ? (
                     <div className={styles.fileWrap}>
-                      <input type="file" className={styles.input} onChange={(e) => {
+                      <button type="button" className={styles.input} onClick={() => openFilePicker(field)}>
+                        Choose File
+                      </button>
+                      <input
+                        ref={(node) => { fileInputRefs.current[field.name] = node; }}
+                        type="file"
+                        className={styles.input}
+                        style={{ display: "none" }}
+                        onChange={(e) => {
                           const file = e.target.files[0];
                           if (!file) return;
-                          if (file.size > 25 * 1024 * 1024) {
-                            showToast("File is too large! Max allowed size is 25MB.", "warning", 5000);
-                            e.target.value = "";
-                            return;
-                          }
-                          const reader = new FileReader();
-                          reader.onload = (event) => {
-                            const base64 = event.target.result;
-                            const kb = file.size / 1024;
-                            const sizeStr = kb > 1024 ? (kb / 1024).toFixed(1) + " MB" : kb.toFixed(1) + " KB";
-                            let ext = file.name.split(".").pop().toLowerCase();
-                            let fileType = "other";
-                            let icon = "📁";
-                            if (["pdf"].includes(ext)) { fileType = "pdf"; icon = "📄"; }
-                            else if (["zip", "rar"].includes(ext)) { fileType = "zip"; icon = "📦"; }
-                            else if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext)) { fileType = "image"; icon = "🖼️"; }
-                            else if (["doc", "docx"].includes(ext)) { fileType = "doc"; icon = "📄"; }
-                            const titleWithoutExt = file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
-                            const autoTags = titleWithoutExt.split(/[\s-_]+/).filter((t) => t.length > 2).map((t) => t.toLowerCase());
-                            setFormData((prev) => {
-                              const updates = { ...prev, [field.name]: base64, name: prev.name || file.name, title: prev.title || titleWithoutExt, size: prev.size || sizeStr, type: prev.type || fileType, format: prev.format || ext.toUpperCase(), icon: prev.icon || icon, url: prev.url ? prev.url : base64 };
-                              if (fields.some((f) => f.name === "tags") && (!updates.tags || updates.tags.length === 0)) updates.tags = autoTags;
-                              return updates;
-                            });
-                          };
-                          reader.readAsDataURL(file);
-                        }} required={field.required && !formData[field.name]} />
+                          processSelectedFile(field, file);
+                          e.target.value = "";
+                        }}
+                        required={field.required && !formData[field.name]}
+                      />
                       {formData[field.name] && <span className={styles.fileSuccess}>✅ File attached properly</span>}
                     </div>
                   ) : field.type === "select-with-custom" ? (
