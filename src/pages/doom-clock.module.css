@@ -156,10 +156,26 @@
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding: 24px 16px;
+  }
+  .header {
+    margin-bottom: 32px;
+  }
   .title {
-    font-size: 2.2rem;
+    font-size: 2rem;
+  }
+  .subtitle {
+    font-size: 0.95rem;
   }
   .activeList {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .timeValue {
+    font-size: 1.6rem;
   }
 }

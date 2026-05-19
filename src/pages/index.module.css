@@ -521,6 +521,9 @@
     max-width: 320px;
     padding: 12px 20px;
   }
+  .searchKbd {
+    display: none;
+  }
   .statsRow,
   .skelStatsRow {
     grid-template-columns: repeat(2, 1fr);
@@ -552,6 +555,9 @@
   .section,
   .skelSection {
     margin-top: 32px;
+  }
+  .sectionHeader img {
+    display: none;
   }
   .pageSkeleton {
     margin-top: -20px;

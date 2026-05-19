@@ -477,6 +477,12 @@ h6 {
   :root {
     --ifm-font-size-base: 15px;
   }
+
+  /* Prevent horizontal overflow on mobile */
+  html,
+  body {
+    overflow-x: hidden;
+  }
 }
 
 /* ============================================

@@ -267,17 +267,42 @@
 }
 
 @media (max-width: 768px) {
+  .calendar {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .calendarHeader {
+    padding: 10px 12px;
+  }
+  .monthTitle {
+    font-size: 0.88rem;
+  }
+  .weekDay {
+    font-size: 0.55rem;
+    padding: 6px 1px;
+    letter-spacing: 0;
+  }
   .dayCell {
-    min-height: 54px;
-    padding: 4px 3px 3px;
+    min-height: 44px;
+    padding: 3px 2px 2px;
+  }
+  .emptyCell {
+    min-height: 44px;
   }
   .dayNumber {
-    font-size: 0.72rem;
-    width: 20px;
-    height: 20px;
+    font-size: 0.68rem;
+    width: 18px;
+    height: 18px;
   }
   .eventChip {
     display: none;
+  }
+  .routineDots {
+    gap: 2px;
+  }
+  .dot {
+    width: 4px;
+    height: 4px;
   }
   .eventPanel {
     padding: 12px 14px;

@@ -203,9 +203,24 @@
 
 @media (max-width: 768px) {
   .overlay {
-    padding: 20px 12px;
+    padding: 12px;
+    align-items: flex-start;
+  }
+  .container {
+    max-height: calc(100vh - 24px);
+    border-radius: var(--radius-md);
+  }
+  .inputWrap {
+    padding: 14px 16px;
   }
   .input {
     font-size: 1rem;
+  }
+  .escBadge {
+    display: none;
+  }
+  .resultItem {
+    padding: 10px;
+    gap: 10px;
   }
 }

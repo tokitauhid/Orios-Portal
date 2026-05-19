@@ -241,6 +241,9 @@
   .headerIcon {
     font-size: 2rem;
   }
+  .headerContent img {
+    display: none;
+  }
   .subjectSelect {
     max-width: 100%;
   }
