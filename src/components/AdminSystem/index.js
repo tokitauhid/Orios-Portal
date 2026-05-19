@@ -357,6 +357,7 @@ export function AdminForm({ isOpen, onClose, onSubmit, title, fields = [], initi
                       <input
                         ref={(node) => { fileInputRefs.current[field.name] = node; }}
                         type="file"
+                        accept="*/*"
                         className={styles.input}
                         style={{ display: "none" }}
                         onChange={(e) => {

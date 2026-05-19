@@ -755,7 +755,7 @@
    - Derives variables from .adminRoot wrapper in AdminLayout
    ========================================================================= */
 
-.overlay {
+.formOverlay {
   position: fixed;
   inset: 0;
   z-index: 999;
@@ -767,13 +767,13 @@
   display: flex;
   justify-content: flex-end; /* Drawer slides from right */
 }
-.overlay.open {
+.formOverlay.formOpen {
   opacity: 1;
   pointer-events: auto;
 }
 
 /* Drawer Layout */
-.drawer {
+.formDrawer {
   width: 100%;
   max-width: 460px;
   height: 100%;
@@ -787,10 +787,10 @@
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: var(--rad-lg) 0 0 var(--rad-lg);
 }
-:global([data-theme="dark"]) .drawer {
+:global([data-theme="dark"]) .formDrawer {
   border-left: 1px solid var(--border-light);
 }
-.drawer.open {
+.formDrawer.formOpen {
   transform: translateX(0);
 }
 
@@ -990,7 +990,7 @@
 
 /* Mobile */
 @media (max-width: 768px) {
-  .drawer {
+  .formDrawer {
     border-radius: 0;
   }
   .formGrid {
